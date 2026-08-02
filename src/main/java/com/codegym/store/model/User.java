@@ -41,4 +41,11 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    // Ảnh đại diện của người dùng (nối sang bảng UserAvatar)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "avatar_id", referencedColumnName = "id")
+    private UserAvatar userAvatar;
+
+
 }

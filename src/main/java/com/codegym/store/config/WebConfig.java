@@ -11,12 +11,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Trỏ tới thư mục "uploads" ở thư mục gốc của project
         Path uploadDir = Paths.get("uploads");
-        String uploadPath = uploadDir.toFile().getAbsolutePath();
 
-        // Nói với Spring Boot: "Hễ ai truy cập vào /images/... thì hãy lấy file trong thư mục uploads ra cho họ xem!"
+        // Dùng .toUri().toString() để tự động chuẩn hóa đường dẫn cho Windows/Mac/Linux
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:/" + uploadPath + "/");
+                .addResourceLocations(uploadDir.toUri().toString());
     }
 }

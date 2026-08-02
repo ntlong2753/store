@@ -9,6 +9,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* --- CSS CHO GALLERY ẢNH --- */
+        .product-gallery { display: flex; gap: 15px; height: 450px; width: 100%; }
+        .thumbnail-list { display: flex; flex-direction: column; gap: 10px; width: 85px; overflow-y: auto; }
+        .thumbnail-list::-webkit-scrollbar { display: none; } /* Giấu thanh cuộn cho đẹp */
+        .thumbnail {
+            border: 2px solid #ddd; border-radius: 6px; cursor: pointer; opacity: 0.6;
+            transition: 0.2s; height: 85px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 5px;
+        }
+        .thumbnail:hover, .thumbnail.active { border-color: var(--primary-red); opacity: 1; }
+        .thumbnail img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .main-image {
+            flex: 1; border: 1px solid #eee; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center; padding: 20px;
+            position: relative; /* Bắt buộc phải có dòng này để mũi tên bay lơ lửng */
+        }
+        .main-image img { max-width: 100%; max-height: 100%; object-fit: contain; transition: opacity 0.3s ease; }
+
+        /* NÚT BẤM TRÁI PHẢI */
+        .nav-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: white; border: 1px solid #eee; border-radius: 50%;
+            width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.2s;
+            font-size: 18px; color: #555; z-index: 10;
+        }
+        .nav-btn:hover { background: var(--primary-red); color: white; border-color: var(--primary-red); }
+        .prev-btn { left: 15px; }
+        .next-btn { right: 15px; }
+
+
         /* CSS dùng chung (HEADER) */
         .account-dropdown button:hover { background: #f9f9f9; color: #e30019; }
         :root { --primary-red: #e30019; --bg-color: #f5f5f5; --text-dark: #333333; --text-gray: #777777; }
@@ -77,7 +108,8 @@
             <!-- Giỏ hàng -->
             <div class="action-item" th:if="${!isAdmin}">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count">0</span>
+                <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}">0</span>
+
                 <div>
                     <span>Giỏ</span>
                     <div style="font-weight: bold;">hàng</div>
@@ -95,7 +127,7 @@
                     <a th:href="@{/register}"><i class="fas fa-user-plus"></i> Đăng ký tài khoản</a>
                 </div>
                 <div class="account-dropdown" th:if="${username != null}">
-                    <a href="#"><i class="fas fa-user-circle"></i> Hồ sơ của tôi</a>
+                    <a th:href="@{/profile}"><i class="fas fa-user-circle"></i> Hồ sơ của tôi</a>
                     <form th:action="@{/logout}" method="post" style="margin: 0;">
                         <button type="submit" style="width: 100%; text-align: left; background: transparent; border: none; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #333;">
                             <i class="fas fa-sign-out-alt" style="color: #e30019; width: 20px; text-align: center;"></i> Đăng xuất
@@ -111,10 +143,36 @@
 <div class="container">
     <div class="detail-card">
         <!-- Cột Trái: Ảnh -->
-        <div class="detail-left">
-            <img th:if="${!#lists.isEmpty(cpu.images)}" th:src="@{${cpu.images[0].path}}" alt="Product Image">
-            <img th:if="${#lists.isEmpty(cpu.images)}" src="https://via.placeholder.com/600x600?text=No+Image" alt="No Image">
+        <!-- Cột Trái: Bộ sưu tập Ảnh -->
+        <div class="detail-left" style="border: none; padding: 0;">
+            <div class="product-gallery">
+                <!-- Cột Thumbnail -->
+                <div class="thumbnail-list" th:if="${!#lists.isEmpty(cpu.images)}">
+                    <!-- Thêm biến data-index để biết nó là ảnh thứ mấy -->
+                    <div class="thumbnail" th:each="img, stat : ${cpu.images}"
+                         th:classappend="${stat.index == 0} ? 'active' : ''"
+                         th:data-path="@{${img.path}}"
+                         th:data-index="${stat.index}"
+                         onclick="changeImage(this, this.getAttribute('data-path'), parseInt(this.getAttribute('data-index')))">
+                        <img th:src="@{${img.path}}" alt="Thumbnail">
+                    </div>
+                </div>
+
+                <!-- Ảnh Chính To Bự (Kèm 2 mũi tên) -->
+                <div class="main-image">
+                    <!-- Mũi tên Trái -->
+                    <button class="nav-btn prev-btn" onclick="prevImage()" th:if="${#lists.size(cpu.images) > 1}"><i class="fas fa-chevron-left"></i></button>
+
+                    <img id="mainProductImg" th:if="${!#lists.isEmpty(cpu.images)}" th:src="@{${cpu.images[0].path}}" alt="Main Image">
+                    <img th:if="${#lists.isEmpty(cpu.images)}" src="https://via.placeholder.com/600x600?text=No+Image" alt="No Image">
+
+                    <!-- Mũi tên Phải -->
+                    <button class="nav-btn next-btn" onclick="nextImage()" th:if="${#lists.size(cpu.images) > 1}"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
         </div>
+
 
         <!-- Cột Phải: Thông tin -->
         <div class="detail-right">
@@ -144,12 +202,62 @@
                 0 đ
             </div>
 
-            <button th:if="${!isAdmin}" class="btn-add-huge">
-                <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
-            </button>
+            <!-- Form đẩy ID sản phẩm vào Giỏ Hàng -->
+            <form th:if="${!isAdmin}" th:action="@{/cart/add}" method="post" style="display: inline-block;">
+                <input type="hidden" name="productId" th:value="${cpu.id}" />
+                <input type="hidden" name="quantity" value="1" />
+
+                <button type="submit" class="btn-add-huge">
+                    <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
+                </button>
+            </form>
+
         </div>
     </div>
 </div>
+<script>
+    let currentImageIndex = 0; // Lưu vết xem đang ở ảnh thứ mấy
+
+    // Hàm khi bấm vào ảnh nhỏ
+    function changeImage(element, imageUrl, index) {
+        document.getElementById('mainProductImg').src = imageUrl;
+
+        let thumbnails = document.querySelectorAll('.thumbnail');
+        thumbnails.forEach(t => t.classList.remove('active'));
+        if(element) element.classList.add('active');
+
+        if (index !== undefined) {
+            currentImageIndex = index;
+        }
+    }
+
+    // Hàm khi bấm mũi tên Phải (Tiếp theo)
+    function nextImage() {
+        let thumbnails = document.querySelectorAll('.thumbnail');
+        if (thumbnails.length <= 1) return;
+
+        currentImageIndex++;
+        if (currentImageIndex >= thumbnails.length) currentImageIndex = 0; // Quay về đầu nếu hết
+
+        let targetThumbnail = thumbnails[currentImageIndex];
+        let path = targetThumbnail.getAttribute('data-path');
+        changeImage(targetThumbnail, path, currentImageIndex);
+    }
+
+    // Hàm khi bấm mũi tên Trái (Quay lại)
+    function prevImage() {
+        let thumbnails = document.querySelectorAll('.thumbnail');
+        if (thumbnails.length <= 1) return;
+
+        currentImageIndex--;
+        if (currentImageIndex < 0) currentImageIndex = thumbnails.length - 1; // Nhảy xuống cuối nếu lùi quá
+
+        let targetThumbnail = thumbnails[currentImageIndex];
+        let path = targetThumbnail.getAttribute('data-path');
+        changeImage(targetThumbnail, path, currentImageIndex);
+    }
+</script>
+
 
 </body>
 </html>

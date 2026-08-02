@@ -102,7 +102,7 @@
 
         .header-actions {
             display: flex;
-            gap: 25px;
+            gap: 20px;
             align-items: center;
         }
 
@@ -110,23 +110,56 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 14px;
+            color: white;
+            text-decoration: none;
             cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background 0.2s;
         }
 
-        .action-item i { font-size: 18px; }
+        .action-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
 
+        .action-item i { font-size: 22px; }
+
+        .action-item .text-group { display: flex; flex-direction: column; line-height: 1.1; }
+        .action-item .text-top { font-size: 12px; opacity: 0.9; }
+        .action-item .text-bottom { font-weight: 700; font-size: 14px; }
+
+        /* Icon Giỏ Hàng có số đếm Vàng */
         .cart-icon { position: relative; }
         .cart-badge {
             position: absolute;
-            top: -8px; right: -8px;
+            top: 2px; right: 40px;
             background: #ffc107; color: black;
             font-size: 10px; font-weight: bold;
             width: 16px; height: 16px;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
         }
+
+        /* Nút Tài Khoản Nền Đỏ Sậm */
+        .account-btn {
+            background-color: #c40015; /* Màu đỏ sậm hơn */
+            padding: 10px 15px;
+        }
+        .account-btn:hover { background-color: #a80012; }
+
+        /* Ảnh đại diện thu nhỏ trên Header */
+        .header-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid white;
+        }
+
+        .account-menu { position: relative; padding: 10px 0; }
+        .account-menu:hover .account-dropdown { display: block; }
+
 
         /* ------------------ MAIN LAYOUT ------------------ */
         .container {
@@ -339,7 +372,7 @@
 <!-- HEADER BAR -->
 <header>
     <div class="header-container">
-        <h1 class="logo">NexGen PC</h1>
+        <h1 class="logo"><a href="/">NexGen PC</a></h1>
 
         <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Bạn cần tìm linh kiện gì (tên, mã, hãng)...">
@@ -347,51 +380,60 @@
         </div>
 
         <div class="header-actions">
-            <!-- Nút Trang Admin (CHỈ HIỆN VỚI ADMIN) -->
-            <div class="action-item" th:if="${isAdmin}">
-                <a th:href="@{/admin}" style="color: white; text-decoration: none;">
-                    <i class="fas fa-cogs"></i> Trang Admin
-                </a>
-            </div>
+            <!-- Nút Trang chủ -->
+            <a th:href="@{/}" class="action-item">
+                <i class="fas fa-home"></i>
+                <div class="text-group">
+                    <span class="text-bottom" style="font-size: 15px;">Trang chủ</span>
+                </div>
+            </a>
 
-            <!-- Tra cứu đơn hàng (BỊ ẨN VỚI ADMIN) -->
-            <div class="action-item" th:if="${!isAdmin}">
+            <!-- Tra cứu đơn hàng -->
+            <a href="#" class="action-item" th:if="${!isAdmin}">
                 <i class="fas fa-file-invoice"></i>
-                <div>
-                    <span>Tra cứu</span>
-                    <div style="font-weight: bold;">đơn hàng</div>
+                <div class="text-group">
+                    <span class="text-top">Tra cứu</span>
+                    <span class="text-bottom">đơn hàng</span>
                 </div>
-            </div>
+            </a>
 
-            <!-- Giỏ hàng (BỊ ẨN VỚI ADMIN) -->
-            <div class="action-item" th:if="${!isAdmin}">
+            <!-- Giỏ hàng -->
+            <a href="/#" class="action-item cart-icon" th:if="${!isAdmin}">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count">0</span>
-                <div>
-                    <span>Giỏ</span>
-                    <div style="font-weight: bold;">hàng</div>
-                </div>
-            </div>
+                <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}">0</span>
 
-            <!-- Nút Tài khoản thông minh -->
-            <div class="action-item account-menu">
-                <div style="cursor: pointer;">
-                    <i class="fas fa-user"></i>
-                    <!-- Nếu có biến username thì in ra, không có thì in chữ Tài khoản -->
-                    <span th:text="${username != null ? username : 'Tài khoản'}">Tài khoản</span>
-                    <i class="fas fa-caret-down" style="font-size: 12px; margin-left: -5px;"></i>
+                <div class="text-group">
+                    <span class="text-top">Giỏ</span>
+                    <span class="text-bottom">hàng</span>
+                </div>
+            </a>
+
+            <!-- Nút Trang Admin (CHỈ HIỆN VỚI ADMIN) -->
+            <a th:href="@{/admin}" class="action-item account-btn" th:if="${isAdmin}">
+                <i class="fas fa-cogs"></i>
+                <span class="text-bottom">Trang Admin</span>
+            </a>
+
+            <!-- Nút Tài khoản -->
+            <div class="account-menu" th:if="${!isAdmin}">
+                <div class="action-item account-btn">
+                    <!-- Ảnh đại diện hoặc Icon -->
+                    <img th:if="${globalAvatar != null}" th:src="${globalAvatar}" class="header-avatar" alt="Avatar">
+                    <i th:if="${globalAvatar == null}" class="fas fa-user"></i>
+
+                    <span class="text-bottom" th:text="${username != null ? username : 'Tài khoản'}">Tài khoản</span>
+
+                    <i class="fas fa-caret-down" style="font-size: 12px; margin-left: 5px;"></i>
                 </div>
 
-                <!-- Menu hiển thị khi CHƯA đăng nhập -->
+                <!-- Dropdown Menu -->
                 <div class="account-dropdown" th:if="${username == null}">
                     <a th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
                     <a th:href="@{/register}"><i class="fas fa-user-plus"></i> Đăng ký tài khoản</a>
                 </div>
 
-                <!-- Menu hiển thị khi ĐÃ đăng nhập -->
                 <div class="account-dropdown" th:if="${username != null}">
-                    <a href="#"><i class="fas fa-user-circle"></i> Hồ sơ của tôi</a>
-                    <!-- Nút Đăng xuất -->
+                    <a th:href="@{/profile}"><i class="fas fa-user-circle"></i> Hồ sơ của tôi</a>
                     <form th:action="@{/logout}" method="post" style="margin: 0;">
                         <button type="submit" style="width: 100%; text-align: left; background: transparent; border: none; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #333;">
                             <i class="fas fa-sign-out-alt" style="color: #e30019; width: 20px; text-align: center;"></i> Đăng xuất
@@ -399,9 +441,6 @@
                     </form>
                 </div>
             </div>
-
-
-
         </div>
     </div>
 </header>
