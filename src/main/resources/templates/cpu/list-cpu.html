@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách CPU</title>
+</head>
+<body>
+<h1>Quản Lý CPU</h1>
+<a th:href="@{/admin/cpu/add}">
+    <button style="margin-bottom: 15px; cursor: pointer;">+ Thêm Mới CPU</button>
+</a>
+
+<!-- th:if: Nếu danh sách cpus bị rỗng, hiển thị dòng chữ này -->
+<div th:if="${#lists.isEmpty(cpus)}">
+    <h3 style="color: gray;">Tạm thời chưa có sản phẩm nào.</h3>
+</div>
+
+<!-- th:unless: Nếu danh sách KHÔNG rỗng, thì hiển thị cái bảng -->
+<table border="1" th:unless="${#lists.isEmpty(cpus)}">
+    <thead>
+    <tr>
+        <th>STT</th>
+        <th>Tên CPU</th>
+        <th>Dòng (Series)</th>
+        <th>Phân khúc</th>
+        <th>Mã model</th>
+        <th>Hậu tố</th>
+        <th>Nhân/Luồng</th>
+        <th>Socket</th>
+        <th>Mô tả</th>
+        <th>Tồn kho</th>
+        <th>Giá</th>
+        <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="cpu : ${cpus}">
+        <!-- SỬA DÒNG NÀY: Khai báo thêm chữ 'iter' -->
+    <tr th:each="cpu, iter : ${cpus}">
+
+        <!-- SỬA DÒNG NÀY: Dùng iter.count để tự động đếm 1, 2, 3... -->
+        <td th:text="${iter.count}"></td>
+        <td th:text="${cpu.name}"></td>
+        <td th:text="${cpu.series}"></td>
+        <td th:text="${cpu.segment}"></td>
+        <td th:text="${cpu.modelNumber}"></td>
+
+        <!-- Dùng hàm #strings.isEmpty() của Thymeleaf để kiểm tra xem nó có bị null hay rỗng không -->
+        <td th:text="${#strings.isEmpty(cpu.suffix)} ? '---' : ${cpu.suffix}"></td>
+
+
+        <!-- Nối chuỗi để hiển thị kiểu "6 / 12" -->
+        <td th:text="${cpu.cores} + ' / ' + ${cpu.threads}"></td>
+        <td th:text="${cpu.socket}"></td>
+
+        <td th:text="${cpu.description}"></td>
+
+        <td th:text="${cpu.stock}"></td>
+        <td th:text="${cpu.price} + ' VNĐ'"></td>
+
+        <!-- BỔ SUNG 2 NÚT NÀY -->
+        <td>
+            <!-- Link Sửa sẽ đưa ID lên URL, ví dụ: /admin/cpu/edit/1 -->
+            <a th:href="@{/admin/cpu/edit/{id}(id=${cpu.id})}">Sửa</a>
+            &nbsp;|&nbsp;
+            <!-- Link Xóa cũng đưa ID lên URL. Thêm hàm javascript để hỏi xác nhận -->
+            <a th:href="@{/admin/cpu/delete/{id}(id=${cpu.id})}"
+               onclick="return confirm('Bạn có chắc chắn muốn xóa CPU này không?')">Xóa</a>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

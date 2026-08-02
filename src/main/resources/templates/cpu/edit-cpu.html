@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <title>Sửa thông tin CPU</title>
+  <style>
+    .error { color: red; font-size: 14px; }
+  </style>
+</head>
+<body>
+<h1>Thêm CPU Mới</h1>
+<!-- Chú ý th:action trỏ về đúng /admin/cpu/add và th:object là product -->
+<!-- Thêm dòng ghi chú này để IntelliJ hết báo đỏ -->
+<!--/*@thymesVar id="product" type="com.codegym.store.model.Cpu"*/-->
+<form th:action="@{/admin/cpu/add}" th:object="${product}" method="post" enctype="multipart/form-data">
+  <input type="hidden" th:field="*{id}" />
+
+  <label>Tên CPU:</label>
+  <label>
+    <input type="text" th:field="*{name}" readonly="readonly" style="background-color: #e9ecef;"/>
+  </label>
+  <br/>
+
+  <label>Phân khúc (Segment):</label>
+  <label>
+    <input type="text" th:field="*{segment}" />
+  </label>
+  <span class="error" th:if="${#fields.hasErrors('segment')}" th:errors="*{segment}"></span><br/>
+
+  <label>Mã model (Model Number):</label>
+  <label>
+    <input type="text" th:field="*{modelNumber}" />
+  </label>
+  <span class="error" th:if="${#fields.hasErrors('modelNumber')}" th:errors="*{modelNumber}"></span><br/>
+
+  <label>Hậu tố (Suffix):</label>
+  <label>
+    <input type="text" th:field="*{suffix}" />
+  </label>
+  <span class="error" th:if="${#fields.hasErrors('suffix')}" th:errors="*{suffix}"></span><br/>
+
+  <label>Dòng (Series):</label>
+  <label>
+    <input type="text" th:field="*{series}" />
+  </label>
+  <span class="error" th:if="${#fields.hasErrors('series')}" th:errors="*{series}"></span><br/>
+
+  <label>Số nhân (Cores):</label>
+  <label>
+    <input type="number" th:field="*{cores}" />
+  </label>
+  <span class="error" th:if="${#fields.hasErrors('cores')}" th:errors="*{cores}"></span><br/>
+
+  <label>Số luồng (Threads):</label>
+  <label>
+    <input type="number" th:field="*{threads}" />
+  </label>
+  <span class="error" th:if="${#fields.hasErrors('threads')}" th:errors="*{threads}"></span><br/>
+
+  <label>Socket:</label>
+  <label>
+    <input type="text" th:field="*{socket}" />
+  </label><br/>
+
+  <label>Mô tả: </label>
+  <label>
+    <input type="text" th:field="*{description}" />
+  </label><br/>
+
+  <label>Số lượng kho:</label>
+  <label>
+    <input type="number" th:field="*{stock}" />
+  </label>
+  <span class="error" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></span><br/>
+
+  <label>Giá (VNĐ):</label>
+  <label>
+    <input type="number" th:field="*{price}" step="0.01" />
+  </label>
+  <span class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span><br/>
+
+  <!-- THÊM Ô CHỌN ẢNH NÀY VÀO TRƯỚC NÚT LƯU -->
+  <label>Chọn hình ảnh (có thể chọn nhiều):</label>
+  <!-- Chú ý thuộc tính multiple cho phép chọn nhiều file -->
+  <input type="file" name="imageFiles" multiple="multiple" accept="image/*" />
+  <br/>
+
+  <button type="submit" style="margin-top: 15px; cursor: pointer;">Lưu lại</button>
+
+  <!-- NÚT HỦY MỚI THÊM VÀO -->
+  <a th:href="@{/admin/cpu}" style="text-decoration: none;">
+    <!-- Dùng CSS để ép cái nút đứng cạnh nút Lưu lại -->
+    <button type="button" style="margin-top: 15px; margin-left: 10px; cursor: pointer;">Hủy</button>
+  </a>
+</form>
+
+<!-- ĐOẠN SCRIPT TỰ ĐỘNG NỐI CHUỖI -->
+<script>
+  // Thymeleaf th:field tự động tạo ra id cho các ô input giống hệt tên biến
+  const nameInput = document.getElementById('name');
+
+  const seriesInput = document.getElementById('series');
+  const segmentInput = document.getElementById('segment');
+  const modelNumberInput = document.getElementById('modelNumber');
+  const suffixInput = document.getElementById('suffix');
+
+  // Hàm này sẽ gom các chữ lại và nhét vào ô Tên CPU
+  function updateCpuName() {
+    const series = seriesInput.value.trim();
+    const segment = segmentInput.value.trim();
+    const modelNumber = modelNumberInput.value.trim();
+    const suffix = suffixInput.value.trim();
+
+    // Nếu suffix có chữ thì thêm dấu cách, không thì thôi
+    const suffixText = suffix ? suffix : '';
+
+    // Ghép lại và đổ vào ô nameInput
+    nameInput.value = `${series} ${segment} ${modelNumber}${suffixText}`.trim();
+  }
+
+  // Bắt sự kiện: Cứ mỗi khi người dùng GÕ PHÍM vào 4 ô này thì gọi hàm updateCpuName
+  seriesInput.addEventListener('input', updateCpuName);
+  segmentInput.addEventListener('input', updateCpuName);
+  modelNumberInput.addEventListener('input', updateCpuName);
+  suffixInput.addEventListener('input', updateCpuName);
+</script>
+
+</body>
+</html>
