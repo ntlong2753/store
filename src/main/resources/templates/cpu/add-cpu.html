@@ -77,11 +77,14 @@
     </label>
     <span class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span><br/>
 
-    <!-- THÊM Ô CHỌN ẢNH NÀY VÀO TRƯỚC NÚT LƯU -->
-    <label>Chọn hình ảnh (có thể chọn nhiều):</label>
-    <!-- Chú ý thuộc tính multiple cho phép chọn nhiều file -->
-    <input type="file" name="imageFiles" multiple="multiple" accept="image/*" />
+    <label>Chọn hình ảnh:</label>
+    <!-- id="imageInput" để JS gọi tới -->
+    <input type="file" id="imageInput" name="imageFiles" multiple="multiple" accept="image/*" />
+
+    <!-- Khung div này để chứa các ảnh preview hiện ra -->
+    <div id="previewContainer" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
     <br/>
+
 
     <button type="submit" style="margin-top: 15px; cursor: pointer;">Lưu lại</button>
 
@@ -92,35 +95,102 @@
     </a>
 </form>
 
-<!-- ĐOẠN SCRIPT TỰ ĐỘNG NỐI CHUỖI -->
 <script>
-    // Thymeleaf th:field tự động tạo ra id cho các ô input giống hệt tên biến
+    // ----------------------------------------------------------------
+    // 1. TÍNH NĂNG TỰ ĐỘNG NỐI CHUỖI TÊN CPU
+    // ----------------------------------------------------------------
     const nameInput = document.getElementById('name');
-
     const seriesInput = document.getElementById('series');
     const segmentInput = document.getElementById('segment');
     const modelNumberInput = document.getElementById('modelNumber');
     const suffixInput = document.getElementById('suffix');
 
-    // Hàm này sẽ gom các chữ lại và nhét vào ô Tên CPU
     function updateCpuName() {
         const series = seriesInput.value.trim();
         const segment = segmentInput.value.trim();
         const modelNumber = modelNumberInput.value.trim();
         const suffix = suffixInput.value.trim();
-
-        // Nếu suffix có chữ thì thêm dấu cách, không thì thôi
         const suffixText = suffix ? suffix : '';
-
-        // Ghép lại và đổ vào ô nameInput
         nameInput.value = `${series} ${segment} ${modelNumber}${suffixText}`.trim();
     }
 
-    // Bắt sự kiện: Cứ mỗi khi người dùng GÕ PHÍM vào 4 ô này thì gọi hàm updateCpuName
     seriesInput.addEventListener('input', updateCpuName);
     segmentInput.addEventListener('input', updateCpuName);
     modelNumberInput.addEventListener('input', updateCpuName);
     suffixInput.addEventListener('input', updateCpuName);
+
+
+    // ----------------------------------------------------------------
+    // 2. TÍNH NĂNG XEM TRƯỚC VÀ XÓA ẢNH
+    // ----------------------------------------------------------------
+    const imageInput = document.getElementById('imageInput');
+    const previewContainer = document.getElementById('previewContainer');
+
+    // Kho chứa file xịn
+    let selectedFiles = new DataTransfer();
+
+    imageInput.addEventListener('change', function(event) {
+        const files = event.target.files;
+        for(let i = 0; i < files.length; i++) {
+            selectedFiles.items.add(files[i]);
+        }
+        updateImagePreview();
+    });
+
+    function updateImagePreview() {
+        previewContainer.innerHTML = '';
+        imageInput.files = selectedFiles.files; // Đổ ngược lại vào thẻ input
+
+        Array.from(selectedFiles.files).forEach((file, index) => {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'relative';
+                wrapper.style.display = 'inline-block';
+
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100px';
+                img.style.height = '100px';
+                img.style.objectFit = 'cover';
+                img.style.border = '1px solid #ccc';
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = 'X';
+                deleteBtn.style.position = 'absolute';
+                deleteBtn.style.top = '0';
+                deleteBtn.style.right = '0';
+                deleteBtn.style.background = 'red';
+                deleteBtn.style.color = 'white';
+                deleteBtn.style.border = 'none';
+                deleteBtn.style.cursor = 'pointer';
+
+                deleteBtn.onclick = function(e) {
+                    e.preventDefault();
+                    removeFile(index);
+                };
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(deleteBtn);
+                previewContainer.appendChild(wrapper);
+            }
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function removeFile(indexToRemove) {
+        const newFiles = new DataTransfer();
+        const currentFiles = selectedFiles.files;
+
+        for(let i = 0; i < currentFiles.length; i++) {
+            if(i !== indexToRemove) {
+                newFiles.items.add(currentFiles[i]);
+            }
+        }
+        selectedFiles = newFiles;
+        updateImagePreview();
+    }
 </script>
 
 </body>

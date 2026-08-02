@@ -78,10 +78,11 @@
   </label>
   <span class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span><br/>
 
-  <!-- THÊM Ô CHỌN ẢNH NÀY VÀO TRƯỚC NÚT LƯU -->
-  <label>Chọn hình ảnh (có thể chọn nhiều):</label>
-  <!-- Chú ý thuộc tính multiple cho phép chọn nhiều file -->
-  <input type="file" name="imageFiles" multiple="multiple" accept="image/*" />
+  <label>Chọn hình ảnh (Xem trước & Xóa):</label>
+  <!-- id="imageInput" để JS gọi tới -->
+  <input type="file" id="imageInput" name="imageFiles" multiple="multiple" accept="image/*" />
+  <!-- Khung div này để chứa các ảnh preview hiện ra -->
+  <div id="previewContainer" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
   <br/>
 
   <button type="submit" style="margin-top: 15px; cursor: pointer;">Lưu lại</button>
@@ -123,6 +124,5 @@
   modelNumberInput.addEventListener('input', updateCpuName);
   suffixInput.addEventListener('input', updateCpuName);
 </script>
-
 </body>
 </html>
