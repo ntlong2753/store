@@ -21,4 +21,12 @@ public class Cart {
     // 1 Giỏ hàng có thể chứa nhiều Mặt hàng (Tự động lưu và tự động xóa mồ côi)
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
+
+    // Hàm tự động tính tổng tiền của cả giỏ hàng
+    public java.math.BigDecimal getTotalPrice() {
+        return items.stream()
+                .map(item -> item.getProduct().getPrice().multiply(new java.math.BigDecimal(item.getQuantity())))
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+    }
+
 }

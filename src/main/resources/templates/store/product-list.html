@@ -24,7 +24,13 @@
         <div class="card-actions">
             <a th:href="@{/product/{id}(id=${cpu.id})}" class="btn-detail" style="text-decoration: none; text-align: center; box-sizing: border-box; display: inline-block;">Chi tiết</a>
 
-            <button th:if="${!isAdmin}" class="btn-add-cart">Thêm vào</button>
+            <!-- Đã bọc Form và thêm class="form-add-cart" -->
+            <form th:if="${!isAdmin}" th:action="@{/cart/add}" method="post" class="form-add-cart" style="margin: 0; flex: 1;">
+                <input type="hidden" name="productId" th:value="${cpu.id}" />
+                <input type="hidden" name="quantity" value="1" />
+                <button type="submit" class="btn-add-cart" style="width: 100%;">Thêm vào</button>
+            </form>
         </div>
+
     </div>
 </div>

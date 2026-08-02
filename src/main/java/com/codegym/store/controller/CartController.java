@@ -106,4 +106,28 @@ public class CartController {
         }
         return "redirect:/cart";
     }
+
+    // 4. Cập nhật số lượng
+    @PostMapping("/update")
+    public String updateQuantity(@RequestParam("itemId") Long itemId,
+                                 @RequestParam("quantity") int quantity,
+                                 Principal principal) {
+        if (principal == null) return "redirect:/login";
+        User user = userRepository.findByUsername(principal.getName()).orElse(null);
+        if (user != null) {
+            Cart cart = cartRepository.findByUserId(user.getId()).orElse(null);
+            if (cart != null) {
+                for (CartItem item : cart.getItems()) {
+                    if (item.getId().equals(itemId)) {
+                        // Chặn trường hợp người dùng cố tình nhập số âm
+                        item.setQuantity(Math.max(1, quantity));
+                        break;
+                    }
+                }
+                cartRepository.save(cart);
+            }
+        }
+        return "redirect:/cart";
+    }
+
 }
