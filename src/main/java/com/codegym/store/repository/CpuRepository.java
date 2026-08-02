@@ -4,7 +4,10 @@ import com.codegym.store.model.Cpu;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CpuRepository extends JpaRepository<Cpu, Long> {
     // Spring sẽ tự biết lấy dữ liệu từ bảng `cpu` (và bảng cha `product`)
+    List<Cpu> findByNameContainingIgnoreCase(String keyword);
 }

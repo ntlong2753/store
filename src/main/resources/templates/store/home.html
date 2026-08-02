@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>NexGen PC - Xây Dựng Cỗ Máy Trong Mơ</title>
+    <!-- Font chữ hiện đại -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Thư viện Icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .account-dropdown button:hover { background: #f9f9f9; color: var(--primary-red); }
+
+        :root {
+            --primary-red: #e30019; /* Màu đỏ chủ đạo giống GearVN/Hacom */
+            --bg-color: #f5f5f5;
+            --text-dark: #333333;
+            --text-gray: #777777;
+            --border-color: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-dark);
+        }
+
+        /* ------------------ TOP BAR (HEADER) ------------------ */
+        header {
+            background-color: var(--primary-red);
+            color: white;
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            width: 94%;
+            max-width: 1600px; /* Đã tăng chiều rộng */
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .search-bar {
+            flex-grow: 0.5;
+            display: flex;
+            background: white;
+            border-radius: 4px;
+            overflow: visible; /* Bắt buộc đổi thành visible */
+            margin: 0 30px;
+            position: relative; /* Bắt buộc thêm cái này */
+        }
+
+        /* CSS CHO DROPDOWN TÌM KIẾM */
+        .search-dropdown {
+            position: absolute; top: 120%; left: 0; width: 100%;
+            background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 1001; display: none; max-height: 400px; overflow-y: auto;
+        }
+        .search-item {
+            display: flex; align-items: center; gap: 15px; padding: 12px 15px;
+            text-decoration: none; color: #333; border-bottom: 1px solid #eee; transition: 0.2s;
+        }
+        .search-item:hover { background: #f9f9f9; }
+        .search-item img { width: 45px; height: 45px; object-fit: contain; border-radius: 4px; }
+        .search-item-info { flex-grow: 1; display: flex; flex-direction: column; gap: 5px; }
+        .search-item-name { font-size: 14px; font-weight: 700; color: #222; }
+        .search-item-price { font-size: 14px; font-weight: 700; color: var(--primary-red); }
+        .search-item-badge { background: #6c757d; color: white; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 4px; }
+        .search-no-result { padding: 15px; text-align: center; color: #777; font-size: 14px; }
+
+
+
+        .search-bar input {
+            flex-grow: 1;
+            border: none;
+            padding: 10px 15px;
+            outline: none;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .search-bar button {
+            background: white;
+            border: none;
+            color: #007bff;
+            padding: 0 15px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .action-item i { font-size: 18px; }
+
+        .cart-icon { position: relative; }
+        .cart-badge {
+            position: absolute;
+            top: -8px; right: -8px;
+            background: #ffc107; color: black;
+            font-size: 10px; font-weight: bold;
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ------------------ MAIN LAYOUT ------------------ */
+        .container {
+            width: 94%;
+            max-width: 1600px; /* Đã tăng chiều rộng */
+            margin: 20px auto;
+        }
+
+        /* ------------------ HERO SECTION (SIDEBAR + BANNER) ------------------ */
+        .hero-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* Sidebar Danh mục */
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            padding: 10px 0;
+            align-self: flex-start;
+        }
+
+        .sidebar ul {
+            list-style: none; padding: 0; margin: 0;
+        }
+
+        .sidebar li a {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 20px;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 1px solid #f9f9f9;
+            transition: 0.2s;
+        }
+
+        .sidebar li a:hover { color: var(--primary-red); background-color: #fdfdfd; }
+
+        .sidebar li a .left-icon {
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .sidebar li a .left-icon i { font-size: 16px; color: #555; width: 20px; text-align: center; }
+        .sidebar li a:hover .left-icon i { color: var(--primary-red); }
+        .sidebar li a .fa-chevron-right { font-size: 10px; color: #ccc; }
+
+        /* Banner chính */
+        /* Banner chính */
+        .banner {
+            flex-grow: 1;
+            border-radius: 8px;
+            /* Đổi link ảnh ở dòng dưới này */
+            background: url('https://images.unsplash.com/photo-1587202372634-32705e3bf49c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            padding: 40px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+
+        .banner-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            max-width: 60%;
+        }
+
+        .banner-content h2 { font-size: 28px; margin: 0 0 10px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .banner-content p { font-size: 14px; line-height: 1.5; margin-bottom: 20px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+
+        .btn-discover {
+            background-color: var(--primary-red);
+            color: white; border: none; padding: 10px 25px;
+            font-size: 14px; font-weight: 700; border-radius: 4px;
+            cursor: pointer; transition: 0.2s;
+        }
+        .btn-discover:hover { background-color: #c40015; }
+
+        /* Phủ đen mờ để dễ đọc chữ trên banner */
+        .banner::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 100%);
+            z-index: 1;
+        }
+
+        /* ------------------ PRODUCT SECTION ------------------ */
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-header h3 { font-size: 22px; font-weight: 700; margin: 0; text-transform: uppercase;}
+
+        .view-all-btn {
+            background-color: var(--primary-red); color: white;
+            border: none; padding: 6px 15px; border-radius: 4px;
+            font-size: 13px; cursor: pointer;
+        }
+
+        /* Grid 5 cột y như ảnh */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        /* Card Sản Phẩm */
+        .product-card {
+            background: white;
+            border-radius: 4px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid transparent;
+            transition: 0.2s;
+        }
+
+        .product-card:hover { border-color: var(--primary-red); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        .badge-brand {
+            position: absolute; top: 10px; right: 10px;
+            background: var(--primary-red); color: white;
+            font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 2px;
+        }
+
+        .product-img {
+            width: 100%; height: 160px; object-fit: contain;
+            margin-bottom: 15px; transition: 0.3s;
+        }
+        .product-card:hover .product-img { transform: translateY(-5px); }
+
+        .brand-text { font-size: 12px; color: var(--text-gray); margin-bottom: 5px; text-transform: uppercase; }
+
+        .product-name {
+            font-size: 14px; font-weight: 500; color: var(--text-dark);
+            line-height: 1.4; margin: 0 0 15px 0;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; /* Cắt chữ nếu dài quá 2 dòng */
+            height: 40px;
+        }
+
+        .price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; margin-top: auto;}
+
+        .price { font-size: 16px; font-weight: 700; color: var(--primary-red); }
+        .stock-status { font-size: 11px; color: #00a651; font-weight: 500; }
+
+        .card-actions { display: flex; gap: 8px; }
+
+        .btn-detail {
+            flex: 1; background: white; color: var(--primary-red);
+            border: 1px solid var(--primary-red); border-radius: 4px;
+            padding: 8px 0; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s;
+        }
+        .btn-detail:hover { background: #fff5f5; }
+
+        .btn-add-cart {
+            flex: 1; background: var(--primary-red); color: white;
+            border: 1px solid var(--primary-red); border-radius: 4px;
+            padding: 8px 0; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s;
+        }
+        .btn-add-cart:hover { background: #c40015; }
+
+        /* Dropdown Menu Tài Khoản */
+        .account-menu {
+            position: relative; /* Trụ cột để thẻ con thả xuống */
+            padding: 15px 0; /* Tăng diện tích nhận diện chuột */
+        }
+
+        .account-dropdown {
+            position: absolute;
+            top: 100%; right: 0;
+            background: white; color: #333;
+            width: 220px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 10px 0;
+            display: none; /* Mặc định giấu đi */
+            z-index: 1000;
+        }
+
+        /* Khi di chuột vào khu vực account-menu thì hiện dropdown lên */
+        .account-menu:hover .account-dropdown {
+            display: block;
+        }
+
+        .account-dropdown a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 20px; color: #333; text-decoration: none;
+            font-size: 14px; font-weight: 500; transition: background 0.2s;
+        }
+
+        .account-dropdown a:hover { background: #f9f9f9; color: var(--primary-red); }
+        .account-dropdown a i { width: 20px; text-align: center; font-size: 16px; }
+        .account-dropdown a:nth-child(1) i { color: #007bff; } /* Icon xanh dương */
+        .account-dropdown a:nth-child(2) i { color: #10b981; } /* Icon xanh lá */
+
+    </style>
+
+</head>
+<body>
+
+<!-- HEADER BAR -->
+<header>
+    <div class="header-container">
+        <h1 class="logo">NexGen PC</h1>
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Bạn cần tìm linh kiện gì (tên, mã, hãng)...">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+
+        <div class="header-actions">
+            <!-- Nút Trang Admin (CHỈ HIỆN VỚI ADMIN) -->
+            <div class="action-item" th:if="${isAdmin}">
+                <a th:href="@{/admin}" style="color: white; text-decoration: none;">
+                    <i class="fas fa-cogs"></i> Trang Admin
+                </a>
+            </div>
+
+            <!-- Tra cứu đơn hàng (BỊ ẨN VỚI ADMIN) -->
+            <div class="action-item" th:if="${!isAdmin}">
+                <i class="fas fa-file-invoice"></i>
+                <div>
+                    <span>Tra cứu</span>
+                    <div style="font-weight: bold;">đơn hàng</div>
+                </div>
+            </div>
+
+            <!-- Giỏ hàng (BỊ ẨN VỚI ADMIN) -->
+            <div class="action-item" th:if="${!isAdmin}">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+                <div>
+                    <span>Giỏ</span>
+                    <div style="font-weight: bold;">hàng</div>
+                </div>
+            </div>
+
+            <!-- Nút Tài khoản thông minh -->
+            <div class="action-item account-menu">
+                <div style="cursor: pointer;">
+                    <i class="fas fa-user"></i>
+                    <!-- Nếu có biến username thì in ra, không có thì in chữ Tài khoản -->
+                    <span th:text="${username != null ? username : 'Tài khoản'}">Tài khoản</span>
+                    <i class="fas fa-caret-down" style="font-size: 12px; margin-left: -5px;"></i>
+                </div>
+
+                <!-- Menu hiển thị khi CHƯA đăng nhập -->
+                <div class="account-dropdown" th:if="${username == null}">
+                    <a th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
+                    <a th:href="@{/register}"><i class="fas fa-user-plus"></i> Đăng ký tài khoản</a>
+                </div>
+
+                <!-- Menu hiển thị khi ĐÃ đăng nhập -->
+                <div class="account-dropdown" th:if="${username != null}">
+                    <a href="#"><i class="fas fa-user-circle"></i> Hồ sơ của tôi</a>
+                    <!-- Nút Đăng xuất -->
+                    <form th:action="@{/logout}" method="post" style="margin: 0;">
+                        <button type="submit" style="width: 100%; text-align: left; background: transparent; border: none; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #333;">
+                            <i class="fas fa-sign-out-alt" style="color: #e30019; width: 20px; text-align: center;"></i> Đăng xuất
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- HERO SECTION (SIDEBAR + BANNER) -->
+    <div class="hero-section">
+        <aside class="sidebar">
+            <ul>
+                <li><a href="#"><div class="left-icon"><i class="fas fa-microchip"></i> Vi xử lý (CPU)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="#"><div class="left-icon"><i class="fas fa-chess-board"></i> Bo mạch chủ (Mainboard)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="#"><div class="left-icon"><i class="fas fa-memory"></i> Bộ nhớ trong (RAM)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="#"><div class="left-icon"><i class="fas fa-tv"></i> Card màn hình (VGA)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="#"><div class="left-icon"><i class="fas fa-hdd"></i> Ổ cứng (SSD/HDD)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="#"><div class="left-icon"><i class="fas fa-bolt"></i> Nguồn máy tính (PSU)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="#"><div class="left-icon"><i class="fas fa-desktop"></i> Vỏ máy tính (Case)</div> <i class="fas fa-chevron-right"></i></a></li>
+            </ul>
+        </aside>
+
+        <div class="banner">
+            <div class="banner-content">
+                <h2>Xây Dựng Cỗ Máy Trong Mơ Của Bạn</h2>
+                <p>Khám phá bộ sưu tập linh kiện PC cao cấp nhất, từ CPU đa nhân, Card đồ họa cực khủng đến những hệ thống tản nhiệt tối tân. Sẵn sàng phá vỡ mọi giới hạn hiệu năng.</p>
+                <button class="btn-discover">Khám Phá Ngay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT SECTION -->
+    <div class="section-header">
+        <h3>Vi Xử Lý (CPU)</h3>
+        <!-- Biến nút bấm thành thẻ Link dẫn tới URL /?viewAll=true -->
+        <a th:href="@{/?viewAll=true}" class="view-all-btn" style="text-decoration: none;" th:if="${!viewAll}">Xem tất cả</a>
+
+        <!-- Nút Thu gọn (Hiện ra khi đang ở chế độ xem tất cả) -->
+        <a th:href="@{/}" class="view-all-btn" style="text-decoration: none; background-color: #555;" th:if="${viewAll}">Thu gọn lại</a>
+
+    </div>
+
+    <div th:replace="~{store/product-list}"></div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("searchInput");
+
+        // 1. Dùng mã code tự động sinh ra một hộp Dropdown và gắn vào dưới thanh tìm kiếm
+        const searchDropdown = document.createElement("div");
+        searchDropdown.className = "search-dropdown";
+        searchInput.parentNode.appendChild(searchDropdown);
+
+        // 2. Bắt sự kiện khi gõ phím
+        searchInput.addEventListener("input", function() {
+            const keyword = searchInput.value.trim();
+
+            // Nếu xóa hết chữ thì giấu Dropdown đi
+            if (keyword.length === 0) {
+                searchDropdown.style.display = "none";
+                return;
+            }
+
+            // Gọi API lên hệ thống (Giai đoạn 2)
+            fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`)
+                .then(response => response.json()) // Chuyển kết quả sang JSON
+                .then(data => {
+                    // Nếu mảng trống (Không tìm thấy)
+                    if (data.length === 0) {
+                        searchDropdown.innerHTML = '<div class="search-no-result">Không tìm thấy linh kiện nào khớp!</div>';
+                        searchDropdown.style.display = "block";
+                        return;
+                    }
+
+                    // Xóa trắng hộp cũ đi để vẽ cái mới
+                    searchDropdown.innerHTML = "";
+
+                    // Duyệt từng sản phẩm và sinh mã HTML nhét vào hộp
+                    data.forEach(cpu => {
+                        const item = document.createElement("a");
+                        item.href = `/product/${cpu.id}`; // Gắn link bay sang trang Chi tiết
+                        item.className = "search-item";
+
+                        item.innerHTML = `
+                            <img src="${cpu.image}" alt="img">
+                            <div class="search-item-info">
+                                <div class="search-item-name">${cpu.name}</div>
+                                <div class="search-item-price">${cpu.price}</div>
+                            </div>
+                            <div class="search-item-badge">Cpu</div>
+                        `;
+                        searchDropdown.appendChild(item);
+                    });
+
+                    // Hiển thị hộp lên
+                    searchDropdown.style.display = "block";
+                })
+                .catch(error => console.error('Lỗi khi tìm kiếm JSON:', error));
+        });
+
+        // 3. Nếu bấm chuột ra chỗ khác trên màn hình thì tự động giấu Dropdown
+        document.addEventListener("click", function(event) {
+            if (!searchInput.parentNode.contains(event.target)) {
+                searchDropdown.style.display = "none";
+            }
+        });
+
+        // 4. Nếu bấm chuột lại vào ô tìm kiếm (mà đang có chữ) thì hiện Dropdown trở lại
+        searchInput.addEventListener("focus", function() {
+            if (searchInput.value.trim().length > 0) {
+                searchDropdown.style.display = "block";
+            }
+        });
+        // Bắt sự kiện khi click vào nút Kính Lúp
+        const searchBtn = searchInput.nextElementSibling;
+        searchBtn.addEventListener("click", function() {
+            // Khi bấm kính lúp, ép con chuột nhảy vào ô gõ chữ và tự động kích hoạt tính năng tìm kiếm
+            searchInput.focus();
+            searchInput.dispatchEvent(new Event('input'));
+        });
+
+    });
+</script>
+
+
+</body>
+</html>

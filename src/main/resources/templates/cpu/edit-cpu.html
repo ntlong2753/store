@@ -1,119 +1,214 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
-  <title>Sửa thông tin CPU</title>
+  <meta charset="UTF-8">
+  <title>NexGen Admin - Chỉnh sửa CPU</title>
+  <!-- Font chữ & Icon -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
-    .error { color: red; font-size: 14px; }
+    /* CSS GIAO DIỆN ADMIN CHUNG */
+    :root { --admin-primary: #1e1e2d; --admin-secondary: #f3f6f9; --admin-accent: #3699ff; --admin-text: #3f4254; --admin-border: #ebedf3; --danger: #f64e60; --success: #1bc5bd; }
+    body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: var(--admin-secondary); color: var(--admin-text); display: flex; height: 100vh; overflow: hidden; }
+    .sidebar { width: 260px; background-color: var(--admin-primary); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-header { padding: 20px; text-align: center; font-size: 24px; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.1); background-color: #1a1a27; }
+    .sidebar-header span { color: var(--danger); }
+    .sidebar-menu { padding: 20px 0; overflow-y: auto; flex-grow: 1; }
+    .menu-title { font-size: 11px; text-transform: uppercase; color: #6c7293; padding: 10px 25px; font-weight: 600; letter-spacing: 1px; }
+    .menu-item { padding: 12px 25px; display: flex; align-items: center; gap: 15px; color: #a2a3b7; text-decoration: none; font-size: 14px; transition: 0.3s; }
+    .menu-item i { font-size: 16px; width: 20px; text-align: center; }
+    .menu-item:hover, .menu-item.active { color: white; background-color: rgba(255,255,255,0.05); border-left: 3px solid var(--admin-accent); padding-left: 22px; }
+    .menu-item.active i { color: var(--admin-accent); }
+    .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); z-index: 10; }
+    .page-title { font-size: 18px; font-weight: 600; margin: 0; }
+    .user-profile { display: flex; align-items: center; gap: 15px; }
+    .btn-logout { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; padding: 6px 15px; border-radius: 4px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+    .btn-logout:hover { background: var(--danger); color: white; }
+    .btn-home { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; padding: 6px 15px; border-radius: 4px; text-decoration: none; font-weight: 500; transition: 0.2s; margin-right: 10px;}
+    .btn-home:hover { background: var(--success); color: white; }
+    .content-area { padding: 30px; overflow-y: auto; flex-grow: 1; }
+    .card { background: white; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+    .card-header { padding: 20px 25px; border-bottom: 1px solid var(--admin-border); display: flex; justify-content: space-between; align-items: center; }
+    .card-title { margin: 0; font-size: 16px; font-weight: 600; }
+
+    /* CSS DÀNH RIÊNG CHO FORM */
+    .card-body { padding: 30px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 500; color: #3f4254; margin-bottom: 8px; }
+    .form-control { width: 100%; padding: 12px 15px; font-size: 14px; border: 1px solid var(--admin-border); border-radius: 6px; box-sizing: border-box; transition: 0.2s; background: #fafafa; font-family: inherit;}
+    .form-control:focus { outline: none; border-color: var(--admin-accent); background: white; box-shadow: 0 0 0 3px rgba(54,153,255,0.1); }
+    .form-control[readonly] { background-color: #f3f6f9; color: #b5b5c3; cursor: not-allowed; }
+    .form-row { display: flex; gap: 20px; margin-bottom: 20px; }
+    .form-col { flex: 1; }
+    .form-col .form-group { margin-bottom: 0; }
+    .error { color: var(--danger); font-size: 12px; margin-top: 5px; display: block; }
+    .btn-primary { background: var(--admin-accent); color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary:hover { background: #228cf3; box-shadow: 0 4px 10px rgba(54,153,255,0.3); }
+    .btn-secondary { background: #f3f6f9; color: #7e8299; border: none; padding: 12px 30px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; margin-left: 10px; }
+    .btn-secondary:hover { background: #e4e6ef; color: #3f4254; }
   </style>
 </head>
 <body>
-<h1>Thêm CPU Mới</h1>
-<!-- Chú ý th:action trỏ về đúng /admin/cpu/add và th:object là product -->
-<!-- Thêm dòng ghi chú này để IntelliJ hết báo đỏ -->
-<!--/*@thymesVar id="product" type="com.codegym.store.model.Cpu"*/-->
-<form th:action="@{/admin/cpu/add}" th:object="${product}" method="post" enctype="multipart/form-data">
-  <input type="hidden" th:field="*{id}" />
 
-  <label>Tên CPU:</label>
-  <label>
-    <input type="text" th:field="*{name}" readonly="readonly" style="background-color: #e9ecef;"/>
-  </label>
-  <br/>
+<!-- SIDEBAR BÊN TRÁI -->
+<div class="sidebar">
+  <div class="sidebar-header">NexGen <span>Admin</span></div>
+  <div class="sidebar-menu">
+    <div class="menu-title">Lối tắt</div>
+    <a th:href="@{/}" class="menu-item"><i class="fas fa-store"></i> Ra Cửa Hàng</a>
+    <div class="menu-title" style="margin-top: 15px;">Quản lý kho</div>
+    <a th:href="@{/admin/cpu}" class="menu-item active"><i class="fas fa-microchip"></i> Vi xử lý (CPU)</a>
+  </div>
+</div>
 
-  <label>Phân khúc (Segment):</label>
-  <label>
-    <input type="text" th:field="*{segment}" />
-  </label>
-  <span class="error" th:if="${#fields.hasErrors('segment')}" th:errors="*{segment}"></span><br/>
-
-  <label>Mã model (Model Number):</label>
-  <label>
-    <input type="text" th:field="*{modelNumber}" />
-  </label>
-  <span class="error" th:if="${#fields.hasErrors('modelNumber')}" th:errors="*{modelNumber}"></span><br/>
-
-  <label>Hậu tố (Suffix):</label>
-  <label>
-    <input type="text" th:field="*{suffix}" />
-  </label>
-  <span class="error" th:if="${#fields.hasErrors('suffix')}" th:errors="*{suffix}"></span><br/>
-
-  <label>Dòng (Series):</label>
-  <label>
-    <input type="text" th:field="*{series}" />
-  </label>
-  <span class="error" th:if="${#fields.hasErrors('series')}" th:errors="*{series}"></span><br/>
-
-  <label>Số nhân (Cores):</label>
-  <label>
-    <input type="number" th:field="*{cores}" />
-  </label>
-  <span class="error" th:if="${#fields.hasErrors('cores')}" th:errors="*{cores}"></span><br/>
-
-  <label>Số luồng (Threads):</label>
-  <label>
-    <input type="number" th:field="*{threads}" />
-  </label>
-  <span class="error" th:if="${#fields.hasErrors('threads')}" th:errors="*{threads}"></span><br/>
-
-  <label>Socket:</label>
-  <label>
-    <input type="text" th:field="*{socket}" />
-  </label><br/>
-
-  <label>Mô tả: </label>
-  <label>
-    <input type="text" th:field="*{description}" />
-  </label><br/>
-
-  <label>Số lượng kho:</label>
-  <label>
-    <input type="number" th:field="*{stock}" />
-  </label>
-  <span class="error" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></span><br/>
-
-  <label>Giá (VNĐ):</label>
-  <label>
-    <input type="number" th:field="*{price}" step="0.01" />
-  </label>
-  <span class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span><br/>
-
-  <!-- 1. Thẻ ẩn lưu ID các ảnh cũ bị xóa -->
-  <input type="hidden" id="deletedImageIds" name="deletedImageIds" value="" />
-
-  <!-- 2. Khung hiển thị các ẢNH CŨ đã lưu trong Database -->
-  <label>Ảnh hiện tại (Bấm X để xóa):</label>
-  <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-    <div th:each="img : *{images}" th:id="'old-img-container-' + ${img.id}" style="position: relative; display: inline-block;">
-      <img th:src="@{${img.path}}" style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc;" />
-      <button type="button" th:onclick="'deleteOldImage(' + ${img.id} + ')'"
-              style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
-        X
-      </button>
+<!-- KHU VỰC BÊN PHẢI -->
+<div class="main-content">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <h2 class="page-title">Cập nhật Vi Xử Lý</h2>
+    <div class="user-profile">
+      <form th:action="@{/logout}" method="post" style="margin: 0;">
+        <button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất hệ thống</button>
+      </form>
     </div>
-    <span th:if="${#lists.isEmpty(product.images)}" style="color: gray; font-size: 14px;">Chưa có ảnh nào.</span>
   </div>
 
-  <!-- 3. Khu vực chọn THÊM ẢNH MỚI (Giống bên trang Add) -->
-  <label>Chọn thêm ảnh mới:</label>
-  <input type="file" id="imageInput" name="imageFiles" multiple="multiple" accept="image/*" />
-  <div id="previewContainer" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
-  <br/>
+  <div class="content-area">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Chỉnh sửa thông số sản phẩm</h3>
+        <a th:href="@{/admin/cpu}" class="btn-secondary" style="padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Quay lại</a>
+      </div>
 
+      <div class="card-body">
+        <!-- FORM CHỈNH SỬA -->
+        <form th:action="@{/admin/cpu/edit}" th:object="${product}" method="post" enctype="multipart/form-data">
 
-  <button type="submit" style="margin-top: 15px; cursor: pointer;">Lưu lại</button>
+          <!-- Giữ lại ID ẩn -->
+          <input type="hidden" th:field="*{id}" />
 
-  <!-- NÚT HỦY MỚI THÊM VÀO -->
-  <a th:href="@{/admin/cpu}" style="text-decoration: none;">
-    <!-- Dùng CSS để ép cái nút đứng cạnh nút Lưu lại -->
-    <button type="button" style="margin-top: 15px; margin-left: 10px; cursor: pointer;">Hủy</button>
-  </a>
-</form>
+          <div class="form-group">
+            <label>Tên CPU (Tự động cập nhật theo dữ liệu bên dưới):</label>
+            <input type="text" class="form-control" th:field="*{name}" readonly="readonly" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label>Dòng (Series):</label>
+                <input type="text" class="form-control" th:field="*{series}" />
+                <span class="error" th:if="${#fields.hasErrors('series')}" th:errors="*{series}"></span>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label>Phân khúc (Segment):</label>
+                <input type="text" class="form-control" th:field="*{segment}" />
+                <span class="error" th:if="${#fields.hasErrors('segment')}" th:errors="*{segment}"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label>Mã model (Model Number):</label>
+                <input type="text" class="form-control" th:field="*{modelNumber}" />
+                <span class="error" th:if="${#fields.hasErrors('modelNumber')}" th:errors="*{modelNumber}"></span>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label>Hậu tố (Suffix):</label>
+                <input type="text" class="form-control" th:field="*{suffix}" />
+                <span class="error" th:if="${#fields.hasErrors('suffix')}" th:errors="*{suffix}"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label>Số nhân (Cores):</label>
+                <input type="number" class="form-control" th:field="*{cores}" />
+                <span class="error" th:if="${#fields.hasErrors('cores')}" th:errors="*{cores}"></span>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label>Số luồng (Threads):</label>
+                <input type="number" class="form-control" th:field="*{threads}" />
+                <span class="error" th:if="${#fields.hasErrors('threads')}" th:errors="*{threads}"></span>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label>Socket:</label>
+                <input type="text" class="form-control" th:field="*{socket}" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label>Số lượng kho:</label>
+                <input type="number" class="form-control" th:field="*{stock}" />
+                <span class="error" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></span>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label>Giá bán (VNĐ):</label>
+                <input type="number" class="form-control" th:field="*{price}" step="0.01" />
+                <span class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Mô tả ngắn gọn:</label>
+            <input type="text" class="form-control" th:field="*{description}" />
+          </div>
+
+          <!-- KHU VỰC ẢNH CŨ VÀ MỚI -->
+
+          <input type="hidden" id="deletedImageIds" name="deletedImageIds" value="" />
+
+          <div class="form-group">
+            <label>Ảnh đang có sẵn (Bấm <i class="fas fa-times" style="color:red"></i> để xóa ảnh):</label>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; background: #fafafa; padding: 15px; border-radius: 6px; border: 1px dashed var(--admin-border);">
+              <div th:each="img : *{images}" th:id="'old-img-container-' + ${img.id}" style="position: relative; display: inline-block;">
+                <img th:src="@{${img.path}}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #ebedf3; box-shadow: 0 2px 5px rgba(0,0,0,0.05);" />
+                <button type="button" th:onclick="'deleteOldImage(' + ${img.id} + ')'"
+                        style="position: absolute; top: -5px; right: -5px; background: #f64e60; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(246,78,96,0.3);">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <span th:if="${#lists.isEmpty(product.images)}" style="color: #a2a3b7; font-size: 13px; font-style: italic; width: 100%; text-align: center; padding: 10px 0;">Sản phẩm này chưa có ảnh nào.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Tải lên thêm ảnh mới:</label>
+            <input type="file" class="form-control" style="padding: 9px 15px;" id="imageInput" name="imageFiles" multiple="multiple" accept="image/*" />
+            <div id="previewContainer" style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;"></div>
+          </div>
+
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--admin-border);">
+            <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Cập Nhật Sản Phẩm</button>
+            <a th:href="@{/admin/cpu}" class="btn-secondary">Hủy bỏ</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
-  // ----------------------------------------------------------------
-  // 1. TÍNH NĂNG TỰ ĐỘNG NỐI CHUỖI TÊN CPU (Giữ nguyên)
-  // ----------------------------------------------------------------
   const nameInput = document.getElementById('name');
   const seriesInput = document.getElementById('series');
   const segmentInput = document.getElementById('segment');
@@ -134,26 +229,15 @@
   modelNumberInput.addEventListener('input', updateCpuName);
   suffixInput.addEventListener('input', updateCpuName);
 
-
-  // ----------------------------------------------------------------
-  // 2. TÍNH NĂNG XÓA ẢNH CŨ (THÊM MỚI)
-  // ----------------------------------------------------------------
   const deletedImageIdsInput = document.getElementById('deletedImageIds');
-  let deletedIds = []; // Mảng chứa ID các ảnh bị xóa
+  let deletedIds = [];
 
   function deleteOldImage(imageId) {
-    // Ẩn khối div chứa ảnh đó đi
     document.getElementById('old-img-container-' + imageId).style.display = 'none';
-
-    // Nhét ID vào mảng và cập nhật vào thẻ hidden input
     deletedIds.push(imageId);
     deletedImageIdsInput.value = deletedIds.join(',');
   }
 
-
-  // ----------------------------------------------------------------
-  // 3. TÍNH NĂNG XEM TRƯỚC VÀ XÓA ẢNH MỚI CHỌN (Giống bên Add)
-  // ----------------------------------------------------------------
   const imageInput = document.getElementById('imageInput');
   const previewContainer = document.getElementById('previewContainer');
   let selectedFiles = new DataTransfer();
@@ -169,36 +253,40 @@
   function updateImagePreview() {
     previewContainer.innerHTML = '';
     imageInput.files = selectedFiles.files;
-
     Array.from(selectedFiles.files).forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = function(e) {
         const wrapper = document.createElement('div');
         wrapper.style.position = 'relative';
         wrapper.style.display = 'inline-block';
-
         const img = document.createElement('img');
         img.src = e.target.result;
         img.style.width = '100px';
         img.style.height = '100px';
         img.style.objectFit = 'cover';
-        img.style.border = '1px solid #ccc';
-
+        img.style.borderRadius = '6px';
+        img.style.border = '1px solid #ebedf3';
+        img.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
         const deleteBtn = document.createElement('button');
-        deleteBtn.innerHTML = 'X';
+        deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
         deleteBtn.style.position = 'absolute';
-        deleteBtn.style.top = '0';
-        deleteBtn.style.right = '0';
-        deleteBtn.style.background = 'red';
+        deleteBtn.style.top = '-5px';
+        deleteBtn.style.right = '-5px';
+        deleteBtn.style.background = '#f64e60';
         deleteBtn.style.color = 'white';
         deleteBtn.style.border = 'none';
+        deleteBtn.style.borderRadius = '50%';
+        deleteBtn.style.width = '24px';
+        deleteBtn.style.height = '24px';
         deleteBtn.style.cursor = 'pointer';
-
+        deleteBtn.style.display = 'flex';
+        deleteBtn.style.alignItems = 'center';
+        deleteBtn.style.justifyContent = 'center';
+        deleteBtn.style.boxShadow = '0 2px 4px rgba(246,78,96,0.3)';
         deleteBtn.onclick = function(e) {
           e.preventDefault();
           removeFile(index);
         };
-
         wrapper.appendChild(img);
         wrapper.appendChild(deleteBtn);
         previewContainer.appendChild(wrapper);
@@ -219,6 +307,5 @@
     updateImagePreview();
   }
 </script>
-
 </body>
 </html>

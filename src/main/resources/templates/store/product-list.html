@@ -1,0 +1,30 @@
+<div class="product-grid" id="productGrid" xmlns:th="http://www.thymeleaf.org">
+    <!-- Vòng lặp hiển thị CPU -->
+    <div class="product-card" th:each="cpu, iterStat : ${cpus}" th:if="${viewAll or iterStat.index < 5}">
+
+        <span class="badge-brand" th:text="${cpu.segment}">i9</span>
+
+        <img class="product-img"
+             th:if="${!#lists.isEmpty(cpu.images)}"
+             th:src="@{${cpu.images[0].path}}"
+             alt="CPU Image">
+        <img class="product-img"
+             th:if="${#lists.isEmpty(cpu.images)}"
+             src="https://via.placeholder.com/150x150?text=No+Image"
+             alt="No Image">
+
+        <div class="brand-text" th:text="${cpu.series}">Core</div>
+        <h4 class="product-name" th:text="${cpu.name}">Tên sản phẩm siêu dài</h4>
+
+        <div class="price-row">
+            <span class="price" th:text="${#numbers.formatDecimal(cpu.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+            <span class="stock-status">Còn hàng</span>
+        </div>
+
+        <div class="card-actions">
+            <a th:href="@{/product/{id}(id=${cpu.id})}" class="btn-detail" style="text-decoration: none; text-align: center; box-sizing: border-box; display: inline-block;">Chi tiết</a>
+
+            <button th:if="${!isAdmin}" class="btn-add-cart">Thêm vào</button>
+        </div>
+    </div>
+</div>
