@@ -78,12 +78,28 @@
   </label>
   <span class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span><br/>
 
-  <label>Chọn hình ảnh (Xem trước & Xóa):</label>
-  <!-- id="imageInput" để JS gọi tới -->
+  <!-- 1. Thẻ ẩn lưu ID các ảnh cũ bị xóa -->
+  <input type="hidden" id="deletedImageIds" name="deletedImageIds" value="" />
+
+  <!-- 2. Khung hiển thị các ẢNH CŨ đã lưu trong Database -->
+  <label>Ảnh hiện tại (Bấm X để xóa):</label>
+  <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+    <div th:each="img : *{images}" th:id="'old-img-container-' + ${img.id}" style="position: relative; display: inline-block;">
+      <img th:src="@{${img.path}}" style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc;" />
+      <button type="button" th:onclick="'deleteOldImage(' + ${img.id} + ')'"
+              style="position: absolute; top: 0; right: 0; background: red; color: white; border: none; cursor: pointer;">
+        X
+      </button>
+    </div>
+    <span th:if="${#lists.isEmpty(product.images)}" style="color: gray; font-size: 14px;">Chưa có ảnh nào.</span>
+  </div>
+
+  <!-- 3. Khu vực chọn THÊM ẢNH MỚI (Giống bên trang Add) -->
+  <label>Chọn thêm ảnh mới:</label>
   <input type="file" id="imageInput" name="imageFiles" multiple="multiple" accept="image/*" />
-  <!-- Khung div này để chứa các ảnh preview hiện ra -->
   <div id="previewContainer" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
   <br/>
+
 
   <button type="submit" style="margin-top: 15px; cursor: pointer;">Lưu lại</button>
 
@@ -94,35 +110,115 @@
   </a>
 </form>
 
-<!-- ĐOẠN SCRIPT TỰ ĐỘNG NỐI CHUỖI -->
 <script>
-  // Thymeleaf th:field tự động tạo ra id cho các ô input giống hệt tên biến
+  // ----------------------------------------------------------------
+  // 1. TÍNH NĂNG TỰ ĐỘNG NỐI CHUỖI TÊN CPU (Giữ nguyên)
+  // ----------------------------------------------------------------
   const nameInput = document.getElementById('name');
-
   const seriesInput = document.getElementById('series');
   const segmentInput = document.getElementById('segment');
   const modelNumberInput = document.getElementById('modelNumber');
   const suffixInput = document.getElementById('suffix');
 
-  // Hàm này sẽ gom các chữ lại và nhét vào ô Tên CPU
   function updateCpuName() {
     const series = seriesInput.value.trim();
     const segment = segmentInput.value.trim();
     const modelNumber = modelNumberInput.value.trim();
     const suffix = suffixInput.value.trim();
-
-    // Nếu suffix có chữ thì thêm dấu cách, không thì thôi
     const suffixText = suffix ? suffix : '';
-
-    // Ghép lại và đổ vào ô nameInput
     nameInput.value = `${series} ${segment} ${modelNumber}${suffixText}`.trim();
   }
 
-  // Bắt sự kiện: Cứ mỗi khi người dùng GÕ PHÍM vào 4 ô này thì gọi hàm updateCpuName
   seriesInput.addEventListener('input', updateCpuName);
   segmentInput.addEventListener('input', updateCpuName);
   modelNumberInput.addEventListener('input', updateCpuName);
   suffixInput.addEventListener('input', updateCpuName);
+
+
+  // ----------------------------------------------------------------
+  // 2. TÍNH NĂNG XÓA ẢNH CŨ (THÊM MỚI)
+  // ----------------------------------------------------------------
+  const deletedImageIdsInput = document.getElementById('deletedImageIds');
+  let deletedIds = []; // Mảng chứa ID các ảnh bị xóa
+
+  function deleteOldImage(imageId) {
+    // Ẩn khối div chứa ảnh đó đi
+    document.getElementById('old-img-container-' + imageId).style.display = 'none';
+
+    // Nhét ID vào mảng và cập nhật vào thẻ hidden input
+    deletedIds.push(imageId);
+    deletedImageIdsInput.value = deletedIds.join(',');
+  }
+
+
+  // ----------------------------------------------------------------
+  // 3. TÍNH NĂNG XEM TRƯỚC VÀ XÓA ẢNH MỚI CHỌN (Giống bên Add)
+  // ----------------------------------------------------------------
+  const imageInput = document.getElementById('imageInput');
+  const previewContainer = document.getElementById('previewContainer');
+  let selectedFiles = new DataTransfer();
+
+  imageInput.addEventListener('change', function(event) {
+    const files = event.target.files;
+    for(let i = 0; i < files.length; i++) {
+      selectedFiles.items.add(files[i]);
+    }
+    updateImagePreview();
+  });
+
+  function updateImagePreview() {
+    previewContainer.innerHTML = '';
+    imageInput.files = selectedFiles.files;
+
+    Array.from(selectedFiles.files).forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-block';
+
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.width = '100px';
+        img.style.height = '100px';
+        img.style.objectFit = 'cover';
+        img.style.border = '1px solid #ccc';
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = 'X';
+        deleteBtn.style.position = 'absolute';
+        deleteBtn.style.top = '0';
+        deleteBtn.style.right = '0';
+        deleteBtn.style.background = 'red';
+        deleteBtn.style.color = 'white';
+        deleteBtn.style.border = 'none';
+        deleteBtn.style.cursor = 'pointer';
+
+        deleteBtn.onclick = function(e) {
+          e.preventDefault();
+          removeFile(index);
+        };
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(deleteBtn);
+        previewContainer.appendChild(wrapper);
+      }
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function removeFile(indexToRemove) {
+    const newFiles = new DataTransfer();
+    const currentFiles = selectedFiles.files;
+    for(let i = 0; i < currentFiles.length; i++) {
+      if(i !== indexToRemove) {
+        newFiles.items.add(currentFiles[i]);
+      }
+    }
+    selectedFiles = newFiles;
+    updateImagePreview();
+  }
 </script>
+
 </body>
 </html>

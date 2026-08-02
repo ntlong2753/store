@@ -1,23 +1,30 @@
 package com.codegym.store.controller;
 
 import com.codegym.store.model.Cpu;
+import com.codegym.store.model.ProductImage;
 import com.codegym.store.repository.CpuRepository;
 import com.codegym.store.service.ProductService;
+import com.codegym.store.service.StorageService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin/cpu")
 public class CpuController {
     private final ProductService productService;
     private final CpuRepository cpuRepository;
+    private final StorageService storageService;
 
-    public CpuController(ProductService productService, CpuRepository cpuRepository) {
+    public CpuController(ProductService productService, CpuRepository cpuRepository, StorageService storageService) {
         this.productService = productService;
         this.cpuRepository = cpuRepository;
+        this.storageService = storageService;
     }
 
     @GetMapping({"", "/"}) // Truy cập /cpu hoặc /cpu/ thì gọi hàm này
@@ -36,7 +43,8 @@ public class CpuController {
 
     // nhận dữ liệu từ Form gửi về
     @PostMapping("/add")
-    public String saveCpu(@ModelAttribute("product") Cpu cpu, BindingResult bindingResult) {
+    public String saveCpu(@ModelAttribute("product") Cpu cpu, BindingResult bindingResult,
+                          @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles) {
         if (bindingResult.hasErrors()) {
             return "cpu/add-cpu";
         }
@@ -46,17 +54,29 @@ public class CpuController {
             return "cpu/add-cpu";
         }
 
-        // --- BẮT ĐẦU: Logic tự sinh tên CPU ---
-        // Ghép chuỗi theo công thức: Dòng + Phân khúc + Mã + Hậu tố (Core i9 14900 K)
-        // Dùng đoạn check hậu tố để tránh chữ "null" hiện lên nếu sản phẩm không có hậu tố (ví dụ: Core i5 12400)
+        // === ĐOẠN CODE MỚI: XỬ LÝ LƯU ẢNH ===
+        if (imageFiles != null) {
+            for (MultipartFile file : imageFiles) {
+                if (!file.isEmpty()) {
+                    // Nhờ service lưu file vào ổ cứng
+                    String imagePath = storageService.storeFile(file);
+
+                    // Tạo đối tượng ProductImage và liên kết với CPU này
+                    ProductImage productImage = new ProductImage();
+                    productImage.setPath(imagePath);
+                    productImage.setProduct(cpu);
+
+                    // Nhét ảnh vào danh sách ảnh của CPU
+                    cpu.getImages().add(productImage);
+                }
+            }
+        }
+        // ===================================
+
         generateName(cpu);
         // --- KẾT THÚC ---
-
-
         productService.save(cpu);
-
         return "redirect:/admin/cpu";
-
     }
 
     @GetMapping("/delete/{id}")
@@ -82,7 +102,10 @@ public class CpuController {
 
     // 2. Nhận dữ liệu sau khi người dùng bấm Lưu ở Form Edit
     @PostMapping("/edit")
-    public String updateCpu(@Valid @ModelAttribute("product") Cpu cpu, BindingResult bindingResult) {
+    public String updateCpu(@Valid @ModelAttribute("product") Cpu cpu, BindingResult bindingResult,
+                            @RequestParam(value = "deletedImageIds", required = false) List<Long> deletedImageIds,
+                            @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles) {
+
         if (bindingResult.hasErrors()) {
             return "cpu/edit-cpu";
         }
@@ -92,12 +115,57 @@ public class CpuController {
             return "cpu/edit-cpu";
         }
 
-        generateName(cpu);
+        // 1. Móc cái CPU CŨ (Managed Entity) từ Database lên
+        Cpu existingCpu = (Cpu) productService.findById(cpu.getId()).orElse(null);
 
-        productService.save(cpu);
+        if (existingCpu != null) {
+            // 2. Lấy dữ liệu chữ từ Form (cpu) đắp vào existingCpu
+            existingCpu.setSeries(cpu.getSeries());
+            existingCpu.setSegment(cpu.getSegment());
+            existingCpu.setModelNumber(cpu.getModelNumber());
+            existingCpu.setSuffix(cpu.getSuffix());
+            existingCpu.setCores(cpu.getCores());
+            existingCpu.setThreads(cpu.getThreads());
+            existingCpu.setSocket(cpu.getSocket());
+            existingCpu.setDescription(cpu.getDescription());
+            existingCpu.setStock(cpu.getStock());
+            existingCpu.setPrice(cpu.getPrice());
+
+            // 3. Xử lý Xóa ảnh cũ
+            if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
+                for (ProductImage img : existingCpu.getImages()) {
+                    if (deletedImageIds.contains(img.getId())) {
+                        storageService.deleteFile(img.getPath());
+                    }
+                }
+                // Xóa khỏi danh sách của existingCpu
+                existingCpu.getImages().removeIf(img -> deletedImageIds.contains(img.getId()));
+            }
+
+            // 4. Xử lý Thêm ảnh mới
+            if (imageFiles != null) {
+                for (MultipartFile file : imageFiles) {
+                    if (!file.isEmpty()) {
+                        String imagePath = storageService.storeFile(file);
+                        ProductImage newImg = new ProductImage();
+                        newImg.setPath(imagePath);
+                        newImg.setProduct(existingCpu); // Trỏ về existingCpu
+
+                        existingCpu.getImages().add(newImg);
+                    }
+                }
+            }
+
+            // Sinh lại tên dựa trên các trường vừa đắp vào
+            generateName(existingCpu);
+
+            // LƯU EXISTING CPU (Vì nó là con cưng của Hibernate nên mọi thay đổi list ảnh sẽ được giữ nguyên)
+            productService.save(existingCpu);
+        }
 
         return "redirect:/admin/cpu";
     }
+
 
 
     private static void generateName(Cpu cpu) {

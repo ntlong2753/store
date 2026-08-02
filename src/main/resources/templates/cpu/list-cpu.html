@@ -20,6 +20,7 @@
     <thead>
     <tr>
         <th>STT</th>
+        <th>Ảnh</th>
         <th>Tên CPU</th>
         <th>Dòng (Series)</th>
         <th>Phân khúc</th>
@@ -40,6 +41,18 @@
 
         <!-- SỬA DÒNG NÀY: Dùng iter.count để tự động đếm 1, 2, 3... -->
         <td th:text="${iter.count}"></td>
+
+        <!-- THÊM ĐOẠN XỬ LÝ ẢNH NÀY VÀO ĐÂY -->
+        <td>
+            <!-- Nếu mảng images KHÔNG rỗng -> Lấy phần tử số [0] (ảnh đầu tiên) để hiển thị -->
+            <img th:if="${!#lists.isEmpty(cpu.images)}"
+                 th:src="@{${cpu.images[0].path}}"
+                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; border: 1px solid #ccc;" />
+
+            <!-- Nếu mảng images RỖNG -> In chữ mờ mờ -->
+            <span th:if="${#lists.isEmpty(cpu.images)}" style="color: gray; font-size: 12px;">Không có ảnh</span>
+        </td>
+
         <td th:text="${cpu.name}"></td>
         <td th:text="${cpu.series}"></td>
         <td th:text="${cpu.segment}"></td>
