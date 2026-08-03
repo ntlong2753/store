@@ -14,6 +14,18 @@ import java.util.Map;
 @Controller
 public class AdminController {
 
+    private final com.codegym.store.repository.OrderRepository orderRepository;
+    private final com.codegym.store.repository.ProductRepository productRepository;
+    private final com.codegym.store.repository.UserRepository userRepository;
+
+    public AdminController(com.codegym.store.repository.OrderRepository orderRepository,
+                           com.codegym.store.repository.ProductRepository productRepository,
+                           com.codegym.store.repository.UserRepository userRepository) {
+        this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+    }
+
     // 1. Controller mở trang Dashboard
     @GetMapping("/admin")
     public String adminDashboard(Model model, Principal principal) {
@@ -22,7 +34,31 @@ public class AdminController {
             model.addAttribute("username", principal.getName());
         }
 
-        // Trỏ về đúng file dashboard.html mà bạn vừa tạo
+        // 1. Doanh thu tháng này
+        java.math.BigDecimal revenue = orderRepository.sumRevenueThisMonth();
+        model.addAttribute("revenueThisMonth", revenue != null ? revenue : java.math.BigDecimal.ZERO);
+
+        // 2. Đơn hàng mới trong tháng
+        Long newOrders = orderRepository.countOrdersThisMonth();
+        model.addAttribute("newOrdersCount", newOrders != null ? newOrders : 0L);
+
+        // 3. Tổng linh kiện
+        long totalProducts = productRepository.count();
+        model.addAttribute("totalProducts", totalProducts);
+
+        // 4. Số lượng khách hàng
+        Long customersCount = userRepository.countUsersByRoleUser();
+        model.addAttribute("customersCount", customersCount != null ? customersCount : 0L);
+
+        // 5. Đơn hàng gần đây
+        java.util.List<com.codegym.store.model.Order> recentOrders = orderRepository.findTop5ByOrderByOrderDateDesc();
+        model.addAttribute("recentOrders", recentOrders);
+
+        // 6. Sản phẩm sắp hết hàng (stock <= 5)
+        java.util.List<com.codegym.store.model.Product> lowStockProducts = productRepository.findTop5ByStockLessThanEqualOrderByStockAsc(5);
+        model.addAttribute("lowStockProducts", lowStockProducts);
+
+        // Trỏ về đúng file dashboard.html
         return "admin/dashboard";
     }
 
