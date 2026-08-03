@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>NexGen Admin - Thêm CPU Mới</title>
+    <title>NexGen Admin - Thêm storage Mới</title>
     <!-- Font chữ & Icon -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -62,7 +62,7 @@
         </a>
 
         <div class="menu-title" style="margin-top: 15px;">Quản lý kho</div>
-        <a th:href="@{/admin/cpu}" class="menu-item active">
+        <a th:href="@{/admin/cpu}" class="menu-item ">
             <i class="fas fa-microchip"></i> Vi xử lý (CPU)
         </a>
         <a th:href="@{/admin/vga}" class="menu-item ">
@@ -71,7 +71,7 @@
         <a th:href="@{/admin/ram}" class="menu-item ">
             <i class="fas fa-memory"></i> Bộ nhớ (RAM)
         </a>
-        <a th:href="@{/admin/storage}" class="menu-item ">
+        <a th:href="@{/admin/storage}" class="menu-item active">
             <i class="fas fa-hdd"></i> Ổ cứng (Storage)
         </a>
 
@@ -86,7 +86,7 @@
 <div class="main-content">
     <!-- TOPBAR -->
     <div class="topbar">
-        <h2 class="page-title">Thêm CPU Mới</h2>
+        <h2 class="page-title">Thêm storage Mới</h2>
         <div class="user-profile">
             <form th:action="@{/logout}" method="post" style="margin: 0;">
                 <button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất hệ thống</button>
@@ -98,72 +98,91 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Nhập thông số sản phẩm</h3>
-                <a th:href="@{/admin/cpu}" class="btn-secondary" style="padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Quay lại</a>
+                <a th:href="@{/admin/storage}" class="btn-secondary" style="padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Quay lại</a>
             </div>
 
             <div class="card-body">
                 <!-- FORM THÊM MỚI -->
-                <form th:action="@{/admin/cpu/add}" th:object="${product}" method="post" enctype="multipart/form-data">
+                <form th:action="@{/admin/storage/add}" th:object="${product}" method="post" enctype="multipart/form-data">
 
                     <div class="form-group">
-                        <label>Tên CPU (Tự động sinh theo dữ liệu dưới):</label>
-                        <input type="text" class="form-control" th:field="*{name}" readonly="readonly" placeholder="Hệ thống sẽ tự động ghép tên..." />
+                        <label>Loại ổ cứng:</label>
+                        <select class="form-control" th:field="*{storageType}" id="storageType">
+                            <option value="SSD">SSD (Ổ cứng thể rắn)</option>
+                            <option value="HDD">HDD (Ổ cứng cơ)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tên ổ cứng (*):</label>
+                        <input type="text" class="form-control" th:field="*{name}" id="name" placeholder="Ví dụ: Ổ cứng SSD Samsung 980 Pro 1TB" />
+                        <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
                     </div>
 
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label>Dòng (Series):</label>
-                                <input type="text" class="form-control" th:field="*{series}" placeholder="Ví dụ: Intel Core" />
-                                <span class="error" th:if="${#fields.hasErrors('series')}" th:errors="*{series}"></span>
+                                <label>Hãng (*):</label>
+                                <input type="text" class="form-control" th:field="*{brand}" placeholder="Ví dụ: Samsung, WD, Seagate" />
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label>Phân khúc (Segment):</label>
-                                <input type="text" class="form-control" th:field="*{segment}" placeholder="Ví dụ: i9" />
-                                <span class="error" th:if="${#fields.hasErrors('segment')}" th:errors="*{segment}"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Mã model (Model Number):</label>
-                                <input type="text" class="form-control" th:field="*{modelNumber}" placeholder="Ví dụ: 14900" />
-                                <span class="error" th:if="${#fields.hasErrors('modelNumber')}" th:errors="*{modelNumber}"></span>
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Hậu tố (Suffix):</label>
-                                <input type="text" class="form-control" th:field="*{suffix}" placeholder="Ví dụ: K" />
-                                <span class="error" th:if="${#fields.hasErrors('suffix')}" th:errors="*{suffix}"></span>
+                                <label>Dung lượng (*):</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" class="form-control" th:field="*{capacity}" placeholder="Ví dụ: 1, 500" style="flex: 1;" />
+                                    <select class="form-control" name="capacityUnit" style="width: 80px;">
+                                        <option value="TB">TB</option>
+                                        <option value="GB">GB</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Số nhân (Cores):</label>
-                                <input type="number" class="form-control" th:field="*{cores}" />
-                                <span class="error" th:if="${#fields.hasErrors('cores')}" th:errors="*{cores}"></span>
+                    <!-- THÔNG SỐ SSD -->
+                    <div id="ssd-section" style="background: #f8fbff; border-left: 4px solid var(--admin-accent); padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                        <h4 style="margin-top: 0; color: #3f4254; font-size: 16px;">Thông số SSD</h4>
+                        <div class="form-group">
+                            <label>Chuẩn kết nối:</label>
+                            <input type="text" class="form-control" th:field="*{connectionStandard}" placeholder="Ví dụ: M.2 NVMe, SATA 3" />
+                        </div>
+                        <div class="form-group">
+                            <label>Chuẩn PCIe (nếu NVMe):</label>
+                            <input type="text" class="form-control" th:field="*{pcieStandard}" placeholder="Ví dụ: PCIe 4.0 x4" />
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Tốc độ đọc (MB/s):</label>
+                                    <input type="number" class="form-control" th:field="*{readSpeed}" placeholder="Ví dụ: 7000" />
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Tốc độ ghi (MB/s):</label>
+                                    <input type="number" class="form-control" th:field="*{writeSpeed}" placeholder="Ví dụ: 5000" />
+                                </div>
                             </div>
                         </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Số luồng (Threads):</label>
-                                <input type="number" class="form-control" th:field="*{threads}" />
-                                <span class="error" th:if="${#fields.hasErrors('threads')}" th:errors="*{threads}"></span>
-                            </div>
+                    </div>
+
+                    <!-- THÔNG SỐ HDD -->
+                    <div id="hdd-section" style="background: #fffdf5; border-left: 4px solid #ffa800; padding: 15px; border-radius: 4px; margin-bottom: 20px; display: none;">
+                        <h4 style="margin-top: 0; color: #3f4254; font-size: 16px;">Thông số HDD</h4>
+                        <div class="form-group">
+                            <label>Tốc độ vòng quay (RPM):</label>
+                            <input type="text" class="form-control" th:field="*{rpm}" placeholder="Ví dụ: 7200, 5400" />
                         </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Socket:</label>
-                                <input type="text" class="form-control" th:field="*{socket}" />
-                            </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bộ nhớ đệm (Cache):</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" class="form-control" th:field="*{cache}" placeholder="Ví dụ: 256" style="flex: 1;" />
+                            <select class="form-control" style="width: 80px;" disabled>
+                                <option>MB</option>
+                            </select>
                         </div>
                     </div>
 
@@ -197,7 +216,7 @@
 
                     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--admin-border);">
                         <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Lưu Sản Phẩm</button>
-                        <a th:href="@{/admin/cpu}" class="btn-secondary">Hủy bỏ</a>
+                        <a th:href="@{/admin/storage}" class="btn-secondary">Hủy bỏ</a>
                     </div>
 
                 </form>
@@ -207,25 +226,24 @@
 </div>
 
 <script>
-    const nameInput = document.getElementById('name');
-    const seriesInput = document.getElementById('series');
-    const segmentInput = document.getElementById('segment');
-    const modelNumberInput = document.getElementById('modelNumber');
-    const suffixInput = document.getElementById('suffix');
+    const storageTypeSelect = document.getElementById('storageType');
+    const ssdSection = document.getElementById('ssd-section');
+    const hddSection = document.getElementById('hdd-section');
 
-    function updateCpuName() {
-        const series = seriesInput.value.trim();
-        const segment = segmentInput.value.trim();
-        const modelNumber = modelNumberInput.value.trim();
-        const suffix = suffixInput.value.trim();
-        const suffixText = suffix ? suffix : '';
-        nameInput.value = `${series} ${segment} ${modelNumber}${suffixText}`.trim();
+    function toggleSections() {
+        if (storageTypeSelect.value === 'SSD') {
+            ssdSection.style.display = 'block';
+            hddSection.style.display = 'none';
+        } else {
+            ssdSection.style.display = 'none';
+            hddSection.style.display = 'block';
+        }
     }
 
-    seriesInput.addEventListener('input', updateCpuName);
-    segmentInput.addEventListener('input', updateCpuName);
-    modelNumberInput.addEventListener('input', updateCpuName);
-    suffixInput.addEventListener('input', updateCpuName);
+    storageTypeSelect.addEventListener('change', toggleSections);
+    
+    // Gọi một lần khi tải trang
+    toggleSections();
 
     const imageInput = document.getElementById('imageInput');
     const previewContainer = document.getElementById('previewContainer');
@@ -293,4 +311,5 @@
 </script>
 </body>
 </html>
+
 

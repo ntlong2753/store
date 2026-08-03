@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>NexGen Admin - Quản Lý CPU</title>
+    <title>NexGen Admin - Quản Lý storage</title>
     <!-- Font chữ -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Icon -->
@@ -103,7 +103,7 @@
         </a>
 
         <div class="menu-title" style="margin-top: 15px;">Quản lý kho</div>
-        <a th:href="@{/admin/cpu}" class="menu-item active">
+        <a th:href="@{/admin/cpu}" class="menu-item ">
             <i class="fas fa-microchip"></i> Vi xử lý (CPU)
         </a>
         <a th:href="@{/admin/vga}" class="menu-item ">
@@ -112,7 +112,7 @@
         <a th:href="@{/admin/ram}" class="menu-item ">
             <i class="fas fa-memory"></i> Bộ nhớ (RAM)
         </a>
-        <a th:href="@{/admin/storage}" class="menu-item ">
+        <a th:href="@{/admin/storage}" class="menu-item active">
             <i class="fas fa-hdd"></i> Ổ cứng (Storage)
         </a>
 
@@ -128,7 +128,7 @@
 
     <!-- THANH TOPBAR TRÊN CÙNG -->
     <div class="topbar">
-        <h2 class="page-title">Quản lý Vi xử lý (CPU)</h2>
+        <h2 class="page-title">Quản lý Vi xử lý (storage)</h2>
         <div class="user-profile">
             <!-- Dùng form POST cho nút Đăng xuất để đúng chuẩn Bảo mật Spring Security -->
             <form th:action="@{/logout}" method="post" style="margin: 0;">
@@ -143,23 +143,23 @@
 
             <!-- TIÊU ĐỀ BẢNG VÀ NÚT THÊM MỚI -->
             <div class="card-header">
-                <h3 class="card-title">Danh sách CPU trong kho</h3>
-                <a th:href="@{/admin/cpu/add}" class="btn-add">
-                    <i class="fas fa-plus"></i> Thêm CPU Mới
+                <h3 class="card-title">Danh sách storage trong kho</h3>
+                <a th:href="@{/admin/storage/add}" class="btn-add">
+                    <i class="fas fa-plus"></i> Thêm storage Mới
                 </a>
             </div>
 
             <div class="card-body">
 
                 <!-- 1. Báo rỗng nếu Danh sách rỗng (Chưa có sản phẩm nào) -->
-                <div class="empty-state" th:if="${#lists.isEmpty(cpus)}">
+                <div class="empty-state" th:if="${#lists.isEmpty(storages)}">
                     <i class="fas fa-box-open"></i>
-                    <h3>Kho CPU đang trống</h3>
-                    <p>Chưa có sản phẩm nào trong cơ sở dữ liệu. Hãy bấm "Thêm CPU Mới"!</p>
+                    <h3>Kho storage đang trống</h3>
+                    <p>Chưa có sản phẩm nào trong cơ sở dữ liệu. Hãy bấm "Thêm storage Mới"!</p>
                 </div>
 
                 <!-- 2. Bảng Dữ liệu (Nếu có sản phẩm thì hiện bảng này) -->
-                <div class="table-responsive" th:unless="${#lists.isEmpty(cpus)}">
+                <div class="table-responsive" th:unless="${#lists.isEmpty(storages)}">
                     <table>
                         <thead>
                         <tr>
@@ -172,8 +172,8 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <!-- Lặp từng CPU trong biến 'cpus' -->
-                        <tr th:each="cpu, iter : ${cpus}">
+                        <!-- Lặp từng storage trong biến 'storages' -->
+                        <tr th:each="storage, iter : ${storages}">
 
                             <!-- Cột STT -->
                             <td style="text-align: center; font-weight: bold;" th:text="${iter.count}">1</td>
@@ -182,13 +182,13 @@
                             <td>
                                 <div style="display: flex; align-items: center; gap: 15px;">
                                     <!-- Hình ảnh -->
-                                    <img th:if="${!#lists.isEmpty(cpu.images)}" th:src="@{${cpu.images[0].path}}" class="product-img" alt="img" />
-                                    <div th:if="${#lists.isEmpty(cpu.images)}" class="no-img">No Img</div>
+                                    <img th:if="${!#lists.isEmpty(storage.images)}" th:src="@{${storage.images[0].path}}" class="product-img" alt="img" />
+                                    <div th:if="${#lists.isEmpty(storage.images)}" class="no-img">No Img</div>
 
                                     <!-- Tên và hãng -->
                                     <div>
-                                        <span class="product-name" th:text="${cpu.name}">Tên CPU</span>
-                                        <span class="product-brand" th:text="${cpu.series} + ' | Phân khúc ' + ${cpu.segment}">Dòng sản phẩm</span>
+                                        <span class="product-name" th:text="${storage.name}">Tên Ổ Cứng</span>
+                                        <span class="product-brand" th:text="${storage.storageType} + ' | Hãng: ' + ${storage.brand}">Loại & Hãng</span>
                                     </div>
                                 </div>
                             </td>
@@ -196,20 +196,20 @@
                             <!-- Cột Thông số -->
                             <td>
                                 <div style="font-size: 12px; color: #7e8299;">
-                                    <div>Mã Model: <strong style="color: #3f4254;" th:text="${cpu.modelNumber} + ' ' + (${#strings.isEmpty(cpu.suffix)} ? '' : ${cpu.suffix})">...</strong></div>
-                                    <div>Socket: <strong style="color: #3f4254;" th:text="${cpu.socket}">...</strong></div>
-                                    <div>Nhân/Luồng: <strong style="color: #3f4254;" th:text="${cpu.cores} + '/' + ${cpu.threads}">...</strong></div>
+                                    <div>Dung lượng: <strong style="color: #3f4254;" th:text="${storage.capacity}">...</strong></div>
+                                    <div th:if="${storage.storageType == 'SSD'}">Kết nối: <strong style="color: #3f4254;" th:text="${storage.connectionStandard}">...</strong></div>
+                                    <div th:if="${storage.storageType == 'HDD'}">Vòng quay: <strong style="color: #3f4254;" th:text="${storage.rpm} + ' RPM'">...</strong></div>
                                 </div>
                             </td>
 
                             <!-- Cột Số lượng (Kho) -->
                             <td>
-                                <span class="badge badge-success" th:if="${cpu.stock > 0}" th:text="'Còn ' + ${cpu.stock} + ' cái'">Còn hàng</span>
-                                <span class="badge badge-danger" th:if="${cpu.stock <= 0}">Hết hàng</span>
+                                <span class="badge badge-success" th:if="${storage.stock > 0}" th:text="'Còn ' + ${storage.stock} + ' cái'">Còn hàng</span>
+                                <span class="badge badge-danger" th:if="${storage.stock <= 0}">Hết hàng</span>
                             </td>
 
                             <!-- Cột Giá tiền -->
-                            <td class="price" th:text="${#numbers.formatDecimal(cpu.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                            <td class="price" th:text="${#numbers.formatDecimal(storage.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">
                                 0 đ
                             </td>
 
@@ -217,13 +217,13 @@
                             <td>
                                 <div class="action-btns">
                                     <!-- Nút Sửa -->
-                                    <a th:href="@{/admin/cpu/edit/{id}(id=${cpu.id})}" class="btn-icon btn-edit" title="Chỉnh sửa CPU">
+                                    <a th:href="@{/admin/storage/edit/{id}(id=${storage.id})}" class="btn-icon btn-edit" title="Chỉnh sửa storage">
                                         <i class="fas fa-pen"></i>
                                     </a>
                                     <!-- Nút Xóa -->
-                                    <a th:href="@{/admin/cpu/delete/{id}(id=${cpu.id})}"
+                                    <a th:href="@{/admin/storage/delete/{id}(id=${storage.id})}"
                                        onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa linh kiện này khỏi hệ thống không?')"
-                                       class="btn-icon btn-delete" title="Xóa CPU">
+                                       class="btn-icon btn-delete" title="Xóa storage">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </div>
@@ -241,4 +241,5 @@
 
 </body>
 </html>
+
 
