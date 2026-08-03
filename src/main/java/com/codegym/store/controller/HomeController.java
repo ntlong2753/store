@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.security.Principal;
 import java.text.DecimalFormat;
@@ -41,38 +38,31 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(@RequestParam(required = false) String cat, // Biến này để bắt lệnh lọc danh mục
-                       @RequestParam(defaultValue = "0") int page, // Trang hiện tại
+    public String home(@RequestParam(defaultValue = "false") boolean viewAll,
+                       @RequestParam(required = false) String cat, // Biến này để bắt lệnh lọc danh mục
                        Model model, Principal principal, HttpServletRequest request) {
-        
-        Page<? extends Product> productPage = null;
+        List<? extends Product> products = new java.util.ArrayList<>();
         String catTitle = "Tất Cả Sản Phẩm";
-        
-        // Mỗi trang lấy 10 sản phẩm (tương đương 2 hàng ngang)
-        Pageable pageable = PageRequest.of(page, 10);
-
-        // Tùy theo danh mục được ấn mà lôi dữ liệu tương ứng ra (có hỗ trợ phân trang)
+        // Tùy theo danh mục được ấn mà lôi dữ liệu tương ứng ra
         if (cat == null || cat.isEmpty()) {
-            productPage = productRepository.findAll(pageable);
+            products = productRepository.findAll();
             catTitle = "Sản Phẩm Nổi Bật";
         } else if ("cpu".equals(cat)) {
-            productPage = cpuRepository.findAll(pageable);
+            products = cpuRepository.findAll();
             catTitle = "Vi Xử Lý (CPU)";
         } else if ("ram".equals(cat)) {
-            productPage = ramRepository.findAll(pageable);
+            products = ramRepository.findAll();
             catTitle = "Bộ Nhớ Trong (RAM)";
         } else if ("vga".equals(cat)) {
-            productPage = vgaRepository.findAll(pageable);
+            products = vgaRepository.findAll();
             catTitle = "Card Màn Hình (VGA)";
         } else if ("storage".equals(cat)) {
-            productPage = storageRepository.findAll(pageable);
+            products = storageRepository.findAll();
             catTitle = "Ổ Cứng (SSD/HDD)";
         }
-        
-        model.addAttribute("cpus", productPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", productPage.getTotalPages());
-        model.addAttribute("viewAll", true); // Luôn set true để ẩn cái nút "Xem tất cả" đi
+        // Thêm else if ("mainboard".equals(cat))...
+        model.addAttribute("cpus", products);
+        model.addAttribute("viewAll", viewAll);
         model.addAttribute("catTitle", catTitle); // Truyền tiêu đề ra màn hình
         // Các đoạn set isAdmin cũ giữ nguyên...
         if (principal != null) {
@@ -95,8 +85,6 @@ public class HomeController {
         model.addAttribute("cpus", cpuRepository.findByNameContainingIgnoreCase(keyword));
         // Lúc tìm kiếm thì luôn hiện tất cả kết quả (không giới hạn 5 cái)
         model.addAttribute("viewAll", true);
-        model.addAttribute("currentPage", 0);
-        model.addAttribute("totalPages", 1);
 
         // Vẫn check quyền Admin để ẩn/hiện nút "Thêm vào" cho chuẩn
         if (principal != null) {
