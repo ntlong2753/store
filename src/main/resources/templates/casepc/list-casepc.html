@@ -146,44 +146,56 @@
                     <table>
                         <thead>
                         <tr>
-                            <th>STT</th>
-                            <th>Hình ảnh</th>
-                            <th>Tên Sản Phẩm</th>
-                            <th>Hãng</th>
-                            <th>Kích thước</th>
-                            <th>Giá Bán</th>
-                            <th>Kho</th>
-                            <th>Thao Tác</th>
+                            <th style="width: 50px; text-align: center;">STT</th>
+                            <th style="width: 300px;">Sản phẩm</th>
+                            <th style="width: 260px;">Thông số chính</th>
+                            <th style="width: 130px;">Trạng thái kho</th>
+                            <th style="width: 140px;">Giá bán</th>
+                            <th style="width: 120px; text-align: center;">Hành động</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="casepc, iter : ${casepcs}">
-                            <td th:text="${iter.count}"></td>
+                            <!-- Cột STT -->
+                            <td style="text-align: center; font-weight: bold;" th:text="${iter.count}">1</td>
                             
-                            <!-- Cột Hình ảnh -->
+                            <!-- Cột Hình ảnh + Tên -->
                             <td>
-                                <img th:if="${!#lists.isEmpty(casepc.images)}" th:src="@{${casepc.images[0].path}}" class="product-img" />
-                                <div th:if="${#lists.isEmpty(casepc.images)}" class="no-img"><i class="fas fa-image"></i></div>
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <!-- Hình ảnh -->
+                                    <img th:if="${!#lists.isEmpty(casepc.images)}" th:src="@{${casepc.images[0].path}}" class="product-img" alt="img" />
+                                    <div th:if="${#lists.isEmpty(casepc.images)}" class="no-img" style="font-size: 12px;">No Img</div>
+
+                                    <!-- Tên và hãng -->
+                                    <div>
+                                        <span style="display: block; font-weight: 600; color: var(--admin-text); font-size: 15px; margin-bottom: 3px; line-height: 1.3;" th:text="${casepc.name}">Tên Case</span>
+                                        <span style="display: block; font-size: 12px; color: #b5b5c3; font-weight: 500;" th:text="${casepc.brand}">Hãng</span>
+                                    </div>
+                                </div>
                             </td>
 
-                            <!-- Các cột thông tin khác -->
+                            <!-- Cột Thông số -->
                             <td>
-                                <strong th:text="${casepc.name}" style="color: var(--admin-primary);"></strong>
+                                <div style="font-size: 12px; color: #7e8299;">
+                                    <div>Kích thước: <strong style="color: #3f4254;" th:text="${casepc.formFactor}">...</strong></div>
+                                    <div>Hỗ trợ Main: <strong style="color: #3f4254;" th:text="${casepc.supportedMainboard}">...</strong></div>
+                                </div>
                             </td>
-                            <td th:text="${casepc.brand}"></td>
-                            <td th:text="${casepc.formFactor}"></td>
                             
-                            <td th:text="${#numbers.formatDecimal(casepc.price, 0, 'COMMA', 0, 'POINT')} + ' đ'" style="font-weight: 500; color: var(--success);"></td>
-                            
-                            <!-- Cột Kho -->
+                            <!-- Cột Số lượng (Kho) -->
                             <td>
-                                <span th:if="${casepc.stock > 0}" class="badge badge-success" th:text="'Còn ' + ${casepc.stock}"></span>
-                                <span th:if="${casepc.stock == 0}" class="badge badge-danger">Hết hàng</span>
+                                <span th:if="${casepc.stock > 0}" class="badge badge-success" th:text="'Còn ' + ${casepc.stock} + ' cái'">Còn hàng</span>
+                                <span th:if="${casepc.stock <= 0}" class="badge badge-danger">Hết hàng</span>
+                            </td>
+
+                            <!-- Cột Giá tiền -->
+                            <td class="price" style="font-weight: 700; color: #f64e60; white-space: nowrap;" th:text="${#numbers.formatDecimal(casepc.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                0 đ
                             </td>
 
                             <!-- Cột Nút Hành Động -->
                             <td>
-                                <div class="action-btns">
+                                <div class="action-btns" style="justify-content: center;">
                                     <a th:href="@{/admin/casepc/edit/{id}(id=${casepc.id})}" class="btn-icon btn-edit" title="Sửa"><i class="fas fa-pen"></i></a>
                                     <a th:href="@{/admin/casepc/delete/{id}(id=${casepc.id})}" class="btn-icon btn-delete" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa Case này không? Mọi dữ liệu và hình ảnh liên quan sẽ bị xóa vĩnh viễn!');"><i class="fas fa-trash"></i></a>
                                 </div>
