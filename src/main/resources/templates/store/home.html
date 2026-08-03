@@ -507,6 +507,44 @@
             });
         });
     });
+
+    // === 3. TÍNH NĂNG PHÂN TRANG BẰNG AJAX ===
+    document.addEventListener("click", function(e) {
+        // Kiểm tra xem người dùng có bấm vào các nút trang (1, 2, Trước, Sau) không
+        const pageLink = e.target.closest('.pagination a');
+
+        if (pageLink) {
+            // CHÍNH LỆNH NÀY SẼ CHẶN TRÌNH DUYỆT LOAD LẠI TRANG:
+            e.preventDefault();
+
+            // Làm mờ danh sách đi một chút để báo hiệu đang tải dữ liệu
+            const productList = document.getElementById('ajax-product-list');
+            productList.style.opacity = '0.5';
+
+            // Lấy đường dẫn url của trang (VD: /?page=1)
+            const url = pageLink.href;
+
+            // Dùng fetch gửi yêu cầu ngầm tới Server kèm mã báo hiệu AJAX
+            fetch(url, {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+                .then(response => response.text()) // Nhận mã HTML mảnh ghép trả về
+                .then(html => {
+                    // Cắm đè HTML mới vào vị trí cũ (Thay danh sách cũ = danh sách mới)
+                    productList.outerHTML = html;
+
+                    // Cuộn màn hình mượt mà lên trên cho dễ nhìn
+                    document.querySelector('.section-header').scrollIntoView({ behavior: 'smooth' });
+                })
+                .catch(err => {
+                    console.error("Lỗi chuyển trang: ", err);
+                    productList.style.opacity = '1';
+                });
+        }
+    });
+
 </script>
 
 

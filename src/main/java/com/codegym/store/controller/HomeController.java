@@ -1,9 +1,11 @@
 package com.codegym.store.controller;
 
-import com.codegym.store.model.Cpu;
 import com.codegym.store.model.Product;
 import com.codegym.store.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,41 +40,66 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(@RequestParam(defaultValue = "false") boolean viewAll,
-                       @RequestParam(required = false) String cat, // Biến này để bắt lệnh lọc danh mục
+    public String home(@RequestParam(required = false) String cat, // Lọc theo danh mục
+                       @RequestParam(defaultValue = "0") int page, // Bắt số trang hiện tại
                        Model model, Principal principal, HttpServletRequest request) {
-        List<? extends Product> products = new java.util.ArrayList<>();
+
+        Page<? extends Product> productPage = null;
         String catTitle = "Tất Cả Sản Phẩm";
-        // Tùy theo danh mục được ấn mà lôi dữ liệu tương ứng ra
+
+        // Cài đặt phân trang: lấy trang số 'page', mỗi trang 10 sản phẩm
+        Pageable pageable = PageRequest.of(page, 50);
+
+        // Thay vì findAll() thông thường, ta gọi findAll(pageable)
         if (cat == null || cat.isEmpty()) {
-            products = productRepository.findAll();
+            productPage = productRepository.findAll(pageable);
             catTitle = "Sản Phẩm Nổi Bật";
         } else if ("cpu".equals(cat)) {
-            products = cpuRepository.findAll();
+            productPage = cpuRepository.findAll(pageable);
             catTitle = "Vi Xử Lý (CPU)";
         } else if ("ram".equals(cat)) {
-            products = ramRepository.findAll();
+            productPage = ramRepository.findAll(pageable);
             catTitle = "Bộ Nhớ Trong (RAM)";
         } else if ("vga".equals(cat)) {
-            products = vgaRepository.findAll();
+            productPage = vgaRepository.findAll(pageable);
             catTitle = "Card Màn Hình (VGA)";
         } else if ("storage".equals(cat)) {
-            products = storageRepository.findAll();
+            productPage = storageRepository.findAll(pageable);
             catTitle = "Ổ Cứng (SSD/HDD)";
         }
-        // Thêm else if ("mainboard".equals(cat))...
-        model.addAttribute("cpus", products);
-        model.addAttribute("viewAll", viewAll);
-        model.addAttribute("catTitle", catTitle); // Truyền tiêu đề ra màn hình
-        // Các đoạn set isAdmin cũ giữ nguyên...
+
+        // .getContent() để chuyển Page thành List và hiển thị ra HTML
+        model.addAttribute("cpus", productPage.getContent());
+
+        // Truyền tổng số trang và trang hiện tại ra giao diện để vẽ nút bấm
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+
+        model.addAttribute("viewAll", true); // Giữ biến này cho code cũ khỏi lỗi
+        model.addAttribute("catTitle", catTitle);
+
         if (principal != null) {
             model.addAttribute("username", principal.getName());
             model.addAttribute("isAdmin", request.isUserInRole("ROLE_ADMIN"));
         } else {
             model.addAttribute("isAdmin", false);
         }
+        if (principal != null) {
+            model.addAttribute("username", principal.getName());
+            model.addAttribute("isAdmin", request.isUserInRole("ROLE_ADMIN"));
+        } else {
+            model.addAttribute("isAdmin", false);
+        }
+        // --- COPY 4 DÒNG NÀY DÁN VÀO TRƯỚC LỆNH RETURN CUỐI CÙNG ---
+        // Nếu trình duyệt gửi yêu cầu bằng AJAX, CHỈ trả về mẩu HTML danh sách sản phẩm
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            return "store/product-list";
+        }
+
+        // Trả về toàn bộ trang chủ nếu là tải trang web bình thường
         return "store/home";
     }
+
 
     // Đầu API này chuyên để phục vụ AJAX gọi ngầm
     @GetMapping("/search")
@@ -85,6 +112,10 @@ public class HomeController {
         model.addAttribute("cpus", cpuRepository.findByNameContainingIgnoreCase(keyword));
         // Lúc tìm kiếm thì luôn hiện tất cả kết quả (không giới hạn 5 cái)
         model.addAttribute("viewAll", true);
+
+        model.addAttribute("viewAll", true);
+        model.addAttribute("currentPage", 0);
+        model.addAttribute("totalPages", 1);
 
         // Vẫn check quyền Admin để ẩn/hiện nút "Thêm vào" cho chuẩn
         if (principal != null) {
