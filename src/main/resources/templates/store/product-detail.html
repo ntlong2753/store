@@ -120,18 +120,18 @@
             <div class="detail-price" th:text="${#numbers.formatDecimal(cpu.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
 
             <!-- Cụm nút bấm mua hàng -->
-            <div class="action-buttons">
+            <div class="action-buttons" style="display: flex; gap: 15px; margin-top: 25px;">
                 <!-- Form đẩy ID sản phẩm vào Giỏ Hàng -->
-                <form th:if="${!isAdmin}" th:action="@{/cart/add}" method="post" class="form-add-cart">
+                <form th:if="${!isAdmin}" th:action="@{/cart/add}" method="post" class="form-add-cart" style="flex: 1;">
                     <input type="hidden" name="productId" th:value="${cpu.id}" />
                     <input type="hidden" name="quantity" value="1" />
-                    <button type="submit" class="btn-add-huge">
+                    <button type="submit" class="btn-buy-now" style="width: 100%; justify-content: center;">
                         <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
                     </button>
                 </form>
 
                 <!-- Nút Mua ngay (Logic để sau) -->
-                <button th:if="${!isAdmin}" type="button" class="btn-buy-now" onclick="alert('Tính năng mua ngay đang được phát triển!')">
+                <button th:if="${!isAdmin}" type="button" class="btn-add-huge" style="flex: 1; justify-content: center;" onclick="alert('Tính năng mua ngay đang được phát triển!')">
                     <i class="fas fa-bolt"></i> Mua ngay
                 </button>
             </div>
@@ -139,10 +139,13 @@
     </div>
 
     <!-- KHỐI ĐÁNH GIÁ & MÔ TẢ CHI TIẾT -->
-    <div class="description-content" style="font-size: 14px; color: #555; line-height: 1.6; margin-top: 20px;">
-        <!-- Đã sửa lại bằng hàm an toàn của Thymeleaf, không bao giờ bị lỗi Null nữa -->
-        <p th:if="${!#strings.isEmpty(cpu.description)}" th:text="${cpu.description}">Mô tả chi tiết của sản phẩm...</p>
-        <p th:if="${#strings.isEmpty(cpu.description)}">Chưa có bài đánh giá nào cho sản phẩm này.</p>
+    <div class="description-card" style="background: white; border-radius: 8px; padding: 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-top: 20px;">
+        <h3 style="margin-top: 0; font-size: 18px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">Đánh giá & Mô tả chi tiết: <span th:text="${cpu.name}"></span></h3>
+        <div class="description-content" style="font-size: 14px; color: #555; line-height: 1.6;">
+            <!-- Đã sửa lại bằng hàm an toàn của Thymeleaf, không bao giờ bị lỗi Null nữa -->
+            <p th:if="${!#strings.isEmpty(cpu.description)}" th:text="${cpu.description}">Mô tả chi tiết của sản phẩm...</p>
+            <p th:if="${#strings.isEmpty(cpu.description)}">Chưa có bài đánh giá nào cho sản phẩm này.</p>
+        </div>
     </div>
 
 </div>
