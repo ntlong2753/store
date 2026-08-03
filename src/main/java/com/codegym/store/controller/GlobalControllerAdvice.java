@@ -20,7 +20,16 @@ public class GlobalControllerAdvice {
         this.cartRepository = cartRepository;
     }
 
-    // --- 1. Bơm Avatar cho Header ---
+    // --- 1. Bơm Tên Người Dùng cho Header ---
+    @ModelAttribute("username")
+    public String addGlobalUsernameToModel(Principal principal) {
+        if (principal != null) {
+            return principal.getName();
+        }
+        return null;
+    }
+
+    // --- 2. Bơm Avatar cho Header ---
     @ModelAttribute("globalAvatar")
     public String addGlobalAvatarToModel(Principal principal) {
         if (principal != null) {
