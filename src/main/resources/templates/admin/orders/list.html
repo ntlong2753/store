@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{admin/fragments/head :: head('NexGen Admin - Quản Lý đơn hàng')}"></head>
+<body>
+
+<!-- SIDEBAR BÊN TRÁI -->
+<div th:replace="~{admin/fragments/sidebar :: sidebar('orders')}"></div>
+
+<!-- KHU VỰC BÊN PHẢI -->
+<div class="main-content">
+
+    <div th:replace="~{admin/fragments/topbar :: topbar('Quản lý đơn hàng')}"></div>
+
+    <!-- KHU VỰC ĐỂ CÁI BẢNG -->
+    <div class="content-area">
+        
+        <div th:if="${successMessage}" class="alert alert-success" style="padding:15px; background:#d4edda; color:#155724; border-radius:4px; margin-bottom:15px;" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" style="padding:15px; background:#f8d7da; color:#721c24; border-radius:4px; margin-bottom:15px;" th:text="${errorMessage}"></div>
+
+        <div class="card">
+
+            <!-- TIÊU ĐỀ BẢNG VÀ NÚT THÊM MỚI -->
+            <div class="card-header">
+                <h3 class="card-title">Danh sách Đơn hàng</h3>
+            </div>
+
+            <div class="card-body">
+
+                <!-- Báo rỗng nếu Danh sách rỗng -->
+                <div class="empty-state" th:if="${#lists.isEmpty(orders)}">
+                    <i class="fas fa-file-invoice"></i>
+                    <h3>Chưa có đơn hàng nào</h3>
+                    <p>Hiện tại chưa có khách hàng nào đặt hàng.</p>
+                </div>
+
+                <!-- Bảng Dữ liệu -->
+                <div class="table-responsive" th:unless="${#lists.isEmpty(orders)}">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th style="width: 80px; text-align: center;">Mã Đơn</th>
+                            <th style="width: 150px;">Ngày đặt</th>
+                            <th style="width: 200px;">Khách hàng</th>
+                            <th style="width: 150px;">Tổng tiền</th>
+                            <th style="width: 150px;">Trạng thái</th>
+                            <th style="width: 250px; text-align: center;">Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td style="text-align: center; font-weight: bold;" th:text="'#' + ${order.id}">#1</td>
+                            <td th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                            <td>
+                                <div style="font-weight: bold;" th:text="${order.receiverName}">Tên Khách</div>
+                                <div style="font-size: 12px; color: #7e8299;" th:text="${order.receiverPhone}">SĐT</div>
+                            </td>
+                            <td class="price" style="font-weight: bold; color: var(--primary-red);" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                            
+                            <!-- Trạng thái -->
+                            <td>
+                                <span class="badge" th:style="${order.status.name() == 'PENDING'} ? 'background-color: #ff9800;' : (${order.status.name() == 'APPROVED'} ? 'background-color: #00bcd4;' : (${order.status.name() == 'SHIPPING'} ? 'background-color: #2196f3;' : (${order.status.name() == 'DELIVERED'} ? 'background-color: #4caf50;' : 'background-color: #f44336;')))" 
+                                      th:text="${order.status.description}" style="color: white; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 12px;"></span>
+                            </td>
+
+                            <!-- Hành động -->
+                            <td style="text-align: center;">
+                                <div class="action-btns" style="justify-content: center; gap: 5px;">
+                                    
+                                    <form th:action="@{/admin/orders/{id}/update-status(id=${order.id})}" method="post" style="margin: 0;">
+                                        <!-- Nếu đang chờ duyệt -->
+                                        <th:block th:if="${order.status.name() == 'PENDING'}">
+                                            <input type="hidden" name="status" value="APPROVED" />
+                                            <button type="submit" style="background: #00bcd4; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;" title="Duyệt đơn hàng"><i class="fas fa-check"></i> Duyệt</button>
+                                        </th:block>
+                                    </form>
+                                    
+                                    <form th:action="@{/admin/orders/{id}/update-status(id=${order.id})}" method="post" style="margin: 0;">
+                                        <!-- Nếu đang chờ duyệt hoặc đã duyệt (nhưng chưa giao) -->
+                                        <th:block th:if="${order.status.name() == 'PENDING' or order.status.name() == 'APPROVED'}">
+                                            <input type="hidden" name="status" value="REJECTED" />
+                                            <button type="submit" style="background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;" title="Không duyệt (Hủy)" onclick="return confirm('Bạn chắc chắn muốn không duyệt/hủy đơn này?')"><i class="fas fa-times"></i> Hủy</button>
+                                        </th:block>
+                                    </form>
+
+                                    <form th:action="@{/admin/orders/{id}/update-status(id=${order.id})}" method="post" style="margin: 0;">
+                                        <!-- Nếu đã duyệt thì có nút Bàn giao vận chuyển -->
+                                        <th:block th:if="${order.status.name() == 'APPROVED'}">
+                                            <input type="hidden" name="status" value="SHIPPING" />
+                                            <button type="submit" style="background: #2196f3; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;" title="Bàn giao vận chuyển"><i class="fas fa-truck"></i> Giao</button>
+                                        </th:block>
+                                    </form>
+                                    
+                                </div>
+                                <!-- Chi tiết (chỉ để cho admin xem) -->
+                                <div style="margin-top: 10px; font-size: 12px; text-align: left; background: #f9f9f9; padding: 10px; border-radius: 4px; border: 1px solid #eee;">
+                                    <strong>Đ/c:</strong> <span th:text="${order.shippingAddress}"></span><br>
+                                    <strong>Sản phẩm:</strong>
+                                    <ul style="padding-left: 15px; margin: 5px 0;">
+                                        <li th:each="item : ${order.items}">
+                                            <span th:text="${item.product.name}"></span> (x<span th:text="${item.quantity}"></span>)
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div> <!-- Hết card-body -->
+        </div> <!-- Hết card -->
+    </div> <!-- Hết content-area -->
+</div> <!-- Hết main-content -->
+
+</body>
+</html>

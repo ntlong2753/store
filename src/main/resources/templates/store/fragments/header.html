@@ -31,7 +31,7 @@
             </a>
 
             <!-- 2. Tra cứu đơn hàng (Ẩn với Admin) -->
-            <a href="#" class="action-item" th:if="${isAdmin != true}">
+            <a th:href="@{/orders}" class="action-item" th:if="${isAdmin != true}">
                 <i class="far fa-file-alt"></i>
                 <div class="text-group">
                     <span class="text-top">Tra cứu</span>

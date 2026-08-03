@@ -38,7 +38,7 @@
         </a>
 
         <div class="menu-title" style="margin-top: 15px;">Đơn hàng</div>
-        <a href="#" th:classappend="${activeItem == 'orders'} ? 'active' : ''" class="menu-item">
+        <a th:href="@{/admin/orders}" th:classappend="${activeItem == 'orders'} ? 'active' : ''" class="menu-item">
             <i class="fas fa-file-invoice"></i> Quản lý Đơn hàng
         </a>
     </div>
