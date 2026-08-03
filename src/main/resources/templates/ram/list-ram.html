@@ -17,9 +17,9 @@
 
             <!-- TIÊU ĐỀ BẢNG VÀ NÚT THÊM MỚI -->
             <div class="card-header">
-                <h3 class="card-title">Danh sách ram trong kho</h3>
-                <a th:href="@{/admin/ram/add}" class="btn-add">
-                    <i class="fas fa-plus"></i> Thêm ram Mới
+                <h3 class="card-title">Danh sách RAM trong kho</h3>
+                <a th:href="@{/admin/ram/add}" class="btn-primary">
+                    <i class="fas fa-plus"></i> Thêm RAM Mới
                 </a>
             </div>
 
@@ -88,7 +88,7 @@
 
                             <!-- Cột Hành động (Sửa / Xóa) -->
                             <td>
-                                <div class="action-btns">
+                                <div class="action-btns" style="justify-content: center;">
                                     <!-- Nút Sửa -->
                                     <a th:href="@{/admin/ram/edit/{id}(id=${ram.id})}" class="btn-icon btn-edit" title="Chỉnh sửa ram">
                                         <i class="fas fa-pen"></i>
@@ -109,7 +109,7 @@
             </div> <!-- Hết card-body -->
 
             <!-- KHU VỰC CHUYỂN TRANG -->
-            <div th:replace="~{admin/fragments/pagination :: pagination(rams, '/admin/ram')}"></div>
+            <div th:replace="~{admin/fragments/pagination :: pagination(${rams}, '/admin/ram')}"></div>
         </div> <!-- Hết card -->
     </div> <!-- Hết content-area -->
 

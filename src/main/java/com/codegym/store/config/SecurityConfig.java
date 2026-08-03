@@ -27,7 +27,7 @@ public class SecurityConfig {
                                                 // Cho phép tất cả mọi người được truy cập vào Trang chủ, Đăng nhập,
                                                 // Đăng ký và kho ảnh
                                                 .requestMatchers("/", "/register", "/login", "/search", "/product/**",
-                                                                "/api/**", "/images/**", "/css/**", "/error")
+                                                                "/api/**", "/images/**", "/css/**", "/js/**", "/error")
                                                 .permitAll()
 
                                                 // Vùng cấm: Bắt buộc phải có quyền ADMIN mới được chui vào link có chữ

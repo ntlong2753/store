@@ -16,68 +16,71 @@
     <th:block th:replace="~{profile/fragments/sidebar :: sidebar('info')}"></th:block>
 
     <!-- NỘI DUNG PHẢI -->
-    <div class="content">
-        <h2 class="page-title"><i class="fas fa-user-circle"></i> Hồ sơ của tôi</h2>
-
-        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-        <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
-
-        <form th:action="@{/profile/update}" th:object="${user}" method="post" enctype="multipart/form-data">
-            <div class="profile-layout">
-
-                <!-- CỘT NHẬP THÔNG TIN (Trái) -->
-                <div class="form-section">
-                    <div class="form-group">
-                        <label>Tên đăng nhập</label>
-                        <!-- Tên đăng nhập LUÔN LUÔN không cho sửa -->
-                        <input type="text" class="form-control" th:field="*{username}" readonly="readonly">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Họ và tên đầy đủ</label>
-                        <!-- Đặt readonly làm mặc định -->
-                        <input type="text" class="form-control editable-field" th:field="*{fullName}" required readonly="readonly">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" class="form-control editable-field" th:field="*{email}" required readonly="readonly">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Số điện thoại</label>
-                        <input type="text" class="form-control editable-field" th:field="*{phone}" required readonly="readonly">
-                    </div>
-
-                    <div class="action-buttons">
-                        <!-- Nút sửa (hiện mặc định) -->
-                        <button type="button" class="btn-edit" id="btnEditInfo">Chỉnh sửa thông tin</button>
-
-                        <!-- Nút Lưu & Hủy (Bị giấu đi lúc đầu) -->
-                        <button type="submit" class="btn-save hidden" id="btnSaveInfo">Lưu</button>
-                        <button type="button" class="btn-cancel hidden" id="btnCancelInfo">Hủy</button>
-                    </div>
-                </div>
-
-                <!-- CỘT ẢNH ĐẠI DIỆN (Phải) -->
-                <div class="avatar-section">
+    <div class="content profile-card">
+        <!-- Phần header banner & avatar -->
+        <div class="profile-banner">
+            <div class="banner-bg"></div>
+            <div class="avatar-header">
+                <form th:action="@{/profile/update}" th:object="${user}" method="post" enctype="multipart/form-data" id="profileUpdateForm">
+                    <!-- Avatar section nằm chung form để khi submit ảnh được upload luôn -->
                     <div class="avatar-wrapper">
                         <img id="avatarPreview" th:src="${user.userAvatar != null ? user.userAvatar.path : 'https://ui-avatars.com/api/?name=' + user.fullName + '&background=e30019&color=fff&size=180'}" class="avatar-circle" alt="Avatar">
                         
-                        <!-- Nút Chọn ảnh mới (Bị giấu đi lúc đầu) -->
                         <div id="avatarUploadDiv" class="hidden">
                             <label class="avatar-upload-btn" title="Thay đổi ảnh đại diện">
                                 <i class="fas fa-camera"></i>
                                 <input type="file" name="avatarFile" class="file-input" id="avatarInput" accept="image/*">
                             </label>
+                            <div style="position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); color: var(--text-muted); font-size: 11px; white-space: nowrap; font-weight: 500;">
+                                Chỉ chấp nhận JPG, PNG. Max 2MB.
+                            </div>
                         </div>
                     </div>
-                    <div style="color: var(--text-muted); font-size: 13px; font-weight: 500;">
-                        Chỉ chấp nhận file ảnh (JPG, PNG).<br>Dung lượng tối đa 2MB.
-                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}" style="margin: 20px 40px 0;"></div>
+        <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}" style="margin: 20px 40px 0;"></div>
+
+        <!-- Các trường thông tin phải nằm trong form, dùng chung ID form nãy -->
+        <div class="profile-body">
+            <div class="section-title">
+                <i class="fas fa-info-circle"></i> Thông tin liên hệ
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group input-with-icon">
+                    <label>Tên đăng nhập</label>
+                    <i class="fas fa-user icon-left"></i>
+                    <input type="text" class="form-control" th:field="${user.username}" readonly="readonly" form="profileUpdateForm">
+                </div>
+
+                <div class="form-group input-with-icon">
+                    <label>Họ và tên đầy đủ</label>
+                    <i class="fas fa-id-card icon-left"></i>
+                    <input type="text" class="form-control editable-field" th:field="${user.fullName}" required readonly="readonly" form="profileUpdateForm">
+                </div>
+
+                <div class="form-group input-with-icon">
+                    <label>Email</label>
+                    <i class="fas fa-envelope icon-left"></i>
+                    <input type="email" class="form-control editable-field" th:field="${user.email}" required readonly="readonly" form="profileUpdateForm">
+                </div>
+
+                <div class="form-group input-with-icon">
+                    <label>Số điện thoại</label>
+                    <i class="fas fa-phone-alt icon-left"></i>
+                    <input type="text" class="form-control editable-field" th:field="${user.phone}" required readonly="readonly" form="profileUpdateForm">
                 </div>
             </div>
-        </form>
+
+            <div class="action-buttons" style="justify-content: flex-end; border-top: 1px dashed var(--border-color); padding-top: 25px; margin-top: 30px;">
+                <button type="button" class="btn-edit" id="btnEditInfo"><i class="fas fa-pen"></i> Chỉnh sửa thông tin</button>
+                <button type="button" class="btn-cancel hidden" id="btnCancelInfo">Hủy</button>
+                <button type="submit" class="btn-save hidden" id="btnSaveInfo" form="profileUpdateForm"><i class="fas fa-save"></i> Lưu thay đổi</button>
+            </div>
+        </div>
     </div>
 </div>
 

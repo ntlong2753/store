@@ -111,6 +111,11 @@ body {
     border-radius: 16px;
     box-shadow: var(--shadow-lg);
     padding: 50px 60px;
+    overflow: hidden;
+}
+
+.content.profile-card {
+    padding: 0; /* Xóa padding để banner full width */
 }
 
 .page-title {
@@ -127,37 +132,95 @@ body {
 }
 .page-title i { color: var(--primary); }
 
-.profile-layout {
+/* BANNER & AVATAR HEADER */
+.profile-banner {
+    position: relative;
+    margin-bottom: 20px;
+}
+.banner-bg {
+    height: 180px;
+    background: var(--primary-gradient);
+    width: 100%;
+}
+.avatar-header {
     display: flex;
-    gap: 70px;
-    align-items: flex-start;
+    align-items: flex-end;
+    gap: 25px;
+    padding: 0 40px;
+    margin-top: -70px; /* Kéo avatar lòi lên trên banner */
+    position: relative;
+    z-index: 10;
+}
+.user-header-info {
+    margin-bottom: 25px; /* Nâng text lên cho vừa với avatar */
+}
+.user-fullname-display {
+    margin: 0 0 5px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+.user-role-display {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
 }
 
-/* FORM SECTION */
-.form-section {
-    flex: 1;
+/* FORM GRID */
+.profile-body {
+    padding: 20px 40px 40px;
+}
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.section-title i { color: var(--primary); }
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px 35px;
+}
+.form-grid .form-group {
+    margin-bottom: 0; /* Form grid dùng gap thay cho margin */
 }
 
 .form-group {
-    margin-bottom: 28px;
+    margin-bottom: 25px; /* Khôi phục margin cho các trang không dùng lưới */
     position: relative;
 }
 
 .form-group label {
     display: block;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 12px; /* Tăng khoảng cách để chữ không dính sát vào ô */
+}
+
+.input-with-icon {
+    position: relative;
+}
+.input-with-icon .icon-left {
+    position: absolute;
+    left: 18px;
+    bottom: 14px; /* Căn chỉnh từ dưới lên cho chuẩn với chữ */
+    color: #94a3b8;
+    font-size: 16px;
+    transition: 0.3s;
 }
 
 .form-control {
     width: 100%;
-    padding: 14px 18px;
+    padding: 14px 18px 14px 45px; /* Padding left lớn hơn để chứa icon */
     border: 2px solid var(--border-color);
-    border-radius: 10px;
+    border-radius: 12px;
     box-sizing: border-box;
     font-size: 15px;
     font-weight: 500;
@@ -173,41 +236,33 @@ body {
     background: white;
     box-shadow: 0 0 0 4px var(--primary-light);
 }
+.form-control:focus + .icon-left, 
+.input-with-icon:focus-within .icon-left {
+    color: var(--primary);
+}
 
-/* READONLY STATE - Beautiful integration */
+/* READONLY STATE - Fixed */
 .form-control[readonly] {
-    background: transparent;
-    border-color: transparent;
-    border-bottom: 2px solid var(--border-color);
-    border-radius: 0;
-    padding: 10px 0;
-    color: var(--text-main);
-    cursor: default;
+    background: #f1f5f9;
+    color: var(--text-muted);
+    border-color: var(--border-color);
+    cursor: not-allowed;
 }
 .form-control[readonly]:focus {
     box-shadow: none;
-}
-
-/* AVATAR SECTION */
-.avatar-section {
-    width: 200px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    border-color: var(--border-color);
 }
 
 .avatar-wrapper {
     position: relative;
-    margin-bottom: 20px;
 }
 
 .avatar-circle {
-    width: 170px;
-    height: 170px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
-    border: 5px solid white;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 6px solid var(--card-bg);
+    box-shadow: var(--shadow-md);
     object-fit: cover;
     background: var(--input-bg);
 }
@@ -242,9 +297,6 @@ body {
 .action-buttons {
     display: flex;
     gap: 15px;
-    margin-top: 40px;
-    padding-top: 30px;
-    border-top: 1px dashed var(--border-color);
 }
 
 .btn-edit {

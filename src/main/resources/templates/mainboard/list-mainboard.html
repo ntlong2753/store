@@ -18,7 +18,7 @@
             <!-- TIÊU ĐỀ BẢNG VÀ NÚT THÊM MỚI -->
             <div class="card-header">
                 <h3 class="card-title">Danh sách mainboard trong kho</h3>
-                <a th:href="@{/admin/mainboard/add}" class="btn-add">
+                <a th:href="@{/admin/mainboard/add}" class="btn-primary">
                     <i class="fas fa-plus"></i> Thêm mainboard Mới
                 </a>
             </div>
@@ -67,12 +67,11 @@
                                 </div>
                             </td>
 
-                            <!-- Cột Thông số -->
                             <td>
                                 <div style="font-size: 12px; color: #7e8299;">
                                     <div>Model: <strong style="color: #3f4254;" th:text="${mainboard.model}">...</strong></div>
-                                    <div>Socket / Chipset: <strong style="color: #3f4254;" th:text="${mainboard.socket} + ' / ' + ${mainboard.chipset}">...</strong></div>
-                                    <div>RAM / Size: <strong style="color: #3f4254;" th:text="${mainboard.ramStandard} + ' / ' + ${mainboard.size}">...</strong></div>
+                                    <div>Socket / Chipset: <strong style="color: #3f4254;" th:text="|${mainboard.socket} / ${mainboard.chipset}|">...</strong></div>
+                                    <div>RAM / Size: <strong style="color: #3f4254;" th:text="|${mainboard.ramStandard} / ${mainboard.size}|">...</strong></div>
                                 </div>
                             </td>
 
@@ -89,7 +88,7 @@
 
                             <!-- Cột Hành động (Sửa / Xóa) -->
                             <td>
-                                <div class="action-btns">
+                                <div class="action-btns" style="justify-content: center;">
                                     <!-- Nút Sửa -->
                                     <a th:href="@{/admin/mainboard/edit/{id}(id=${mainboard.id})}" class="btn-icon btn-edit" title="Chỉnh sửa mainboard">
                                         <i class="fas fa-pen"></i>
@@ -110,7 +109,7 @@
             </div> <!-- Hết card-body -->
 
             <!-- KHU VỰC CHUYỂN TRANG -->
-            <div th:replace="~{admin/fragments/pagination :: pagination(mainboards, '/admin/mainboard')}"></div>
+            <div th:replace="~{admin/fragments/pagination :: pagination(${mainboards}, '/admin/mainboard')}"></div>
         </div> <!-- Hết card -->
     </div> <!-- Hết content-area -->
 

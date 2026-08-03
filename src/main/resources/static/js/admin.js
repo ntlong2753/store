@@ -65,4 +65,27 @@ document.addEventListener('DOMContentLoaded', function() {
             updateImagePreview();
         }
     }
+
+    // Logic for Storage Type toggle
+    const storageType = document.getElementById('storageType');
+    const ssdSection = document.getElementById('ssd-section');
+    const hddSection = document.getElementById('hdd-section');
+
+    if (storageType && ssdSection && hddSection) {
+        function toggleStorageSections() {
+            if (storageType.value === 'SSD') {
+                ssdSection.style.display = 'block';
+                hddSection.style.display = 'none';
+            } else if (storageType.value === 'HDD') {
+                ssdSection.style.display = 'none';
+                hddSection.style.display = 'block';
+            }
+        }
+        
+        // Initial setup on page load
+        toggleStorageSections();
+
+        // Listen for changes
+        storageType.addEventListener('change', toggleStorageSections);
+    }
 });

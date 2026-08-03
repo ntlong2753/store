@@ -19,7 +19,7 @@ header {
 }
 
 .logo {
-    font-size: 26px;
+    font-size: 30px; /* Tăng từ 26px lên 30px */
     font-weight: 700;
     margin: 0;
     letter-spacing: -0.5px;
@@ -172,13 +172,12 @@ header {
 }
 
 .action-item .text-top {
-    font-size: 13px;
-    font-weight: 400;
-    opacity: 0.9;
+    font-size: 14px;
+    font-weight: 700; /* Đổi thành đậm */
 }
 
 .action-item .text-bottom {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     margin-top: -2px;
 }
