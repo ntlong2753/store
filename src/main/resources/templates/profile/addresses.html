@@ -7,22 +7,23 @@
     <link rel="stylesheet" th:href="@{/css/profile.css}">
 </head>
 <body>
+<th:block th:replace="~{profile/fragments/header :: header}"></th:block>
 
-<div class="profile-container">
+<div class="container">
     <!-- Cột trái: Sidebar điều hướng -->
     <th:block th:replace="~{profile/fragments/sidebar :: sidebar('addresses')}"></th:block>
 
     <!-- Cột phải: Nội dung chính -->
-    <div class="main-content">
+    <div class="content">
         <div class="page-header">
             <h2 class="page-title"><i class="fas fa-map-marker-alt"></i> Sổ địa chỉ của tôi</h2>
-            <button class="btn-add" onclick="toggleForm()">
+            <button class="btn-save" onclick="toggleForm()" style="padding: 8px 20px;">
                 <i class="fas fa-plus"></i> Thêm địa chỉ mới
             </button>
         </div>
 
         <!-- Báo lỗi hoặc thành công -->
-        <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
         <!-- Form Thêm Mới (Được ẩn đi bằng CSS) -->
         <div id="addAddressForm">
@@ -30,17 +31,17 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Họ và tên</label>
-                        <input type="text" name="receiverName" placeholder="Tên người nhận hàng" required>
+                        <input type="text" name="receiverName" class="form-control" placeholder="Tên người nhận hàng" required>
                     </div>
                     <div class="form-group">
                         <label>Số điện thoại</label>
-                        <input type="text" name="phone" placeholder="Số điện thoại liên hệ" required>
+                        <input type="text" name="phone" class="form-control" placeholder="Số điện thoại liên hệ" required>
                     </div>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label>Địa chỉ cụ thể</label>
-                    <textarea name="fullAddress" rows="3" placeholder="Số nhà, Tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố..." required></textarea>
+                    <textarea name="fullAddress" rows="3" class="form-control" placeholder="Số nhà, Tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố..." required></textarea>
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -50,7 +51,7 @@
 
                 <div class="form-actions">
                     <button type="button" class="btn-cancel" onclick="toggleForm()">Hủy</button>
-                    <button type="submit" class="btn-add">Hoàn thành</button>
+                    <button type="submit" class="btn-save">Hoàn thành</button>
                 </div>
             </form>
         </div>
@@ -62,7 +63,7 @@
         </div>
 
         <!-- Vòng lặp hiển thị từng thẻ Địa Chỉ -->
-        <div th:each="addr : ${addresses}" class="address-card">
+        <div th:each="addr : ${addresses}" class="list-item" style="display: flex; justify-content: space-between; align-items: center;">
 
             <div class="address-info">
                 <div class="address-header">
@@ -72,24 +73,24 @@
                 <p class="full-address" th:text="${addr.fullAddress}">Số 123 Đường ABC</p>
 
                 <div style="margin-top: 10px;" th:if="${addr.isDefault}">
-                    <span class="badge-default">Mặc định</span>
+                    <span class="badge-default" style="background: var(--primary); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">Mặc định</span>
                 </div>
             </div>
 
-            <div class="address-actions">
-                <div class="action-links">
-                    <!-- Nút Xóa (Gửi POST request) -->
-                    <form th:action="@{/profile/addresses/delete/{id}(id=${addr.id})}" method="post">
-                        <button type="submit" class="btn-link delete" onclick="return confirm('Bạn có chắc chắn muốn xóa địa chỉ này?');">Xóa</button>
-                    </form>
-                </div>
-
+            <div class="address-actions" style="display: flex; gap: 10px; flex-direction: column; align-items: flex-end;">
                 <!-- Nút Đặt Mặc Định (Vô hiệu hóa nếu đang là mặc định) -->
                 <form th:action="@{/profile/addresses/default/{id}(id=${addr.id})}" method="post">
-                    <button type="submit" class="btn-set-default" th:disabled="${addr.isDefault}">
+                    <button type="submit" class="btn-save" style="padding: 6px 12px; font-size: 12px; opacity: 1;" th:disabled="${addr.isDefault}" th:styleappend="${addr.isDefault ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
                         Thiết lập mặc định
                     </button>
                 </form>
+
+                <div class="action-links">
+                    <!-- Nút Xóa (Gửi POST request) -->
+                    <form th:action="@{/profile/addresses/delete/{id}(id=${addr.id})}" method="post">
+                        <button type="submit" class="btn-cancel" style="padding: 6px 12px; font-size: 12px;" onclick="return confirm('Bạn có chắc chắn muốn xóa địa chỉ này?');">Xóa</button>
+                    </form>
+                </div>
             </div>
 
         </div> <!-- Kết thúc vòng lặp -->
