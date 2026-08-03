@@ -28,13 +28,13 @@
         }
 
         /* ------------------ TOP BAR (HEADER) HOÀN CHỈNH ------------------ */
-        header { background-color: var(--primary-red); color: white; padding: 12px 0; position: sticky; top: 0; z-index: 1000; }
+        header { background-color: var(--primary-red); color: white; padding: 8px 0; position: sticky; top: 0; z-index: 1000; }
         .header-container { width: 94%; max-width: 1600px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
 
         .logo { font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-decoration: none !important; color: white !important; }
 
-        .search-bar { flex-grow: 0.5; display: flex; background: white; border-radius: 4px; overflow: visible; margin: 0 30px; position: relative; }
-        .search-bar input { flex-grow: 1; border: none; padding: 10px 15px; outline: none; font-family: 'Roboto', sans-serif; }
+        .search-bar { flex-grow: 0.8; display: flex; background: white; border-radius: 4px; overflow: visible; margin: 0 40px; position: relative; }
+        .search-bar input { flex-grow: 1; border: none; padding: 10px 15px; outline: none; font-family: 'Roboto', sans-serif; font-size: 15px; }
         .search-bar button { background: white; border: none; color: #007bff; padding: 0 15px; cursor: pointer; font-size: 16px; border-radius: 0 4px 4px 0;}
 
         /* Dropdown tìm kiếm */
@@ -100,12 +100,12 @@
 
         /* Sidebar Danh mục */
         .sidebar {
-            width: 250px;
+            width: 290px;
             background: white;
             border-radius: 8px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.05);
             flex-shrink: 0;
-            padding: 10px 0;
+            padding: 12px 0;
             align-self: flex-start;
         }
 
@@ -115,10 +115,10 @@
 
         .sidebar li a {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 20px;
+            padding: 16px 22px;
             color: var(--text-dark);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 500;
             border-bottom: 1px solid #f9f9f9;
             transition: 0.2s;
@@ -389,6 +389,8 @@
                 <li><a th:href="@{/(cat='ram')}"><div class="left-icon"><i class="fas fa-memory"></i> Bộ nhớ trong (RAM)</div> <i class="fas fa-chevron-right"></i></a></li>
                 <li><a th:href="@{/(cat='vga')}"><div class="left-icon"><i class="fas fa-tv"></i> Card màn hình (VGA)</div> <i class="fas fa-chevron-right"></i></a></li>
                 <li><a th:href="@{/(cat='storage')}"><div class="left-icon"><i class="fas fa-hdd"></i> Ổ cứng (SSD/HDD)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='casepc')}"><div class="left-icon"><i class="fas fa-box"></i> Vỏ máy tính (Case)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='psu')}"><div class="left-icon"><i class="fas fa-plug"></i> Nguồn (PSU)</div> <i class="fas fa-chevron-right"></i></a></li>
             </ul>
         </aside>
 

@@ -27,9 +27,11 @@ public class MainboardController {
         this.storageService = storageService;
     }
 
-    @GetMapping({"", "/"})
-    public String showMainboardList(Model model) {
-        model.addAttribute("mainboards", mainboardRepository.findAll());
+    @GetMapping({"", "/"}) // Truy cập /mainboard hoặc /mainboard/ thì gọi hàm này
+    public String showMainboardList(@RequestParam(defaultValue = "0") int page, Model model) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10);
+        org.springframework.data.domain.Page<com.codegym.store.model.Mainboard> mainboardPage = mainboardRepository.findAll(pageable);
+        model.addAttribute("mainboards", mainboardPage);
         return "mainboard/list-mainboard";
     }
 

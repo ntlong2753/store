@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>NexGen Admin - Thêm ram Mới</title>
+    <title>NexGen Admin - Chỉnh sửa Nguồn</title>
     <!-- Font chữ & Icon -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -55,7 +55,7 @@
 <!-- SIDEBAR BÊN TRÁI -->
 <div class="sidebar">
     <div class="sidebar-header">NexGen <span>Admin</span></div>
-            <div class="sidebar-menu">
+    <div class="sidebar-menu">
         <div class="menu-title">Lối tắt</div>
         <a th:href="@{/}" class="menu-item">
             <i class="fas fa-store"></i> Ra Cửa Hàng
@@ -73,7 +73,7 @@
         <a th:href="@{/admin/mainboard}" class="menu-item ">
             <i class="fas fa-chess-board"></i> Bo mạch chủ (Main)
         </a>
-        <a th:href="@{/admin/ram}" class="menu-item active">
+        <a th:href="@{/admin/ram}" class="menu-item ">
             <i class="fas fa-memory"></i> Bộ nhớ (RAM)
         </a>
         <a th:href="@{/admin/vga}" class="menu-item ">
@@ -85,7 +85,7 @@
         <a th:href="@{/admin/casepc}" class="menu-item ">
             <i class="fas fa-box"></i> Vỏ máy tính (Case)
         </a>
-        <a th:href="@{/admin/psu}" class="menu-item ">
+        <a th:href="@{/admin/psu}" class="menu-item active">
             <i class="fas fa-plug"></i> Nguồn (PSU)
         </a>
 
@@ -98,9 +98,8 @@
 
 <!-- KHU VỰC BÊN PHẢI -->
 <div class="main-content">
-    <!-- TOPBAR -->
     <div class="topbar">
-        <h2 class="page-title">Thêm ram Mới</h2>
+        <h2 class="page-title">Chỉnh sửa Nguồn</h2>
         <div class="user-profile">
             <form th:action="@{/logout}" method="post" style="margin: 0;">
                 <button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất hệ thống</button>
@@ -111,41 +110,43 @@
     <div class="content-area">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Nhập thông số sản phẩm</h3>
-                <a th:href="@{/admin/ram}" class="btn-secondary" style="padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Quay lại</a>
+                <h3 class="card-title">Cập nhật thông số Nguồn</h3>
+                <a th:href="@{/admin/psu}" class="btn-secondary" style="padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Quay lại</a>
             </div>
 
             <div class="card-body">
-                <!-- FORM THÊM MỚI -->
-                <form th:action="@{/admin/ram/add}" th:object="${product}" method="post" enctype="multipart/form-data">
+                <form th:action="@{/admin/psu/edit}" th:object="${product}" method="post" enctype="multipart/form-data" id="editForm">
+                    
+                    <input type="hidden" th:field="*{id}" />
 
                     <div class="form-group">
-                        <label>Tên ram (Tự động sinh theo dữ liệu dưới):</label>
-                        <input type="text" class="form-control" th:field="*{name}" readonly="readonly" placeholder="Hệ thống sẽ tự động ghép tên..." />
+                        <label>Tên PSU (*):</label>
+                        <input type="text" class="form-control" th:field="*{name}" />
+                        <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Hãng sản xuất (Brand):</label>
-                                <input type="text" class="form-control" th:field="*{brand}" id="brand" placeholder="Ví dụ: Corsair, Kingston, G.Skill" />
-                                <span class="error" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Dung lượng (Capacity):</label>
-                                <input type="text" class="form-control" th:field="*{capacity}" id="capacity" placeholder="Ví dụ: 8GB, 16GB" />
-                                <span class="error" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}"></span>
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Chuẩn RAM (Standard):</label>
-                                <input type="text" class="form-control" th:field="*{ramStandard}" id="ramStandard" placeholder="Ví dụ: DDR4, DDR5" />
-                                <span class="error" th:if="${#fields.hasErrors('ramStandard')}" th:errors="*{ramStandard}"></span>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label>Hãng (*):</label>
+                        <input type="text" class="form-control" th:field="*{brand}" />
+                        <span class="error" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Công suất (W) (*):</label>
+                        <input type="number" class="form-control" th:field="*{wattage}" />
+                        <span class="error" th:if="${#fields.hasErrors('wattage')}" th:errors="*{wattage}"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Chuẩn nguồn (*):</label>
+                        <input type="text" class="form-control" th:field="*{formFactor}" />
+                        <span class="error" th:if="${#fields.hasErrors('formFactor')}" th:errors="*{formFactor}"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Kích thước (*):</label>
+                        <input type="text" class="form-control" th:field="*{size}" />
+                        <span class="error" th:if="${#fields.hasErrors('size')}" th:errors="*{size}"></span>
                     </div>
 
                     <div class="form-row">
@@ -171,14 +172,29 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Hình ảnh minh họa:</label>
+                        <label>Hình ảnh hiện tại (Bấm X để xóa ảnh cũ):</label>
+                        <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;" id="existingImagesContainer">
+                            <div th:each="img : *{images}" th:id="'old-img-container-' + ${img.id}" style="position: relative; display: inline-block;">
+                                <img th:src="@{${img.path}}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #ebedf3;" />
+                                <button type="button" th:onclick="'deleteOldImage(' + ${img.id} + ')'"
+                                        style="position: absolute; top: -5px; right: -5px; background: #f64e60; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <!-- Checkbox ẩn để gửi danh sách ID ảnh bị xóa -->
+                                <input type="checkbox" name="deletedImageIds" th:value="${img.id}" th:id="'delete-checkbox-' + ${img.id}" style="display: none;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Thêm hình ảnh mới (Có thể chọn nhiều ảnh):</label>
                         <input type="file" class="form-control" style="padding: 9px 15px;" id="imageInput" name="imageFiles" multiple="multiple" accept="image/*" />
                         <div id="previewContainer" style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;"></div>
                     </div>
 
                     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--admin-border);">
-                        <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Lưu Sản Phẩm</button>
-                        <a th:href="@{/admin/ram}" class="btn-secondary">Hủy bỏ</a>
+                        <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Cập Nhật Sản Phẩm</button>
+                        <a th:href="@{/admin/psu}" class="btn-secondary">Hủy bỏ</a>
                     </div>
 
                 </form>
@@ -188,21 +204,12 @@
 </div>
 
 <script>
-    const nameInput = document.getElementById('name');
-    const brandInput = document.getElementById('brand');
-    const capacityInput = document.getElementById('capacity');
-    const ramStandardInput = document.getElementById('ramStandard');
-
-    function updateramName() {
-        const br = brandInput.value.trim();
-        const cp = capacityInput.value.trim();
-        const st = ramStandardInput.value.trim();
-        nameInput.value = `RAM ${br} ${cp} ${st}`.trim().replace(/\s+/g, ' ');
+    function deleteOldImage(imgId) {
+        if(confirm('Bạn có chắc muốn xóa ảnh này không? (Ảnh sẽ bị xóa khi bấm Cập nhật)')) {
+            document.getElementById('old-img-container-' + imgId).style.display = 'none';
+            document.getElementById('delete-checkbox-' + imgId).checked = true;
+        }
     }
-
-    brandInput.addEventListener('input', updateramName);
-    capacityInput.addEventListener('input', updateramName);
-    ramStandardInput.addEventListener('input', updateramName);
 
     const imageInput = document.getElementById('imageInput');
     const previewContainer = document.getElementById('previewContainer');
@@ -270,6 +277,3 @@
 </script>
 </body>
 </html>
-
-
-

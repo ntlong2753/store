@@ -28,9 +28,10 @@ public class CpuController {
     }
 
     @GetMapping({"", "/"}) // Truy cập /cpu hoặc /cpu/ thì gọi hàm này
-    public String showCpuList(Model model) {
-        // Lấy danh sách chuyên CPU
-        model.addAttribute("cpus", cpuRepository.findAll());
+    public String showCpuList(@RequestParam(defaultValue = "0") int page, Model model) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10);
+        org.springframework.data.domain.Page<com.codegym.store.model.Cpu> cpuPage = cpuRepository.findAll(pageable);
+        model.addAttribute("cpus", cpuPage);
         return "cpu/list-cpu";
     }
 

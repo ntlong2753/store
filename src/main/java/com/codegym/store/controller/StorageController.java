@@ -28,8 +28,10 @@ public class StorageController {
     }
 
     @GetMapping({"", "/"})
-    public String showStorageList(Model model) {
-        model.addAttribute("storages", storageRepository.findAll());
+    public String showStorageList(@RequestParam(defaultValue = "0") int page, Model model) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10);
+        org.springframework.data.domain.Page<com.codegym.store.model.Storage> storagePage = storageRepository.findAll(pageable);
+        model.addAttribute("storages", storagePage);
         return "storage/list-storage";
     }
 

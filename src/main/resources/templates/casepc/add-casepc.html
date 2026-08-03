@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>NexGen Admin - Thêm ram Mới</title>
+    <title>NexGen Admin - Thêm Case Mới</title>
     <!-- Font chữ & Icon -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -55,7 +55,7 @@
 <!-- SIDEBAR BÊN TRÁI -->
 <div class="sidebar">
     <div class="sidebar-header">NexGen <span>Admin</span></div>
-            <div class="sidebar-menu">
+    <div class="sidebar-menu">
         <div class="menu-title">Lối tắt</div>
         <a th:href="@{/}" class="menu-item">
             <i class="fas fa-store"></i> Ra Cửa Hàng
@@ -73,7 +73,7 @@
         <a th:href="@{/admin/mainboard}" class="menu-item ">
             <i class="fas fa-chess-board"></i> Bo mạch chủ (Main)
         </a>
-        <a th:href="@{/admin/ram}" class="menu-item active">
+        <a th:href="@{/admin/ram}" class="menu-item ">
             <i class="fas fa-memory"></i> Bộ nhớ (RAM)
         </a>
         <a th:href="@{/admin/vga}" class="menu-item ">
@@ -82,7 +82,7 @@
         <a th:href="@{/admin/storage}" class="menu-item ">
             <i class="fas fa-hdd"></i> Ổ cứng (Storage)
         </a>
-        <a th:href="@{/admin/casepc}" class="menu-item ">
+        <a th:href="@{/admin/casepc}" class="menu-item active">
             <i class="fas fa-box"></i> Vỏ máy tính (Case)
         </a>
         <a th:href="@{/admin/psu}" class="menu-item ">
@@ -98,9 +98,8 @@
 
 <!-- KHU VỰC BÊN PHẢI -->
 <div class="main-content">
-    <!-- TOPBAR -->
     <div class="topbar">
-        <h2 class="page-title">Thêm ram Mới</h2>
+        <h2 class="page-title">Thêm Case Mới</h2>
         <div class="user-profile">
             <form th:action="@{/logout}" method="post" style="margin: 0;">
                 <button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất hệ thống</button>
@@ -111,41 +110,41 @@
     <div class="content-area">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Nhập thông số sản phẩm</h3>
-                <a th:href="@{/admin/ram}" class="btn-secondary" style="padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Quay lại</a>
+                <h3 class="card-title">Nhập thông số Case</h3>
+                <a th:href="@{/admin/casepc}" class="btn-secondary" style="padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Quay lại</a>
             </div>
 
             <div class="card-body">
-                <!-- FORM THÊM MỚI -->
-                <form th:action="@{/admin/ram/add}" th:object="${product}" method="post" enctype="multipart/form-data">
+                <form th:action="@{/admin/casepc/add}" th:object="${product}" method="post" enctype="multipart/form-data">
 
                     <div class="form-group">
-                        <label>Tên ram (Tự động sinh theo dữ liệu dưới):</label>
-                        <input type="text" class="form-control" th:field="*{name}" readonly="readonly" placeholder="Hệ thống sẽ tự động ghép tên..." />
+                        <label>Tên Case (*):</label>
+                        <input type="text" class="form-control" th:field="*{name}" placeholder="Tên Case sẽ tự động sinh hoặc tự sửa..." />
+                        <span style="font-size: 12px; color: #7e8299;">(Tự động sinh theo cấu trúc [Hãng] [Model] [Kích thước], có thể chỉnh sửa)</span>
+                        <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Hãng sản xuất (Brand):</label>
-                                <input type="text" class="form-control" th:field="*{brand}" id="brand" placeholder="Ví dụ: Corsair, Kingston, G.Skill" />
-                                <span class="error" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Dung lượng (Capacity):</label>
-                                <input type="text" class="form-control" th:field="*{capacity}" id="capacity" placeholder="Ví dụ: 8GB, 16GB" />
-                                <span class="error" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}"></span>
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Chuẩn RAM (Standard):</label>
-                                <input type="text" class="form-control" th:field="*{ramStandard}" id="ramStandard" placeholder="Ví dụ: DDR4, DDR5" />
-                                <span class="error" th:if="${#fields.hasErrors('ramStandard')}" th:errors="*{ramStandard}"></span>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label>Hãng (*):</label>
+                        <input type="text" class="form-control" th:field="*{brand}" placeholder="Ví dụ: NZXT, Corsair, Deepcool" />
+                        <span class="error" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Model (*):</label>
+                        <input type="text" class="form-control" th:field="*{modelNumber}" placeholder="Ví dụ: H510, 4000D Airflow" />
+                        <span class="error" th:if="${#fields.hasErrors('modelNumber')}" th:errors="*{modelNumber}"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Kích thước (Form Factor) (*):</label>
+                        <input type="text" class="form-control" th:field="*{formFactor}" placeholder="Ví dụ: Mid Tower, Full Tower, Mini ITX" />
+                        <span class="error" th:if="${#fields.hasErrors('formFactor')}" th:errors="*{formFactor}"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hỗ trợ Mainboard:</label>
+                        <input type="text" class="form-control" th:field="*{supportedMainboard}" placeholder="Ví dụ: ATX, Micro-ATX, Mini-ITX" />
                     </div>
 
                     <div class="form-row">
@@ -178,7 +177,7 @@
 
                     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--admin-border);">
                         <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Lưu Sản Phẩm</button>
-                        <a th:href="@{/admin/ram}" class="btn-secondary">Hủy bỏ</a>
+                        <a th:href="@{/admin/casepc}" class="btn-secondary">Hủy bỏ</a>
                     </div>
 
                 </form>
@@ -188,22 +187,6 @@
 </div>
 
 <script>
-    const nameInput = document.getElementById('name');
-    const brandInput = document.getElementById('brand');
-    const capacityInput = document.getElementById('capacity');
-    const ramStandardInput = document.getElementById('ramStandard');
-
-    function updateramName() {
-        const br = brandInput.value.trim();
-        const cp = capacityInput.value.trim();
-        const st = ramStandardInput.value.trim();
-        nameInput.value = `RAM ${br} ${cp} ${st}`.trim().replace(/\s+/g, ' ');
-    }
-
-    brandInput.addEventListener('input', updateramName);
-    capacityInput.addEventListener('input', updateramName);
-    ramStandardInput.addEventListener('input', updateramName);
-
     const imageInput = document.getElementById('imageInput');
     const previewContainer = document.getElementById('previewContainer');
     let selectedFiles = new DataTransfer();
@@ -270,6 +253,3 @@
 </script>
 </body>
 </html>
-
-
-

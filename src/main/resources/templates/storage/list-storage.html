@@ -123,6 +123,12 @@
         <a th:href="@{/admin/storage}" class="menu-item active">
             <i class="fas fa-hdd"></i> Ổ cứng (Storage)
         </a>
+        <a th:href="@{/admin/casepc}" class="menu-item ">
+            <i class="fas fa-box"></i> Vỏ máy tính (Case)
+        </a>
+        <a th:href="@{/admin/psu}" class="menu-item ">
+            <i class="fas fa-plug"></i> Nguồn (PSU)
+        </a>
 
         <div class="menu-title" style="margin-top: 15px;">Hệ thống</div>
         <a href="#" class="menu-item">
@@ -160,14 +166,14 @@
             <div class="card-body">
 
                 <!-- 1. Báo rỗng nếu Danh sách rỗng (Chưa có sản phẩm nào) -->
-                <div class="empty-state" th:if="${#lists.isEmpty(storages)}">
+                <div class="empty-state" th:if="${storages.empty}">
                     <i class="fas fa-box-open"></i>
                     <h3>Kho storage đang trống</h3>
                     <p>Chưa có sản phẩm nào trong cơ sở dữ liệu. Hãy bấm "Thêm storage Mới"!</p>
                 </div>
 
                 <!-- 2. Bảng Dữ liệu (Nếu có sản phẩm thì hiện bảng này) -->
-                <div class="table-responsive" th:unless="${#lists.isEmpty(storages)}">
+                <div class="table-responsive" th:unless="${storages.empty}">
                     <table>
                         <thead>
                         <tr>
@@ -242,6 +248,39 @@
                 </div>
 
             </div> <!-- Hết card-body -->
+
+            <!-- KHU VỰC CHUYỂN TRANG -->
+            <div th:if="${storages.totalPages > 1}" style="display: flex; justify-content: center; margin-top: 25px; padding-bottom: 25px;">
+                <ul style="list-style: none; display: flex; gap: 8px; padding: 0; margin: 0;">
+                    
+                    <!-- Nút Trở Lùi (Trang trước) -->
+                    <li>
+                        <a th:href="@{/admin/storage(page=${storages.number - 1})}" 
+                           style="padding: 8px 14px; border: 1px solid var(--admin-border); border-radius: 6px; text-decoration: none; color: var(--admin-text); background: white; font-size: 14px; font-weight: 500;"
+                           th:styleappend="${storages.first} ? 'pointer-events: none; opacity: 0.4; background: #f3f6f9;' : ''">
+                            <i class="fas fa-angle-left"></i> Lùi
+                        </a>
+                    </li>
+            
+                    <!-- Các nút số trang (1, 2, 3...) -->
+                    <li th:each="i : ${#numbers.sequence(0, storages.totalPages - 1)}">
+                        <a th:href="@{/admin/storage(page=${i})}" th:text="${i + 1}"
+                           style="padding: 8px 14px; border: 1px solid var(--admin-border); border-radius: 6px; text-decoration: none; color: var(--admin-text); background: white; font-size: 14px; font-weight: 600;"
+                           th:styleappend="${i == storages.number} ? 'background: var(--admin-accent); color: white; border-color: var(--admin-accent);' : ''">
+                        </a>
+                    </li>
+            
+                    <!-- Nút Tới (Trang sau) -->
+                    <li>
+                        <a th:href="@{/admin/storage(page=${storages.number + 1})}"
+                           style="padding: 8px 14px; border: 1px solid var(--admin-border); border-radius: 6px; text-decoration: none; color: var(--admin-text); background: white; font-size: 14px; font-weight: 500;"
+                           th:styleappend="${storages.last} ? 'pointer-events: none; opacity: 0.4; background: #f3f6f9;' : ''">
+                            Tới <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
         </div> <!-- Hết card -->
     </div> <!-- Hết content-area -->
 

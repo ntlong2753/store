@@ -262,6 +262,8 @@
                 <span th:if="${cpu.class.simpleName == 'Vga'}">Thương hiệu: <strong th:text="${cpu.cardBrand}">Brand</strong></span>
                 <span th:if="${cpu.class.simpleName == 'Mainboard'}">Thương hiệu: <strong th:text="${cpu.brand}">Brand</strong></span>
                 <span th:if="${cpu.class.simpleName == 'Storage'}">Thương hiệu: <strong th:text="${cpu.brand}">Brand</strong></span>
+                <span th:if="${cpu.class.simpleName == 'Casepc'}">Thương hiệu: <strong th:text="${cpu.brand}">Brand</strong></span>
+                <span th:if="${cpu.class.simpleName == 'Psu'}">Thương hiệu: <strong th:text="${cpu.brand}">Brand</strong></span>
 
                 <!-- Đẩy Badge Còn hàng qua góc phải bằng margin-left: auto -->
                 <span class="badge-instock" th:if="${cpu.stock > 0}" style="margin-left: auto;">Còn hàng</span>
@@ -298,6 +300,28 @@
                     <li><span>Dung lượng VRAM: <strong th:text="${cpu.vram} + ' GB'">...</strong></span></li>
                     <li><span>Loại bộ nhớ: <strong th:text="${cpu.memoryType}">...</strong></span></li>
                     <li><span>Dòng (Series): <strong th:text="${cpu.series}">...</strong></span></li>
+                </ul>
+            </div>
+
+            <!-- HỘP THÔNG SỐ: CASEPC -->
+            <div class="specs-box" th:if="${cpu.class.simpleName == 'Casepc'}">
+                <h4>Thông số sản phẩm</h4>
+                <ul class="specs-list">
+                    <li><span>Thương hiệu: <strong th:text="${cpu.brand}">...</strong></span></li>
+                    <li><span>Model: <strong th:text="${cpu.modelNumber}">...</strong></span></li>
+                    <li><span>Kích thước: <strong th:text="${cpu.formFactor}">...</strong></span></li>
+                    <li><span>Hỗ trợ Mainboard: <strong th:text="${cpu.supportedMainboard}">...</strong></span></li>
+                </ul>
+            </div>
+
+            <!-- HỘP THÔNG SỐ: PSU -->
+            <div class="specs-box" th:if="${cpu.class.simpleName == 'Psu'}">
+                <h4>Thông số sản phẩm</h4>
+                <ul class="specs-list">
+                    <li><span>Thương hiệu: <strong th:text="${cpu.brand}">...</strong></span></li>
+                    <li><span>Công suất: <strong th:text="${cpu.wattage} + 'W'">...</strong></span></li>
+                    <li><span>Chuẩn nguồn: <strong th:text="${cpu.formFactor}">...</strong></span></li>
+                    <li><span>Kích thước: <strong th:text="${cpu.size}">...</strong></span></li>
                 </ul>
             </div>
 

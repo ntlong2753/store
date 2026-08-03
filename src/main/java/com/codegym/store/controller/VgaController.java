@@ -27,9 +27,11 @@ public class VgaController {
         this.storageService = storageService;
     }
 
-    @GetMapping({"", "/"})
-    public String showVgaList(Model model) {
-        model.addAttribute("vgas", vgaRepository.findAll());
+    @GetMapping({"", "/"}) // Truy cập /vga hoặc /vga/ thì gọi hàm này
+    public String showVgaList(@RequestParam(defaultValue = "0") int page, Model model) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10);
+        org.springframework.data.domain.Page<com.codegym.store.model.Vga> vgaPage = vgaRepository.findAll(pageable);
+        model.addAttribute("vgas", vgaPage);
         return "vga/list-vga";
     }
 

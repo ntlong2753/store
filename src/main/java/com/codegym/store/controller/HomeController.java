@@ -29,18 +29,23 @@ public class HomeController {
     private final VgaRepository vgaRepository;
     private final StorageRepository storageRepository;
     private final MainboardRepository mainboardRepository;
+    private final CasepcRepository casepcRepository;
+    private final PsuRepository psuRepository;
 
-    // 2. Thêm tham số vào hàm khởi tạo
     public HomeController(ProductRepository productRepository, CpuRepository cpuRepository,
                           RamRepository ramRepository, VgaRepository vgaRepository,
                           StorageRepository storageRepository,
-                          MainboardRepository mainboardRepository) { // Thêm ở đây
+                          MainboardRepository mainboardRepository,
+                          CasepcRepository casepcRepository,
+                          PsuRepository psuRepository) { 
         this.productRepository = productRepository;
         this.cpuRepository = cpuRepository;
         this.ramRepository = ramRepository;
         this.vgaRepository = vgaRepository;
         this.storageRepository = storageRepository;
-        this.mainboardRepository = mainboardRepository; // Gán ở đây
+        this.mainboardRepository = mainboardRepository; 
+        this.casepcRepository = casepcRepository;
+        this.psuRepository = psuRepository;
     }
 
     @GetMapping("/")
@@ -70,12 +75,15 @@ public class HomeController {
         } else if ("storage".equals(cat)) {
             productPage = storageRepository.findAll(pageable);
             catTitle = "Ổ Cứng (SSD/HDD)";
-        } else if ("storage".equals(cat)) {
-            productPage = storageRepository.findAll(pageable);
-            catTitle = "Ổ Cứng (SSD/HDD)";
-        } else if ("mainboard".equals(cat)) { // THÊM KHỐI NÀY
+        } else if ("mainboard".equals(cat)) { 
             productPage = mainboardRepository.findAll(pageable);
             catTitle = "Bo Mạch Chủ (Mainboard)";
+        } else if ("casepc".equals(cat)) { 
+            productPage = casepcRepository.findAll(pageable);
+            catTitle = "Vỏ Máy Tính (Case)";
+        } else if ("psu".equals(cat)) { 
+            productPage = psuRepository.findAll(pageable);
+            catTitle = "Nguồn Máy Tính (PSU)";
         }
 
 
