@@ -1,3 +1,5 @@
+<!--suppress CssUnresolvedCustomProperty -->
+<!--/*@thymesVar id="pageData" type="org.springframework.data.domain.Page"*/-->
 <div th:fragment="pagination(pageData, baseUrl)" th:if="${pageData.totalPages > 1}" style="display: flex; justify-content: center; margin-top: 25px; padding-bottom: 25px;">
     <ul style="list-style: none; display: flex; gap: 8px; padding: 0; margin: 0;">
         <!-- Nút Trở Lùi (Trang trước) -->
