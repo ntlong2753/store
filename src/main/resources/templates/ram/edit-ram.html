@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>NexGen Admin - Chỉnh sửa CPU</title>
+  <title>NexGen Admin - Chỉnh sửa ram</title>
   <!-- Font chữ & Icon -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -67,13 +67,13 @@
         </a>
 
         <div class="menu-title" style="margin-top: 15px;">Quản lý kho</div>
-        <a th:href="@{/admin/cpu}" class="menu-item active">
+        <a th:href="@{/admin/cpu}" class="menu-item ">
             <i class="fas fa-microchip"></i> Vi xử lý (CPU)
         </a>
         <a th:href="@{/admin/mainboard}" class="menu-item ">
             <i class="fas fa-chess-board"></i> Bo mạch chủ (Main)
         </a>
-        <a th:href="@{/admin/ram}" class="menu-item ">
+        <a th:href="@{/admin/ram}" class="menu-item active">
             <i class="fas fa-memory"></i> Bộ nhớ (RAM)
         </a>
         <a th:href="@{/admin/vga}" class="menu-item ">
@@ -106,74 +106,41 @@
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Chỉnh sửa thông số sản phẩm</h3>
-        <a th:href="@{/admin/cpu}" class="btn-secondary" style="padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Quay lại</a>
+        <a th:href="@{/admin/ram}" class="btn-secondary" style="padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Quay lại</a>
       </div>
 
       <div class="card-body">
         <!-- FORM CHỈNH SỬA -->
-        <form th:action="@{/admin/cpu/edit}" th:object="${product}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/admin/ram/edit}" th:object="${product}" method="post" enctype="multipart/form-data">
 
           <!-- Giữ lại ID ẩn -->
           <input type="hidden" th:field="*{id}" />
 
           <div class="form-group">
-            <label>Tên CPU (Tự động cập nhật theo dữ liệu bên dưới):</label>
-            <input type="text" class="form-control" th:field="*{name}" readonly="readonly" />
+            <label>Tên ram (Tự động cập nhật theo dữ liệu bên dưới):</label>
+            <input type="text" class="form-control" th:field="*{name}" id="name" readonly="readonly" />
           </div>
 
           <div class="form-row">
             <div class="form-col">
               <div class="form-group">
-                <label>Dòng (Series):</label>
-                <input type="text" class="form-control" th:field="*{series}" />
-                <span class="error" th:if="${#fields.hasErrors('series')}" th:errors="*{series}"></span>
+                <label>Hãng sản xuất (Brand):</label>
+                <input type="text" class="form-control" th:field="*{brand}" id="brand" placeholder="Ví dụ: Corsair, Kingston, G.Skill" />
+                <span class="error" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
               </div>
             </div>
             <div class="form-col">
               <div class="form-group">
-                <label>Phân khúc (Segment):</label>
-                <input type="text" class="form-control" th:field="*{segment}" />
-                <span class="error" th:if="${#fields.hasErrors('segment')}" th:errors="*{segment}"></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-col">
-              <div class="form-group">
-                <label>Mã model (Model Number):</label>
-                <input type="text" class="form-control" th:field="*{modelNumber}" />
-                <span class="error" th:if="${#fields.hasErrors('modelNumber')}" th:errors="*{modelNumber}"></span>
+                <label>Dung lượng (Capacity):</label>
+                <input type="text" class="form-control" th:field="*{capacity}" id="capacity" placeholder="Ví dụ: 8GB, 16GB" />
+                <span class="error" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}"></span>
               </div>
             </div>
             <div class="form-col">
               <div class="form-group">
-                <label>Hậu tố (Suffix):</label>
-                <input type="text" class="form-control" th:field="*{suffix}" />
-                <span class="error" th:if="${#fields.hasErrors('suffix')}" th:errors="*{suffix}"></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-col">
-              <div class="form-group">
-                <label>Số nhân (Cores):</label>
-                <input type="number" class="form-control" th:field="*{cores}" />
-                <span class="error" th:if="${#fields.hasErrors('cores')}" th:errors="*{cores}"></span>
-              </div>
-            </div>
-            <div class="form-col">
-              <div class="form-group">
-                <label>Số luồng (Threads):</label>
-                <input type="number" class="form-control" th:field="*{threads}" />
-                <span class="error" th:if="${#fields.hasErrors('threads')}" th:errors="*{threads}"></span>
-              </div>
-            </div>
-            <div class="form-col">
-              <div class="form-group">
-                <label>Socket:</label>
-                <input type="text" class="form-control" th:field="*{socket}" />
+                <label>Chuẩn RAM (Standard):</label>
+                <input type="text" class="form-control" th:field="*{ramStandard}" id="ramStandard" placeholder="Ví dụ: DDR4, DDR5" />
+                <span class="error" th:if="${#fields.hasErrors('ramStandard')}" th:errors="*{ramStandard}"></span>
               </div>
             </div>
           </div>
@@ -226,7 +193,7 @@
 
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--admin-border);">
             <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Cập Nhật Sản Phẩm</button>
-            <a th:href="@{/admin/cpu}" class="btn-secondary">Hủy bỏ</a>
+            <a th:href="@{/admin/ram}" class="btn-secondary">Hủy bỏ</a>
           </div>
 
         </form>
@@ -236,25 +203,21 @@
 </div>
 
 <script>
-  const nameInput = document.getElementById('name');
-  const seriesInput = document.getElementById('series');
-  const segmentInput = document.getElementById('segment');
-  const modelNumberInput = document.getElementById('modelNumber');
-  const suffixInput = document.getElementById('suffix');
+    const nameInput = document.getElementById('name');
+    const brandInput = document.getElementById('brand');
+    const capacityInput = document.getElementById('capacity');
+    const ramStandardInput = document.getElementById('ramStandard');
 
-  function updateCpuName() {
-    const series = seriesInput.value.trim();
-    const segment = segmentInput.value.trim();
-    const modelNumber = modelNumberInput.value.trim();
-    const suffix = suffixInput.value.trim();
-    const suffixText = suffix ? suffix : '';
-    nameInput.value = `${series} ${segment} ${modelNumber}${suffixText}`.trim();
-  }
+    function updateramName() {
+        const br = brandInput.value.trim();
+        const cp = capacityInput.value.trim();
+        const st = ramStandardInput.value.trim();
+        nameInput.value = `RAM ${br} ${cp} ${st}`.trim().replace(/\s+/g, ' ');
+    }
 
-  seriesInput.addEventListener('input', updateCpuName);
-  segmentInput.addEventListener('input', updateCpuName);
-  modelNumberInput.addEventListener('input', updateCpuName);
-  suffixInput.addEventListener('input', updateCpuName);
+    brandInput.addEventListener('input', updateramName);
+    capacityInput.addEventListener('input', updateramName);
+    ramStandardInput.addEventListener('input', updateramName);
 
   const deletedImageIdsInput = document.getElementById('deletedImageIds');
   let deletedIds = [];
@@ -336,5 +299,6 @@
 </script>
 </body>
 </html>
+
 
 
