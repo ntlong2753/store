@@ -3,6 +3,7 @@ package com.codegym.store.controller;
 import com.codegym.store.model.Product;
 import com.codegym.store.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -88,6 +89,7 @@ public class HomeController {
 
 
         // .getContent() để chuyển Page thành List và hiển thị ra HTML
+        assert productPage != null;
         model.addAttribute("cpus", productPage.getContent());
 
         // Truyền tổng số trang và trang hiện tại ra giao diện để vẽ nút bấm
@@ -169,9 +171,10 @@ public class HomeController {
 
 
     // --- GIAI ĐOẠN 2: API TÌM KIẾM TRẢ VỀ JSON CHO DROPDOWN ---
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     @GetMapping("/api/search")
     @ResponseBody
-    public List<Map<String, Object>> searchApi(@RequestParam String keyword) {
+    public List<Map<String, Object>> searchApi(@RequestParam("keyword") String keyword) {
 
         // THAY ĐỔI 1: Dùng productRepository để tìm kiếm TRÊN TOÀN BỘ SẢN PHẨM thay vì chỉ cpuRepository
         List<Product> products = productRepository.findByNameContainingIgnoreCase(keyword);
@@ -180,21 +183,30 @@ public class HomeController {
 
         // THAY ĐỔI 2: Đổi tên biến cpus thành products cho logic
         for (Product product : products) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", product.getId());
-            map.put("name", product.getName());
-
-            DecimalFormat df = new DecimalFormat("#,###");
-            map.put("price", df.format(product.getPrice()).replace(",", ".") + " ₫");
-
-            if (product.getImages() != null && !product.getImages().isEmpty()) {
-                map.put("image", product.getImages().get(0).getPath());
-            } else {
-                map.put("image", "https://via.placeholder.com/50x50?text=No+Image");
-            }
+            Map<String, Object> map = getStringObjectMap(product);
             results.add(map);
         }
         return results;
+    }
+
+    private static @NonNull Map<String, Object> getStringObjectMap(Product product) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", product.getId());
+        map.put("name", product.getName());
+
+        DecimalFormat df = new DecimalFormat("#,###");
+        if (product.getPrice() != null) {
+            map.put("price", df.format(product.getPrice()).replace(",", ".") + " ₫");
+        } else {
+            map.put("price", "Liên hệ");
+        }
+
+        if (product.getImages() != null && !product.getImages().isEmpty()) {
+            map.put("image", product.getImages().getFirst().getPath());
+        } else {
+            map.put("image", "https://via.placeholder.com/50x50?text=No+Image");
+        }
+        return map;
     }
 
 
