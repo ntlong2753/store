@@ -40,26 +40,78 @@
         .next-btn { right: 15px; }
 
 
-        /* CSS dùng chung (HEADER) */
-        .account-dropdown button:hover { background: #f9f9f9; color: #e30019; }
-        :root { --primary-red: #e30019; --bg-color: #f5f5f5; --text-dark: #333333; --text-gray: #777777; }
-        body { font-family: 'Roboto', sans-serif; background-color: var(--bg-color); margin: 0; padding: 0; color: var(--text-dark); }
+        /* Khôi phục lại CSS cơ bản (Nền, Font, Biến màu) */
+        :root {
+            --primary-red: #e30019;
+            --bg-color: #f5f5f5;
+            --text-dark: #333333;
+            --text-gray: #777777;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-dark);
+        }
+
+        /* ------------------ TOP BAR (HEADER) HOÀN CHỈNH ------------------ */
         header { background-color: var(--primary-red); color: white; padding: 12px 0; position: sticky; top: 0; z-index: 1000; }
         .header-container { width: 94%; max-width: 1600px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-        .logo { font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-decoration: none; color: white;}
-        .search-bar { flex-grow: 0.5; display: flex; background: white; border-radius: 4px; overflow: hidden; margin: 0 30px; }
+
+        .logo { font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-decoration: none !important; color: white !important; }
+
+        .search-bar { flex-grow: 0.5; display: flex; background: white; border-radius: 4px; overflow: visible; margin: 0 30px; position: relative; }
         .search-bar input { flex-grow: 1; border: none; padding: 10px 15px; outline: none; font-family: 'Roboto', sans-serif; }
-        .search-bar button { background: white; border: none; color: #007bff; padding: 0 15px; cursor: pointer; font-size: 16px; }
-        .header-actions { display: flex; gap: 25px; align-items: center; }
-        .action-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; color: white;}
-        .action-item i { font-size: 18px; }
-        .cart-count { background: #ffc107; color: black; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 10px; margin-left: -5px;}
-        .account-menu { position: relative; padding: 15px 0; }
+        .search-bar button { background: white; border: none; color: #007bff; padding: 0 15px; cursor: pointer; font-size: 16px; border-radius: 0 4px 4px 0;}
+
+        /* Dropdown tìm kiếm */
+        .search-dropdown { position: absolute; top: 120%; left: 0; width: 100%; background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 1001; display: none; max-height: 400px; overflow-y: auto; }
+        .search-item { display: flex; align-items: center; gap: 15px; padding: 12px 15px; text-decoration: none; color: #333; border-bottom: 1px solid #eee; transition: 0.2s; }
+        .search-item:hover { background: #f9f9f9; }
+        .search-item img { width: 45px; height: 45px; object-fit: contain; border-radius: 4px; }
+        .search-item-info { flex-grow: 1; display: flex; flex-direction: column; gap: 5px; }
+        .search-item-name { font-size: 14px; font-weight: 700; color: #222; }
+        .search-item-price { font-size: 14px; font-weight: 700; color: var(--primary-red); }
+        .search-item-badge { background: #6c757d; color: white; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 4px; }
+        .search-no-result { padding: 15px; text-align: center; color: #777; font-size: 14px; }
+
+        /* Vùng Các Nút Bấm Bên Phải */
+        .header-actions { display: flex; gap: 35px; align-items: center; }
+
+        .action-item {
+            display: flex; align-items: center; gap: 10px; color: white !important;
+            text-decoration: none !important; cursor: pointer; transition: opacity 0.2s;
+            background: transparent; padding: 0; border: none; font-family: inherit;
+        }
+        .action-item:hover { opacity: 0.8; }
+        .action-item i { font-size: 26px; }
+
+        /* Căn chỉnh lại chữ */
+        .action-item .text-group { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+        .action-item .text-top { font-size: 13px; font-weight: 500; }
+        .action-item .text-bottom { font-size: 16px; font-weight: 700; }
+        .text-single { font-size: 16px; font-weight: 700; }
+
+        /* CSS CHO ICON GIỎ HÀNG VIỀN ĐỎ */
+        .icon-wrapper { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+        .cart-count {
+            position: absolute; top: -8px; right: -12px;
+            background: #ffc107; color: #333; font-size: 12px; font-weight: 900;
+            width: 22px; height: 22px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid var(--primary-red);
+        }
+
+        /* Dropdown Menu Tài Khoản */
+        .account-menu { position: relative; padding: 10px 0; }
         .account-dropdown { position: absolute; top: 100%; right: 0; background: white; color: #333; width: 220px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 10px 0; display: none; z-index: 1000; }
         .account-menu:hover .account-dropdown { display: block; }
         .account-dropdown a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #333; text-decoration: none; font-size: 14px; font-weight: 500; transition: background 0.2s; }
         .account-dropdown a:hover { background: #f9f9f9; color: var(--primary-red); }
         .account-dropdown a i { width: 20px; text-align: center; font-size: 16px; }
+
 
         /* CSS RIÊNG CHO TRANG CHI TIẾT */
         .container { width: 94%; max-width: 1200px; margin: 40px auto; }
@@ -82,52 +134,79 @@
 </head>
 <body>
 
-<!-- HEADER BÊ TỪ TRANG CHỦ SANG -->
 <header>
     <div class="header-container">
+        <!-- Logo -->
         <a th:href="@{/}" class="logo">NexGen PC</a>
+
+        <!-- Cây tìm kiếm -->
         <div class="search-bar">
-            <!-- Tạm thời chặn ô tìm kiếm ở trang chi tiết để lát nữa ta tập trung làm AJAX -->
-            <input type="text" placeholder="Đang nâng cấp tính năng Dropdown..." disabled>
-            <button disabled><i class="fas fa-search"></i></button>
+            <input type="text" id="searchInput" placeholder="Bạn cần tìm linh kiện gì (tên, mã, hãng)...">
+            <button><i class="fas fa-search"></i></button>
         </div>
+
+        <!-- Cụm Các Nút Chức Năng -->
         <div class="header-actions">
-            <!-- Dẫn về trang chủ -->
+
+            <!-- 1. Nút Trang chủ -->
             <a th:href="@{/}" class="action-item">
                 <i class="fas fa-home"></i>
-                <div style="font-weight: bold;">Trang chủ</div>
-            </a>
-            <!-- Tra cứu đơn hàng -->
-            <div class="action-item" th:if="${!isAdmin}">
-                <i class="fas fa-file-invoice"></i>
-                <div>
-                    <span>Tra cứu</span>
-                    <div style="font-weight: bold;">đơn hàng</div>
-                </div>
-            </div>
-            <!-- Giỏ hàng -->
-            <a th:href="@{/cart}" class="action-item" th:if="${!isAdmin}" style="text-decoration: none;">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}">0</span>
-                <div>
-                    <span>Giỏ</span>
-                    <div style="font-weight: bold;">hàng</div>
+                <div class="text-group">
+                    <span class="text-single">Trang chủ</span>
                 </div>
             </a>
 
-            <!-- Tài khoản -->
-            <div class="action-item account-menu">
-                <div style="cursor: pointer;">
-                    <i class="fas fa-user"></i>
-                    <span th:text="${username != null ? username : 'Tài khoản'}">Tài khoản</span>
-                    <i class="fas fa-caret-down" style="font-size: 12px; margin-left: -5px;"></i>
+            <!-- 2. Tra cứu đơn hàng (Ẩn với Admin) -->
+            <a href="#" class="action-item" th:if="${!isAdmin}">
+                <i class="far fa-file-alt"></i>
+                <div class="text-group">
+                    <span class="text-top">Tra cứu</span>
+                    <span class="text-bottom">đơn hàng</span>
                 </div>
+            </a>
+
+            <!-- 3. Giỏ hàng siêu đẹp (Ẩn với Admin) -->
+            <a th:href="@{/cart}" class="action-item" th:if="${!isAdmin}">
+                <div class="icon-wrapper">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" th:text="${cartCount != null ? cartCount : 0}">0</span>
+                </div>
+                <div class="text-group">
+                    <span class="text-top">Giỏ</span>
+                    <span class="text-bottom">hàng</span>
+                </div>
+            </a>
+
+            <!-- 4. Nút Trang Admin (Chỉ hiện khi là ADMIN) -->
+            <a th:href="@{/admin}" class="action-item" th:if="${isAdmin}" style="background: rgba(255,255,255,0.2) !important; padding: 5px 15px !important; border-radius: 6px;">
+                <i class="fas fa-cogs"></i>
+                <div class="text-group">
+                    <span class="text-single">Trang Admin</span>
+                </div>
+            </a>
+
+            <!-- 5. Nút Tài khoản & Menu -->
+            <div class="account-menu">
+                <div class="action-item" style="background: #c40015 !important; padding: 8px 15px !important; border-radius: 6px;">
+                    <!-- Ảnh đại diện -->
+                    <img th:if="${globalAvatar != null}" th:src="${globalAvatar}" class="header-avatar" alt="Avatar" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 1px solid white;">
+                    <i th:if="${globalAvatar == null}" class="fas fa-user"></i>
+
+                    <div class="text-group">
+                        <span class="text-single" th:text="${username != null ? username : 'Tài khoản'}">Tài khoản</span>
+                    </div>
+                    <i class="fas fa-caret-down" style="font-size: 14px; margin-left: 5px;"></i>
+                </div>
+
+                <!-- Dropdown cho KHÁCH -->
                 <div class="account-dropdown" th:if="${username == null}">
-                    <a th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
-                    <a th:href="@{/register}"><i class="fas fa-user-plus"></i> Đăng ký tài khoản</a>
+                    <a th:href="@{/login}"><i class="fas fa-sign-in-alt" style="color:#007bff;"></i> Đăng nhập</a>
+                    <a th:href="@{/register}"><i class="fas fa-user-plus" style="color:#10b981;"></i> Đăng ký tài khoản</a>
                 </div>
+
+                <!-- Dropdown cho NGƯỜI ĐÃ ĐĂNG NHẬP -->
                 <div class="account-dropdown" th:if="${username != null}">
-                    <a th:href="@{/profile}"><i class="fas fa-user-circle"></i> Hồ sơ của tôi</a>
+                    <a th:href="@{/profile}"><i class="fas fa-user-circle" style="color:#333;"></i> Hồ sơ của tôi</a>
                     <form th:action="@{/logout}" method="post" style="margin: 0;">
                         <button type="submit" style="width: 100%; text-align: left; background: transparent; border: none; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #333;">
                             <i class="fas fa-sign-out-alt" style="color: #e30019; width: 20px; text-align: center;"></i> Đăng xuất
@@ -135,9 +214,11 @@
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </header>
+
 
 <!-- GIAO DIỆN CHI TIẾT SẢN PHẨM -->
 <div class="container">
@@ -216,64 +297,88 @@
         </div>
     </div>
 </div>
+
+<!-- SCRIPT XỬ LÝ TÌM KIẾM BẰNG AJAX -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Tìm tất cả các form có class form-add-cart
-        const cartForms = document.querySelectorAll('.form-add-cart');
+        const searchInput = document.getElementById("searchInput");
 
-        cartForms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault(); // CHẶN TUYỆT ĐỐI HÀNH ĐỘNG LOAD LẠI TRANG
+        // Nếu trang nào không có ô tìm kiếm thì bỏ qua để tránh báo lỗi
+        if (!searchInput) return;
 
-                const btn = this.querySelector('button');
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; // Hiện icon xoay chờ đợi
-                btn.disabled = true;
+        // 1. Tự động sinh ra hộp Dropdown dưới thanh tìm kiếm
+        let searchDropdown = document.querySelector(".search-dropdown");
+        if (!searchDropdown) {
+            searchDropdown = document.createElement("div");
+            searchDropdown.className = "search-dropdown";
+            searchInput.parentNode.appendChild(searchDropdown);
+        }
 
-                // Dùng fetch để bắn dữ liệu ngầm lên Server
-                fetch(this.action, {
-                    method: 'POST',
-                    body: new FormData(this)
-                })
-                    .then(response => {
-                        if (response.url.includes('/login')) {
-                            window.location.href = '/login'; // Chưa đăng nhập thì tự đá về trang Login
-                            throw new Error("Cần đăng nhập");
-                        }
-                        return response.text();
-                    })
-                    .then(html => {
-                        // Tuyệt kỹ: Bóc tách HTML ngầm để trích xuất con số Giỏ hàng mới nhất
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const newCount = doc.querySelector('.cart-count').innerText;
+        // 2. Bắt sự kiện khi gõ phím
+        searchInput.addEventListener("input", function() {
+            const keyword = searchInput.value.trim();
 
-                        // Gắn đè số mới lên Icon Giỏ hàng hiện tại của màn hình
-                        document.querySelectorAll('.cart-count').forEach(el => {
-                            el.innerText = newCount;
-                            // Hiệu ứng nảy lò xo nhẹ cho đẹp
-                            el.style.transform = "scale(1.5)";
-                            setTimeout(() => el.style.transform = "scale(1)", 200);
-                        });
+            // Nếu xóa hết chữ thì giấu Dropdown đi
+            if (keyword.length === 0) {
+                searchDropdown.style.display = "none";
+                return;
+            }
 
-                        alert("Đã thêm sản phẩm vào giỏ hàng!");
+            // Gọi API lên hệ thống
+            fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        searchDropdown.innerHTML = '<div class="search-no-result">Không tìm thấy linh kiện nào khớp!</div>';
+                        searchDropdown.style.display = "block";
+                        return;
+                    }
 
-                        // Khôi phục lại nút bấm
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        if(btn) {
-                            btn.innerHTML = originalText;
-                            btn.disabled = false;
-                        }
+                    searchDropdown.innerHTML = "";
+                    data.forEach(cpu => {
+                        const item = document.createElement("a");
+                        item.href = `/product/${cpu.id}`;
+                        item.className = "search-item";
+
+                        item.innerHTML = `
+                            <img src="${cpu.image != null ? cpu.image : 'https://via.placeholder.com/150x150?text=No+Image'}" alt="img">
+                            <div class="search-item-info">
+                                <div class="search-item-name">${cpu.name}</div>
+                                <div class="search-item-price">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(cpu.price)}</div>
+                            </div>
+                            <div class="search-item-badge">Chi tiết</div>
+                        `;
+                        searchDropdown.appendChild(item);
                     });
-            });
+                    searchDropdown.style.display = "block";
+                })
+                .catch(error => console.error('Lỗi khi tìm kiếm:', error));
         });
+
+        // 3. Giấu Dropdown khi bấm chuột ra ngoài vùng tìm kiếm
+        document.addEventListener("click", function(event) {
+            if (!searchInput.parentNode.contains(event.target)) {
+                searchDropdown.style.display = "none";
+            }
+        });
+
+        // 4. Hiện lại Dropdown khi click lại vào ô input
+        searchInput.addEventListener("focus", function() {
+            if (searchInput.value.trim().length > 0) {
+                searchDropdown.style.display = "block";
+            }
+        });
+
+        // 5. Bắt sự kiện khi click vào nút Kính Lúp
+        const searchBtn = searchInput.nextElementSibling;
+        if (searchBtn) {
+            searchBtn.addEventListener("click", function() {
+                searchInput.focus();
+                searchInput.dispatchEvent(new Event('input'));
+            });
+        }
     });
 </script>
-
 
 
 </body>
