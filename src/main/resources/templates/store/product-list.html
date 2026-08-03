@@ -57,24 +57,18 @@
     </div>
 
     <!-- KHỐI PHÂN TRANG -->
-    <div class="pagination" th:if="${totalPages > 1}" style="display: flex; justify-content: center; gap: 10px; margin-top: 30px; width: 100%;">
-
-        <a th:href="@{/(cat=${param.cat}, page=${currentPage - 1})}"
-           th:if="${currentPage > 0}"
-           style="padding: 8px 15px; border: 1px solid #e30019; color: #e30019; text-decoration: none; border-radius: 4px; font-weight: 500;">
+    <div class="pagination" th:if="${totalPages > 1}">
+        <a th:href="@{/(cat=${param.cat}, page=${currentPage - 1})}" th:if="${currentPage > 0}">
             <i class="fas fa-chevron-left"></i> Trước
         </a>
 
-        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-            <a th:href="@{/(cat=${param.cat}, page=${i})}"
-               th:text="${i + 1}"
-               th:style="${i == currentPage} ? 'background: #e30019; color: white; padding: 8px 15px; border: 1px solid #e30019; text-decoration: none; border-radius: 4px; font-weight: 500;' : 'padding: 8px 15px; border: 1px solid #e30019; color: #e30019; text-decoration: none; border-radius: 4px; font-weight: 500;'">
-            </a>
-        </span>
+        <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+           th:href="@{/(cat=${param.cat}, page=${i})}"
+           th:text="${i + 1}"
+           th:class="${i == currentPage ? 'active' : ''}">
+        </a>
 
-        <a th:href="@{/(cat=${param.cat}, page=${currentPage + 1})}"
-           th:if="${currentPage < totalPages - 1}"
-           style="padding: 8px 15px; border: 1px solid #e30019; color: #e30019; text-decoration: none; border-radius: 4px; font-weight: 500;">
+        <a th:href="@{/(cat=${param.cat}, page=${currentPage + 1})}" th:if="${currentPage < totalPages - 1}">
             Sau <i class="fas fa-chevron-right"></i>
         </a>
     </div>
