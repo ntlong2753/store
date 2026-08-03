@@ -1,118 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>NexGen Admin - Quản lý Nguồn (PSU)</title>
-    <!-- Font chữ & Icon -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        /* CSS GIAO DIỆN ADMIN CHUNG */
-        :root { --admin-primary: #1e1e2d; --admin-secondary: #f3f6f9; --admin-accent: #3699ff; --admin-text: #3f4254; --admin-border: #ebedf3; --danger: #f64e60; --success: #1bc5bd; }
-        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: var(--admin-secondary); color: var(--admin-text); display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 260px; background-color: var(--admin-primary); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
-        .sidebar-header { padding: 20px; text-align: center; font-size: 24px; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.1); background-color: #1a1a27; }
-        .sidebar-header span { color: var(--danger); }
-        .sidebar-menu { padding: 20px 0; overflow-y: auto; flex-grow: 1; }
-        .menu-title { font-size: 11px; text-transform: uppercase; color: #6c7293; padding: 10px 25px; font-weight: 600; letter-spacing: 1px; }
-        .menu-item { padding: 12px 25px; display: flex; align-items: center; gap: 15px; color: #a2a3b7; text-decoration: none; font-size: 14px; transition: 0.3s; }
-        .menu-item i { font-size: 16px; width: 20px; text-align: center; }
-        .menu-item:hover, .menu-item.active { color: white; background-color: rgba(255,255,255,0.05); border-left: 3px solid var(--admin-accent); padding-left: 22px; }
-        .menu-item.active i { color: var(--admin-accent); }
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .topbar { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); z-index: 10; }
-        .page-title { font-size: 18px; font-weight: 600; margin: 0; }
-        .user-profile { display: flex; align-items: center; gap: 15px; }
-        .btn-logout { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; padding: 6px 15px; border-radius: 4px; font-weight: 500; cursor: pointer; transition: 0.2s; }
-        .btn-logout:hover { background: var(--danger); color: white; }
-        .btn-home { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; padding: 6px 15px; border-radius: 4px; text-decoration: none; font-weight: 500; transition: 0.2s; margin-right: 10px;}
-        .btn-home:hover { background: var(--success); color: white; }
-        .content-area { padding: 30px; overflow-y: auto; flex-grow: 1; }
-        .card { background: white; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
-        .card-header { padding: 20px 25px; border-bottom: 1px solid var(--admin-border); display: flex; justify-content: space-between; align-items: center; }
-        .card-title { margin: 0; font-size: 20px; font-weight: 700; }
-        .btn-primary { background: var(--admin-accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;}
-        .btn-primary:hover { background: #228cf3; }
-        
-        /* BẢNG DỮ LIỆU */
-        .card-body { padding: 0; }
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 15px 25px; border-bottom: 1px solid var(--admin-border); }
-        th { background: #f9f9f9; font-weight: 600; color: #b5b5c3; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        td { font-size: 14px; vertical-align: middle; }
-        tr:hover { background: #fcfcfc; }
-        
-        /* HÌNH ẢNH SẢN PHẨM */
-        .product-img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid var(--admin-border); }
-        .no-img { width: 50px; height: 50px; border-radius: 6px; background: #f3f6f9; display: flex; align-items: center; justify-content: center; color: #b5b5c3; font-size: 20px; border: 1px dashed #ebedf3;}
-        
-        /* TRẠNG THÁI TỒN KHO */
-        .badge { padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; }
-        .badge-success { background: #c9f7f5; color: #1bc5bd; }
-        .badge-danger { background: #ffe2e5; color: #f64e60; }
-        
-        /* NÚT HÀNH ĐỘNG */
-        .action-btns { display: flex; gap: 8px; }
-        .btn-icon { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.2s; border: none; cursor: pointer; }
-        .btn-edit { background: #e1f0ff; color: var(--admin-accent); }
-        .btn-edit:hover { background: var(--admin-accent); color: white; }
-        .btn-delete { background: #ffe2e5; color: var(--danger); }
-        .btn-delete:hover { background: var(--danger); color: white; }
-
-        /* TRẠNG THÁI TRỐNG */
-        .empty-state { text-align: center; padding: 50px 20px; }
-        .empty-state i { font-size: 50px; color: #b5b5c3; margin-bottom: 15px; }
-        .empty-state h3 { font-size: 18px; font-weight: 600; margin: 0 0 10px 0; }
-        .empty-state p { color: #7e8299; margin: 0 0 20px 0; }
-    </style>
-</head>
+<head th:replace="~{admin/fragments/head :: head('NexGen Admin - Quản lý Nguồn (PSU)')}"></head>
 <body>
 
 <!-- SIDEBAR BÊN TRÁI -->
-<div class="sidebar">
-    <div class="sidebar-header">NexGen <span>Admin</span></div>
-    <div class="sidebar-menu">
-        <div class="menu-title">Lối tắt</div>
-        <a th:href="@{/}" class="menu-item">
-            <i class="fas fa-store"></i> Ra Cửa Hàng
-        </a>
-
-        <div class="menu-title" style="margin-top: 15px;">Hệ thống</div>
-        <a th:href="@{/admin}" class="menu-item">
-            <i class="fas fa-chart-pie"></i> Tổng quan (Dashboard)
-        </a>
-
-        <div class="menu-title" style="margin-top: 15px;">Quản lý kho</div>
-        <a th:href="@{/admin/cpu}" class="menu-item ">
-            <i class="fas fa-microchip"></i> Vi xử lý (CPU)
-        </a>
-        <a th:href="@{/admin/mainboard}" class="menu-item ">
-            <i class="fas fa-chess-board"></i> Bo mạch chủ (Main)
-        </a>
-        <a th:href="@{/admin/ram}" class="menu-item ">
-            <i class="fas fa-memory"></i> Bộ nhớ (RAM)
-        </a>
-        <a th:href="@{/admin/vga}" class="menu-item ">
-            <i class="fas fa-tv"></i> Card đồ họa (VGA)
-        </a>
-        <a th:href="@{/admin/storage}" class="menu-item ">
-            <i class="fas fa-hdd"></i> Ổ cứng (Storage)
-        </a>
-        <a th:href="@{/admin/casepc}" class="menu-item ">
-            <i class="fas fa-box"></i> Vỏ máy tính (Case)
-        </a>
-        <a th:href="@{/admin/psu}" class="menu-item active">
-            <i class="fas fa-plug"></i> Nguồn (PSU)
-        </a>
-
-        <div class="menu-title" style="margin-top: 15px;">Hệ thống</div>
-        <a href="#" class="menu-item">
-            <i class="fas fa-file-invoice"></i> Quản lý Đơn hàng
-        </a>
-    </div>
-</div>
+<div th:replace="~{admin/fragments/sidebar :: sidebar('psu')}"></div>
 
 <!-- KHU VỰC BÊN PHẢI -->
 <div class="main-content">
@@ -135,14 +27,14 @@
             <div class="card-body">
 
                 <!-- 1. Báo rỗng nếu Danh sách rỗng -->
-                <div class="empty-state" th:if="${psus.empty}">
+                <div class="empty-state" th:if="${psus.isEmpty()}">
                     <i class="fas fa-box-open"></i>
                     <h3>Kho Nguồn đang trống</h3>
                     <p>Chưa có sản phẩm nào trong cơ sở dữ liệu. Hãy bấm "Thêm Nguồn Mới"!</p>
                 </div>
 
                 <!-- 2. Bảng Dữ liệu -->
-                <div class="table-responsive" th:unless="${psus.empty}">
+                <div class="table-responsive" th:unless="${psus.isEmpty()}">
                     <table>
                         <thead>
                         <tr>
@@ -208,34 +100,7 @@
             </div> <!-- Hết card-body -->
 
             <!-- KHU VỰC CHUYỂN TRANG -->
-            <div th:if="${psus.totalPages > 1}" style="display: flex; justify-content: center; margin-top: 25px; padding-bottom: 25px;">
-                <ul style="list-style: none; display: flex; gap: 8px; padding: 0; margin: 0;">
-                    
-                    <li>
-                        <a th:href="@{/admin/psu(page=${psus.number - 1})}" 
-                           style="padding: 8px 14px; border: 1px solid var(--admin-border); border-radius: 6px; text-decoration: none; color: var(--admin-text); background: white; font-size: 14px; font-weight: 500;"
-                           th:styleappend="${psus.first} ? 'pointer-events: none; opacity: 0.4; background: #f3f6f9;' : ''">
-                            <i class="fas fa-angle-left"></i> Lùi
-                        </a>
-                    </li>
-            
-                    <li th:each="i : ${#numbers.sequence(0, psus.totalPages - 1)}">
-                        <a th:href="@{/admin/psu(page=${i})}" th:text="${i + 1}"
-                           style="padding: 8px 14px; border: 1px solid var(--admin-border); border-radius: 6px; text-decoration: none; color: var(--admin-text); background: white; font-size: 14px; font-weight: 600;"
-                           th:styleappend="${i == psus.number} ? 'background: var(--admin-accent); color: white; border-color: var(--admin-accent);' : ''">
-                        </a>
-                    </li>
-            
-                    <li>
-                        <a th:href="@{/admin/psu(page=${psus.number + 1})}"
-                           style="padding: 8px 14px; border: 1px solid var(--admin-border); border-radius: 6px; text-decoration: none; color: var(--admin-text); background: white; font-size: 14px; font-weight: 500;"
-                           th:styleappend="${psus.last} ? 'pointer-events: none; opacity: 0.4; background: #f3f6f9;' : ''">
-                            Tới <i class="fas fa-angle-right"></i>
-                        </a>
-                    </li>
-                    
-                </ul>
-            </div>
+            <div th:replace="~{admin/fragments/pagination :: pagination(psus, '/admin/psu')}"></div>
         </div> <!-- Hết card -->
     </div> <!-- Hết content-area -->
 

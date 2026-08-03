@@ -1,7 +1,7 @@
 package com.codegym.store.controller;
 
-import com.codegym.store.model.Ram;
 import com.codegym.store.model.ProductImage;
+import com.codegym.store.model.Ram;
 import com.codegym.store.repository.RamRepository;
 import com.codegym.store.service.ProductService;
 import com.codegym.store.service.StorageService;
@@ -129,7 +129,7 @@ public class RamController {
         String brand = ram.getBrand() != null ? ram.getBrand() : "";
         String capacity = ram.getCapacity() != null ? ram.getCapacity() : "";
         String standard = ram.getRamStandard() != null ? ram.getRamStandard() : "";
-        
+
         String autoName = "RAM " + brand + " " + capacity + " " + standard;
         ram.setName(autoName.trim().replaceAll(" +", " "));
     }

@@ -1,0 +1,23 @@
+<th:block th:fragment="sidebar(activeMenu)">
+    <div class="sidebar">
+        <!-- Tóm tắt hồ sơ (Optional: chỉ hiển thị nếu có biến user) -->
+        <div class="sidebar-profile-summary" th:if="${user != null}">
+            <img th:src="${user.userAvatar != null ? user.userAvatar.path : 'https://ui-avatars.com/api/?name=' + user.fullName + '&background=e30019&color=fff&size=150'}" alt="Avatar">
+            <h3 th:text="${user.fullName}">Tên Người Dùng</h3>
+            <p th:text="${user.email}">email@example.com</p>
+        </div>
+
+        <a th:href="@{/profile}" class="sidebar-item" th:classappend="${activeMenu == 'info' ? 'active' : ''}">
+            <i class="fas fa-user-circle"></i> Thông tin tài khoản
+        </a>
+        <a th:href="@{/profile/orders}" class="sidebar-item" th:classappend="${activeMenu == 'orders' ? 'active' : ''}">
+            <i class="fas fa-box-open"></i> Thông tin đơn hàng
+        </a>
+        <a th:href="@{/profile/addresses}" class="sidebar-item" th:classappend="${activeMenu == 'addresses' ? 'active' : ''}">
+            <i class="fas fa-map-marker-alt"></i> Các địa chỉ được lưu
+        </a>
+        <a th:href="@{/profile/password}" class="sidebar-item" th:classappend="${activeMenu == 'password' ? 'active' : ''}">
+            <i class="fas fa-shield-alt"></i> Thay đổi mật khẩu
+        </a>
+    </div>
+</th:block>

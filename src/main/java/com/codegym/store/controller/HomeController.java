@@ -37,13 +37,13 @@ public class HomeController {
                           StorageRepository storageRepository,
                           MainboardRepository mainboardRepository,
                           CasepcRepository casepcRepository,
-                          PsuRepository psuRepository) { 
+                          PsuRepository psuRepository) {
         this.productRepository = productRepository;
         this.cpuRepository = cpuRepository;
         this.ramRepository = ramRepository;
         this.vgaRepository = vgaRepository;
         this.storageRepository = storageRepository;
-        this.mainboardRepository = mainboardRepository; 
+        this.mainboardRepository = mainboardRepository;
         this.casepcRepository = casepcRepository;
         this.psuRepository = psuRepository;
     }
@@ -75,13 +75,13 @@ public class HomeController {
         } else if ("storage".equals(cat)) {
             productPage = storageRepository.findAll(pageable);
             catTitle = "Ổ Cứng (SSD/HDD)";
-        } else if ("mainboard".equals(cat)) { 
+        } else if ("mainboard".equals(cat)) {
             productPage = mainboardRepository.findAll(pageable);
             catTitle = "Bo Mạch Chủ (Mainboard)";
-        } else if ("casepc".equals(cat)) { 
+        } else if ("casepc".equals(cat)) {
             productPage = casepcRepository.findAll(pageable);
             catTitle = "Vỏ Máy Tính (Case)";
-        } else if ("psu".equals(cat)) { 
+        } else if ("psu".equals(cat)) {
             productPage = psuRepository.findAll(pageable);
             catTitle = "Nguồn Máy Tính (PSU)";
         }
@@ -196,7 +196,6 @@ public class HomeController {
         }
         return results;
     }
-
 
 
 }
