@@ -300,10 +300,10 @@
         <a th:href="@{/}" class="logo">NexGen PC</a>
 
         <!-- Cây tìm kiếm -->
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Bạn cần tìm linh kiện gì (tên, mã, hãng)...">
-            <button><i class="fas fa-search"></i></button>
-        </div>
+        <form class="search-bar" action="/search" method="get">
+            <input type="text" name="keyword" id="searchInput" placeholder="Bạn cần tìm linh kiện gì (tên, mã, hãng)..." th:value="${param.keyword}">
+            <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
 
         <!-- Cụm Các Nút Chức Năng -->
         <div class="header-actions">

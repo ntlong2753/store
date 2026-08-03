@@ -120,32 +120,29 @@ public class HomeController {
     }
 
 
-    // Đầu API này chuyên để phục vụ AJAX gọi ngầm
     @GetMapping("/search")
-    public String search(@org.springframework.web.bind.annotation.RequestParam String keyword,
+    public String search(@RequestParam String keyword,
+                         @RequestParam(defaultValue = "0") int page,
                          Model model,
-                         java.security.Principal principal,
+                         Principal principal,
                          jakarta.servlet.http.HttpServletRequest request) {
 
-        // Tìm kiếm CPU theo từ khóa
-        model.addAttribute("cpus", cpuRepository.findByNameContainingIgnoreCase(keyword));
-        // Lúc tìm kiếm thì luôn hiện tất cả kết quả (không giới hạn 5 cái)
-        model.addAttribute("viewAll", true);
+        Pageable pageable = PageRequest.of(page, 50);
+        Page<Product> productPage = productRepository.findByNameContainingIgnoreCase(keyword, pageable);
 
+        model.addAttribute("cpus", productPage.getContent());
+        model.addAttribute("catTitle", "Kết quả tìm kiếm cho: " + keyword);
         model.addAttribute("viewAll", true);
-        model.addAttribute("currentPage", 0);
-        model.addAttribute("totalPages", 1);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
 
-        // Vẫn check quyền Admin để ẩn/hiện nút "Thêm vào" cho chuẩn
         if (principal != null) {
             model.addAttribute("isAdmin", request.isUserInRole("ROLE_ADMIN"));
         } else {
             model.addAttribute("isAdmin", false);
         }
 
-        // LƯU Ý QUAN TRỌNG:
-        // Chỉ trả về ĐÚNG cái mẩu HTML của danh sách sản phẩm (có tên fragment là product-list)
-        return "store/product-list";
+        return "store/home";
     }
 
     // --- GIAI ĐOẠN 1: API MỞ TRANG CHI TIẾT SẢN PHẨM ---
