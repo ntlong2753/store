@@ -21,9 +21,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // THÊM ĐÚNG DÒNG NÀY VÀO ĐỂ TẮT CSRF VÀ TRỊ DỨT ĐIỂM LỖI SESSION
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         // Cho phép tất cả mọi người được truy cập vào Trang chủ, Đăng nhập, Đăng ký và kho ảnh
-                        .requestMatchers("/", "/register", "/login", "/search", "/product/**", "/api/**", "/images/**", "/css/**").permitAll()
+                        .requestMatchers("/", "/register", "/login", "/search", "/product/**", "/api/**", "/images/**", "/css/**", "/error").permitAll()
 
                         // Vùng cấm: Bắt buộc phải có quyền ADMIN mới được chui vào link có chữ /admin/...
                         .requestMatchers("/admin/**").hasRole("ADMIN")

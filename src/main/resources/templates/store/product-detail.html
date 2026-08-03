@@ -220,16 +220,13 @@
 </header>
 
 
-<!-- GIAO DIỆN CHI TIẾT SẢN PHẨM -->
+<!-- BẮT ĐẦU GIAO DIỆN CHI TIẾT SẢN PHẨM -->
 <div class="container">
     <div class="detail-card">
-        <!-- Cột Trái: Ảnh -->
-        <!-- Cột Trái: Bộ sưu tập Ảnh -->
+        <!-- Cột Trái: Ảnh (Giữ nguyên cấu trúc Gallery) -->
         <div class="detail-left" style="border: none; padding: 0;">
             <div class="product-gallery">
-                <!-- Cột Thumbnail -->
                 <div class="thumbnail-list" th:if="${!#lists.isEmpty(cpu.images)}">
-                    <!-- Thêm biến data-index để biết nó là ảnh thứ mấy -->
                     <div class="thumbnail" th:each="img, stat : ${cpu.images}"
                          th:classappend="${stat.index == 0} ? 'active' : ''"
                          th:data-path="@{${img.path}}"
@@ -239,146 +236,222 @@
                     </div>
                 </div>
 
-                <!-- Ảnh Chính To Bự (Kèm 2 mũi tên) -->
                 <div class="main-image">
-                    <!-- Mũi tên Trái -->
                     <button class="nav-btn prev-btn" onclick="prevImage()" th:if="${#lists.size(cpu.images) > 1}"><i class="fas fa-chevron-left"></i></button>
-
                     <img id="mainProductImg" th:if="${!#lists.isEmpty(cpu.images)}" th:src="@{${cpu.images[0].path}}" alt="Main Image">
                     <img th:if="${#lists.isEmpty(cpu.images)}" src="https://via.placeholder.com/600x600?text=No+Image" alt="No Image">
-
-                    <!-- Mũi tên Phải -->
                     <button class="nav-btn next-btn" onclick="nextImage()" th:if="${#lists.size(cpu.images) > 1}"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
-
         </div>
-
 
         <!-- Cột Phải: Thông tin -->
         <div class="detail-right">
             <h1 class="detail-title" th:text="${cpu.name}">Tên sản phẩm</h1>
 
+            <!-- Meta: Mã SP, Thương hiệu và Trạng thái -->
             <div class="detail-meta">
                 <span>Mã SP: <strong th:text="${cpu.id}">0</strong></span>
-                <span>Thương hiệu: <strong th:text="${cpu.series}">Brand</strong></span>
-                <span class="badge-instock" th:if="${cpu.stock > 0}">Còn hàng</span>
-                <span class="badge-instock" style="background: #ffebeb; color: #e30019;" th:if="${cpu.stock <= 0}">Hết hàng</span>
+
+                <!-- Phân nhánh Thương hiệu -->
+                <span th:if="${cpu.class.simpleName == 'Cpu'}">Thương hiệu: <strong th:text="${cpu.series}">Brand</strong></span>
+                <span th:if="${cpu.class.simpleName == 'Ram'}">Thương hiệu: <strong th:text="${cpu.brand}">Brand</strong></span>
+                <span th:if="${cpu.class.simpleName == 'Vga'}">Thương hiệu: <strong th:text="${cpu.cardBrand}">Brand</strong></span>
+                <span th:if="${cpu.class.simpleName == 'Mainboard'}">Thương hiệu: <strong th:text="${cpu.brand}">Brand</strong></span>
+                <span th:if="${cpu.class.simpleName == 'Storage'}">Thương hiệu: <strong th:text="${cpu.brand}">Brand</strong></span>
+
+                <!-- Đẩy Badge Còn hàng qua góc phải bằng margin-left: auto -->
+                <span class="badge-instock" th:if="${cpu.stock > 0}" style="margin-left: auto;">Còn hàng</span>
+                <span class="badge-instock" style="background: #ffebeb; color: #e30019; margin-left: auto;" th:if="${cpu.stock <= 0}">Hết hàng</span>
             </div>
 
-            <!-- Hộp cấu hình CPU -->
-            <div class="specs-box">
+            <!-- HỘP THÔNG SỐ: CPU -->
+            <div class="specs-box" th:if="${cpu.class.simpleName == 'Cpu'}">
                 <h4>Thông số sản phẩm</h4>
                 <ul class="specs-list">
                     <li><span>Dòng (Series): <strong th:text="${cpu.series}">...</strong></span></li>
-                    <li><span>Phân khúc: <strong th:text="${cpu.segment}">...</strong></span></li>
                     <li><span>Socket: <strong th:text="${cpu.socket}">...</strong></span></li>
                     <li><span>Số nhân: <strong th:text="${cpu.cores}">...</strong></span></li>
                     <li><span>Số luồng: <strong th:text="${cpu.threads}">...</strong></span></li>
-                    <li><span>Trạng thái kho: <strong th:text="${cpu.stock} + ' sản phẩm'">...</strong></span></li>
                 </ul>
             </div>
 
-            <div class="detail-price" th:text="${#numbers.formatDecimal(cpu.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">
-                0 đ
+            <!-- HỘP THÔNG SỐ: RAM -->
+            <div class="specs-box" th:if="${cpu.class.simpleName == 'Ram'}">
+                <h4>Thông số sản phẩm</h4>
+                <ul class="specs-list">
+                    <li><span>Thương hiệu: <strong th:text="${cpu.brand}">...</strong></span></li>
+                    <li><span>Chuẩn RAM: <strong th:text="${cpu.ramStandard}">...</strong></span></li>
+                    <li><span>Dung lượng: <strong th:text="${cpu.capacity}">...</strong></span></li>
+                </ul>
             </div>
+
+            <!-- HỘP THÔNG SỐ: VGA (Cực chuẩn theo ảnh của bạn) -->
+            <div class="specs-box" th:if="${cpu.class.simpleName == 'Vga'}">
+                <h4>Thông số sản phẩm</h4>
+                <ul class="specs-list">
+                    <li><span>Hãng GPU: <strong th:text="${cpu.gpuBrand}">...</strong></span></li>
+                    <li><span>Model GPU: <strong th:text="${cpu.gpuModel}">...</strong></span></li>
+                    <li><span>Dung lượng VRAM: <strong th:text="${cpu.vram} + ' GB'">...</strong></span></li>
+                    <li><span>Loại bộ nhớ: <strong th:text="${cpu.memoryType}">...</strong></span></li>
+                    <li><span>Dòng (Series): <strong th:text="${cpu.series}">...</strong></span></li>
+                </ul>
+            </div>
+
+            <div class="detail-price" th:text="${#numbers.formatDecimal(cpu.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
 
             <!-- Form đẩy ID sản phẩm vào Giỏ Hàng -->
             <form th:if="${!isAdmin}" th:action="@{/cart/add}" method="post" class="form-add-cart" style="display: inline-block;">
                 <input type="hidden" name="productId" th:value="${cpu.id}" />
                 <input type="hidden" name="quantity" value="1" />
-
                 <button type="submit" class="btn-add-huge">
                     <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
                 </button>
             </form>
-
-
         </div>
     </div>
-</div>
 
-<!-- SCRIPT XỬ LÝ TÌM KIẾM BẰNG AJAX -->
+    <!-- KHỐI ĐÁNH GIÁ & MÔ TẢ CHI TIẾT -->
+    <div class="description-content" style="font-size: 14px; color: #555; line-height: 1.6; margin-top: 20px;">
+        <!-- Đã sửa lại bằng hàm an toàn của Thymeleaf, không bao giờ bị lỗi Null nữa -->
+        <p th:if="${!#strings.isEmpty(cpu.description)}" th:text="${cpu.description}">Mô tả chi tiết của sản phẩm...</p>
+        <p th:if="${#strings.isEmpty(cpu.description)}">Chưa có bài đánh giá nào cho sản phẩm này.</p>
+    </div>
+
+</div>
+<!-- KẾT THÚC GIAO DIỆN CHI TIẾT SẢN PHẨM -->
+
+
+<!-- SCRIPT TỔNG HỢP -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // ==========================================
+        // 1. TÍNH NĂNG TÌM KIẾM
+        // ==========================================
         const searchInput = document.getElementById("searchInput");
-
-        // Nếu trang nào không có ô tìm kiếm thì bỏ qua để tránh báo lỗi
-        if (!searchInput) return;
-
-        // 1. Tự động sinh ra hộp Dropdown dưới thanh tìm kiếm
-        let searchDropdown = document.querySelector(".search-dropdown");
-        if (!searchDropdown) {
-            searchDropdown = document.createElement("div");
-            searchDropdown.className = "search-dropdown";
-            searchInput.parentNode.appendChild(searchDropdown);
-        }
-
-        // 2. Bắt sự kiện khi gõ phím
-        searchInput.addEventListener("input", function() {
-            const keyword = searchInput.value.trim();
-
-            // Nếu xóa hết chữ thì giấu Dropdown đi
-            if (keyword.length === 0) {
-                searchDropdown.style.display = "none";
-                return;
+        if (searchInput) {
+            let searchDropdown = document.querySelector(".search-dropdown");
+            if (!searchDropdown) {
+                searchDropdown = document.createElement("div");
+                searchDropdown.className = "search-dropdown";
+                searchInput.parentNode.appendChild(searchDropdown);
             }
-
-            // Gọi API lên hệ thống
-            fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length === 0) {
-                        searchDropdown.innerHTML = '<div class="search-no-result">Không tìm thấy linh kiện nào khớp!</div>';
+            searchInput.addEventListener("input", function() {
+                const keyword = searchInput.value.trim();
+                if (keyword.length === 0) {
+                    searchDropdown.style.display = "none";
+                    return;
+                }
+                fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length === 0) {
+                            searchDropdown.innerHTML = '<div class="search-no-result">Không tìm thấy linh kiện nào khớp!</div>';
+                            searchDropdown.style.display = "block";
+                            return;
+                        }
+                        searchDropdown.innerHTML = "";
+                        data.forEach(cpu => {
+                            const item = document.createElement("a");
+                            item.href = `/product/${cpu.id}`;
+                            item.className = "search-item";
+                            item.innerHTML = `
+                                <img src="${cpu.image != null ? cpu.image : 'https://via.placeholder.com/150x150?text=No+Image'}" alt="img">
+                                <div class="search-item-info">
+                                    <div class="search-item-name">${cpu.name}</div>
+                                    <div class="search-item-price">${cpu.price}</div>
+                                </div>
+                            `;
+                            searchDropdown.appendChild(item);
+                        });
                         searchDropdown.style.display = "block";
-                        return;
-                    }
-
-                    searchDropdown.innerHTML = "";
-                    data.forEach(cpu => {
-                        const item = document.createElement("a");
-                        item.href = `/product/${cpu.id}`;
-                        item.className = "search-item";
-
-                        item.innerHTML = `
-                            <img src="${cpu.image != null ? cpu.image : 'https://via.placeholder.com/150x150?text=No+Image'}" alt="img">
-                            <div class="search-item-info">
-                                <div class="search-item-name">${cpu.name}</div>
-                                <div class="search-item-price">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(cpu.price)}</div>
-                            </div>
-                            <div class="search-item-badge">Chi tiết</div>
-                        `;
-                        searchDropdown.appendChild(item);
-                    });
-                    searchDropdown.style.display = "block";
-                })
-                .catch(error => console.error('Lỗi khi tìm kiếm:', error));
-        });
-
-        // 3. Giấu Dropdown khi bấm chuột ra ngoài vùng tìm kiếm
-        document.addEventListener("click", function(event) {
-            if (!searchInput.parentNode.contains(event.target)) {
-                searchDropdown.style.display = "none";
-            }
-        });
-
-        // 4. Hiện lại Dropdown khi click lại vào ô input
-        searchInput.addEventListener("focus", function() {
-            if (searchInput.value.trim().length > 0) {
-                searchDropdown.style.display = "block";
-            }
-        });
-
-        // 5. Bắt sự kiện khi click vào nút Kính Lúp
-        const searchBtn = searchInput.nextElementSibling;
-        if (searchBtn) {
-            searchBtn.addEventListener("click", function() {
-                searchInput.focus();
-                searchInput.dispatchEvent(new Event('input'));
+                    })
+                    .catch(error => console.error('Lỗi khi tìm kiếm:', error));
+            });
+            document.addEventListener("click", function(event) {
+                if (!searchInput.parentNode.contains(event.target)) searchDropdown.style.display = "none";
+            });
+            searchInput.addEventListener("focus", function() {
+                if (searchInput.value.trim().length > 0) searchDropdown.style.display = "block";
             });
         }
+
+        // ==========================================
+        // 2. TÍNH NĂNG GIỎ HÀNG AJAX
+        // ==========================================
+        const cartForms = document.querySelectorAll('.form-add-cart');
+        cartForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btn = this.querySelector('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang thêm...';
+                btn.disabled = true;
+
+                fetch(this.action, { method: 'POST', body: new FormData(this) })
+                    .then(response => {
+                        if (response.url.includes('/login')) { window.location.href = '/login'; throw new Error("Cần đăng nhập"); }
+                        return response.text();
+                    })
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newCountEl = doc.querySelector('.cart-count');
+
+                        if (newCountEl) {
+                            document.querySelectorAll('.cart-count').forEach(el => {
+                                el.innerText = newCountEl.innerText;
+                                el.style.transform = "scale(1.5)";
+                                setTimeout(() => el.style.transform = "scale(1)", 200);
+                            });
+                            alert("Đã thêm sản phẩm vào giỏ hàng!");
+                        }
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }).catch(error => {
+                    if(btn) { btn.innerHTML = originalText; btn.disabled = false; }
+                });
+            });
+        });
     });
+
+    // ==========================================
+    // 3. TÍNH NĂNG CHUYỂN ẢNH (GALLERY)
+    // ==========================================
+    let currentImageIndex = 0;
+
+    window.changeImage = function(element, path, index) {
+        const mainImg = document.getElementById('mainProductImg');
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        if(!mainImg) return;
+        mainImg.src = path;
+        currentImageIndex = index;
+
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+        if(element) element.classList.add('active');
+    };
+
+    window.prevImage = function() {
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        if (thumbnails.length === 0) return;
+        currentImageIndex--;
+        if (currentImageIndex < 0) currentImageIndex = thumbnails.length - 1;
+
+        const targetThumb = thumbnails[currentImageIndex];
+        window.changeImage(targetThumb, targetThumb.getAttribute('data-path'), currentImageIndex);
+    };
+
+    window.nextImage = function() {
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        if (thumbnails.length === 0) return;
+        currentImageIndex++;
+        if (currentImageIndex >= thumbnails.length) currentImageIndex = 0;
+
+        const targetThumb = thumbnails[currentImageIndex];
+        window.changeImage(targetThumb, targetThumb.getAttribute('data-path'), currentImageIndex);
+    };
 </script>
+
 
 
 </body>

@@ -1,44 +1,76 @@
 package com.codegym.store.controller;
 
-import com.codegym.store.repository.CpuRepository;
+import com.codegym.store.model.Cpu;
+import com.codegym.store.model.Product;
+import com.codegym.store.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class HomeController {
 
+    private final ProductRepository productRepository;
     private final CpuRepository cpuRepository;
-
-    // Tiêm (Inject) CpuRepository vào đây để lấy dữ liệu
-    public HomeController(CpuRepository cpuRepository) {
+    private final RamRepository ramRepository;
+    private final VgaRepository vgaRepository;
+    private final StorageRepository storageRepository;
+    // Thêm Mainboard, Case, Psu... tùy theo bạn đã tạo
+    public HomeController(ProductRepository productRepository, CpuRepository cpuRepository,
+                          RamRepository ramRepository, VgaRepository vgaRepository,
+                          StorageRepository storageRepository) {
+        this.productRepository = productRepository;
         this.cpuRepository = cpuRepository;
+        this.ramRepository = ramRepository;
+        this.vgaRepository = vgaRepository;
+        this.storageRepository = storageRepository;
     }
 
     @GetMapping("/")
-    // Thêm @RequestParam để nhận lệnh "viewAll" từ trên URL xuống
     public String home(@RequestParam(defaultValue = "false") boolean viewAll,
-                       Model model,
-                       Principal principal,
-                       HttpServletRequest request) {
-
-        model.addAttribute("cpus", cpuRepository.findAll());
-        // Bơm biến cờ viewAll xuống cho giao diện HTML xử lý
+                       @RequestParam(required = false) String cat, // Biến này để bắt lệnh lọc danh mục
+                       Model model, Principal principal, HttpServletRequest request) {
+        List<? extends Product> products = new java.util.ArrayList<>();
+        String catTitle = "Tất Cả Sản Phẩm";
+        // Tùy theo danh mục được ấn mà lôi dữ liệu tương ứng ra
+        if (cat == null || cat.isEmpty()) {
+            products = productRepository.findAll();
+            catTitle = "Sản Phẩm Nổi Bật";
+        } else if ("cpu".equals(cat)) {
+            products = cpuRepository.findAll();
+            catTitle = "Vi Xử Lý (CPU)";
+        } else if ("ram".equals(cat)) {
+            products = ramRepository.findAll();
+            catTitle = "Bộ Nhớ Trong (RAM)";
+        } else if ("vga".equals(cat)) {
+            products = vgaRepository.findAll();
+            catTitle = "Card Màn Hình (VGA)";
+        } else if ("storage".equals(cat)) {
+            products = storageRepository.findAll();
+            catTitle = "Ổ Cứng (SSD/HDD)";
+        }
+        // Thêm else if ("mainboard".equals(cat))...
+        model.addAttribute("cpus", products);
         model.addAttribute("viewAll", viewAll);
-
-        // Các code cũ của bạn giữ nguyên
+        model.addAttribute("catTitle", catTitle); // Truyền tiêu đề ra màn hình
+        // Các đoạn set isAdmin cũ giữ nguyên...
         if (principal != null) {
             model.addAttribute("username", principal.getName());
-            boolean isAdmin = request.isUserInRole("ROLE_ADMIN");
-            model.addAttribute("isAdmin", isAdmin);
+            model.addAttribute("isAdmin", request.isUserInRole("ROLE_ADMIN"));
         } else {
             model.addAttribute("isAdmin", false);
         }
-
         return "store/home";
     }
 
@@ -68,49 +100,48 @@ public class HomeController {
 
     // --- GIAI ĐOẠN 1: API MỞ TRANG CHI TIẾT SẢN PHẨM ---
     @GetMapping("/product/{id}")
-    public String productDetail(@org.springframework.web.bind.annotation.PathVariable Long id,
-                                Model model,
-                                java.security.Principal principal,
-                                jakarta.servlet.http.HttpServletRequest request) {
+    public String productDetail(@PathVariable Long id, Model model, Principal principal, HttpServletRequest request) {
 
-        // 1. Tìm CPU trong CSDL dựa vào ID
-        com.codegym.store.model.Cpu cpu = cpuRepository.findById(id).orElse(null);
-        if (cpu == null) {
-            return "redirect:/"; // Nếu gõ link láo không có thật thì đá về trang chủ
+        // ĐỔI SANG PRODUCT REPOSITORY ĐỂ TÌM ĐƯỢC MỌI LINH KIỆN
+        Product product = productRepository.findById(id).orElse(null);
+        if (product == null) {
+            return "redirect:/";
         }
 
-        // 2. Gửi CPU xuống cho giao diện hiển thị
-        model.addAttribute("cpu", cpu);
+        // Vẫn cứ lưu tên biến là "cpu" đẩy xuống HTML để đỡ phải sửa lắt nhắt
+        model.addAttribute("cpu", product);
 
-        // 3. Vẫn check quyền Admin để biết đường ẩn/hiện nút "Thêm vào giỏ hàng"
         if (principal != null) {
             model.addAttribute("username", principal.getName());
             model.addAttribute("isAdmin", request.isUserInRole("ROLE_ADMIN"));
         } else {
             model.addAttribute("isAdmin", false);
         }
-
         return "store/product-detail";
     }
 
+
     // --- GIAI ĐOẠN 2: API TÌM KIẾM TRẢ VỀ JSON CHO DROPDOWN ---
     @GetMapping("/api/search")
-    @org.springframework.web.bind.annotation.ResponseBody
-    public java.util.List<java.util.Map<String, Object>> searchApi(@org.springframework.web.bind.annotation.RequestParam String keyword) {
+    @ResponseBody
+    public List<Map<String, Object>> searchApi(@RequestParam String keyword) {
 
-        java.util.List<com.codegym.store.model.Cpu> cpus = cpuRepository.findByNameContainingIgnoreCase(keyword);
-        java.util.List<java.util.Map<String, Object>> results = new java.util.ArrayList<>();
+        // THAY ĐỔI 1: Dùng productRepository để tìm kiếm TRÊN TOÀN BỘ SẢN PHẨM thay vì chỉ cpuRepository
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(keyword);
 
-        for (com.codegym.store.model.Cpu cpu : cpus) {
-            java.util.Map<String, Object> map = new java.util.HashMap<>();
-            map.put("id", cpu.getId());
-            map.put("name", cpu.getName());
+        List<Map<String, Object>> results = new ArrayList<>();
 
-            java.text.DecimalFormat df = new java.text.DecimalFormat("#,###");
-            map.put("price", df.format(cpu.getPrice()).replace(",", ".") + " ₫");
+        // THAY ĐỔI 2: Đổi tên biến cpus thành products cho logic
+        for (Product product : products) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", product.getId());
+            map.put("name", product.getName());
 
-            if (cpu.getImages() != null && !cpu.getImages().isEmpty()) {
-                map.put("image", cpu.getImages().get(0).getPath());
+            DecimalFormat df = new DecimalFormat("#,###");
+            map.put("price", df.format(product.getPrice()).replace(",", ".") + " ₫");
+
+            if (product.getImages() != null && !product.getImages().isEmpty()) {
+                map.put("image", product.getImages().get(0).getPath());
             } else {
                 map.put("image", "https://via.placeholder.com/50x50?text=No+Image");
             }
@@ -118,6 +149,7 @@ public class HomeController {
         }
         return results;
     }
+
 
 
 }

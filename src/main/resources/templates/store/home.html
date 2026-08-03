@@ -384,15 +384,14 @@
     <div class="hero-section">
         <aside class="sidebar">
             <ul>
-                <li><a href="#"><div class="left-icon"><i class="fas fa-microchip"></i> Vi xử lý (CPU)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="#"><div class="left-icon"><i class="fas fa-chess-board"></i> Bo mạch chủ (Mainboard)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="#"><div class="left-icon"><i class="fas fa-memory"></i> Bộ nhớ trong (RAM)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="#"><div class="left-icon"><i class="fas fa-tv"></i> Card màn hình (VGA)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="#"><div class="left-icon"><i class="fas fa-hdd"></i> Ổ cứng (SSD/HDD)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="#"><div class="left-icon"><i class="fas fa-bolt"></i> Nguồn máy tính (PSU)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a href="#"><div class="left-icon"><i class="fas fa-desktop"></i> Vỏ máy tính (Case)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='cpu')}"><div class="left-icon"><i class="fas fa-microchip"></i> Vi xử lý (CPU)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='mainboard')}"><div class="left-icon"><i class="fas fa-chess-board"></i> Bo mạch chủ (Mainboard)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='ram')}"><div class="left-icon"><i class="fas fa-memory"></i> Bộ nhớ trong (RAM)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='vga')}"><div class="left-icon"><i class="fas fa-tv"></i> Card màn hình (VGA)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='storage')}"><div class="left-icon"><i class="fas fa-hdd"></i> Ổ cứng (SSD/HDD)</div> <i class="fas fa-chevron-right"></i></a></li>
             </ul>
         </aside>
+
 
         <div class="banner">
             <div class="banner-content">
@@ -404,101 +403,112 @@
     </div>
 
     <!-- PRODUCT SECTION -->
+    <!-- PRODUCT SECTION -->
     <div class="section-header">
-        <h3>Vi Xử Lý (CPU)</h3>
-        <!-- Biến nút bấm thành thẻ Link dẫn tới URL /?viewAll=true -->
-        <a th:href="@{/?viewAll=true}" class="view-all-btn" style="text-decoration: none;" th:if="${!viewAll}">Xem tất cả</a>
-
-        <!-- Nút Thu gọn (Hiện ra khi đang ở chế độ xem tất cả) -->
-        <a th:href="@{/}" class="view-all-btn" style="text-decoration: none; background-color: #555;" th:if="${viewAll}">Thu gọn lại</a>
-
+        <h3 th:text="${catTitle}">Sản Phẩm Nổi Bật</h3>
+        <!-- Khi ấn Xem tất cả, vẫn nhớ mình đang ở danh mục nào -->
+        <a th:href="@{/(viewAll=true, cat=${param.cat})}" class="view-all-btn" style="text-decoration: none;" th:if="${!viewAll}">Xem tất cả</a>
     </div>
+
 
     <div th:replace="~{store/product-list}"></div>
 
 </div>
 
 <!-- SCRIPT XỬ LÝ TÌM KIẾM BẰNG AJAX -->
+<!-- SCRIPT CHUNG CHO CẢ TÌM KIẾM VÀ GIỎ HÀNG -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // === 1. TÍNH NĂNG TÌM KIẾM ===
         const searchInput = document.getElementById("searchInput");
-
-        // Nếu trang nào không có ô tìm kiếm thì bỏ qua để tránh báo lỗi
-        if (!searchInput) return;
-
-        // 1. Tự động sinh ra hộp Dropdown dưới thanh tìm kiếm
-        let searchDropdown = document.querySelector(".search-dropdown");
-        if (!searchDropdown) {
-            searchDropdown = document.createElement("div");
-            searchDropdown.className = "search-dropdown";
-            searchInput.parentNode.appendChild(searchDropdown);
-        }
-
-        // 2. Bắt sự kiện khi gõ phím
-        searchInput.addEventListener("input", function() {
-            const keyword = searchInput.value.trim();
-
-            // Nếu xóa hết chữ thì giấu Dropdown đi
-            if (keyword.length === 0) {
-                searchDropdown.style.display = "none";
-                return;
+        if (searchInput) {
+            let searchDropdown = document.querySelector(".search-dropdown");
+            if (!searchDropdown) {
+                searchDropdown = document.createElement("div");
+                searchDropdown.className = "search-dropdown";
+                searchInput.parentNode.appendChild(searchDropdown);
             }
+            searchInput.addEventListener("input", function() {
+                const keyword = searchInput.value.trim();
+                if (keyword.length === 0) { searchDropdown.style.display = "none"; return; }
+                fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length === 0) {
+                            searchDropdown.innerHTML = '<div class="search-no-result">Không tìm thấy linh kiện nào khớp!</div>';
+                            searchDropdown.style.display = "block";
+                            return;
+                        }
+                        searchDropdown.innerHTML = "";
+                        data.forEach(cpu => {
+                            const item = document.createElement("a");
+                            item.href = `/product/${cpu.id}`;
+                            item.className = "search-item";
+                            item.innerHTML = `
+                                <img src="${cpu.image != null ? cpu.image : 'https://via.placeholder.com/150x150?text=No+Image'}" alt="img">
+                                <div class="search-item-info">
+                                    <div class="search-item-name">${cpu.name}</div>
+                                    <div class="search-item-price">${cpu.price}</div>
 
-            // Gọi API lên hệ thống
-            fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length === 0) {
-                        searchDropdown.innerHTML = '<div class="search-no-result">Không tìm thấy linh kiện nào khớp!</div>';
+                                </div>
+                            `;
+                            searchDropdown.appendChild(item);
+                        });
                         searchDropdown.style.display = "block";
-                        return;
-                    }
-
-                    searchDropdown.innerHTML = "";
-                    data.forEach(cpu => {
-                        const item = document.createElement("a");
-                        item.href = `/product/${cpu.id}`;
-                        item.className = "search-item";
-
-                        item.innerHTML = `
-                            <img src="${cpu.image != null ? cpu.image : 'https://via.placeholder.com/150x150?text=No+Image'}" alt="img">
-                            <div class="search-item-info">
-                                <div class="search-item-name">${cpu.name}</div>
-                                <div class="search-item-price">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(cpu.price)}</div>
-                            </div>
-                            <div class="search-item-badge">Chi tiết</div>
-                        `;
-                        searchDropdown.appendChild(item);
-                    });
-                    searchDropdown.style.display = "block";
-                })
-                .catch(error => console.error('Lỗi khi tìm kiếm:', error));
-        });
-
-        // 3. Giấu Dropdown khi bấm chuột ra ngoài vùng tìm kiếm
-        document.addEventListener("click", function(event) {
-            if (!searchInput.parentNode.contains(event.target)) {
-                searchDropdown.style.display = "none";
-            }
-        });
-
-        // 4. Hiện lại Dropdown khi click lại vào ô input
-        searchInput.addEventListener("focus", function() {
-            if (searchInput.value.trim().length > 0) {
-                searchDropdown.style.display = "block";
-            }
-        });
-
-        // 5. Bắt sự kiện khi click vào nút Kính Lúp
-        const searchBtn = searchInput.nextElementSibling;
-        if (searchBtn) {
-            searchBtn.addEventListener("click", function() {
-                searchInput.focus();
-                searchInput.dispatchEvent(new Event('input'));
+                    }).catch(error => console.error('Lỗi khi tìm kiếm:', error));
+            });
+            document.addEventListener("click", function(event) {
+                if (!searchInput.parentNode.contains(event.target)) searchDropdown.style.display = "none";
+            });
+            searchInput.addEventListener("focus", function() {
+                if (searchInput.value.trim().length > 0) searchDropdown.style.display = "block";
             });
         }
+
+        // === 2. TÍNH NĂNG GIỎ HÀNG AJAX ===
+        const cartForms = document.querySelectorAll('.form-add-cart');
+        cartForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btn = this.querySelector('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                btn.disabled = true;
+
+                fetch(this.action, { method: 'POST', body: new FormData(this) })
+                    .then(response => {
+                        if (response.url.includes('/login')) {
+                            window.location.href = '/login';
+                            throw new Error("Cần đăng nhập");
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newCountEl = doc.querySelector('.cart-count');
+
+                        if (newCountEl) {
+                            document.querySelectorAll('.cart-count').forEach(el => {
+                                el.innerText = newCountEl.innerText;
+                                el.style.transform = "scale(1.5)";
+                                setTimeout(() => el.style.transform = "scale(1)", 200);
+                            });
+                            alert("Đã thêm sản phẩm vào giỏ hàng!");
+                        } else {
+                            alert("Có lỗi xảy ra, thử lại sau!");
+                        }
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }).catch(error => {
+                    console.error(error);
+                    if(btn) { btn.innerHTML = originalText; btn.disabled = false; }
+                });
+            });
+        });
     });
 </script>
+
 
 </body>
 </html>

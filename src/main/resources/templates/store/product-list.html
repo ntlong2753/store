@@ -1,30 +1,41 @@
 <div class="product-grid" id="productGrid" xmlns:th="http://www.thymeleaf.org">
-    <!-- Vòng lặp hiển thị CPU -->
+    <!-- Vòng lặp hiển thị linh kiện -->
     <div class="product-card" th:each="cpu, iterStat : ${cpus}" th:if="${viewAll or iterStat.index < 5}">
 
-        <span class="badge-brand" th:text="${cpu.segment}">i9</span>
+        <!-- Nhận diện tên class để biết đây là loại linh kiện gì -->
+        <span class="badge-brand" th:text="${cpu.class.simpleName}">Loại LK</span>
 
+        <!-- Ảnh sản phẩm -->
         <img class="product-img"
              th:if="${!#lists.isEmpty(cpu.images)}"
              th:src="@{${cpu.images[0].path}}"
-             alt="CPU Image">
+             alt="Product Image">
         <img class="product-img"
              th:if="${#lists.isEmpty(cpu.images)}"
              src="https://via.placeholder.com/150x150?text=No+Image"
              alt="No Image">
 
-        <div class="brand-text" th:text="${cpu.series}">Core</div>
-        <h4 class="product-name" th:text="${cpu.name}">Tên sản phẩm siêu dài</h4>
+        <!-- Hiển thị Hãng sản xuất hoặc Series tùy theo loại linh kiện -->
+        <div class="brand-text" th:if="${cpu.class.simpleName == 'Cpu'}" th:text="${cpu.series}">...</div>
+        <div class="brand-text" th:if="${cpu.class.simpleName == 'Ram'}" th:text="${cpu.brand}">...</div>
+        <div class="brand-text" th:if="${cpu.class.simpleName == 'Vga'}" th:text="${cpu.cardBrand}">...</div>
 
+        <!-- Tên sản phẩm -->
+        <h4 class="product-name" th:text="${cpu.name}">Tên sản phẩm</h4>
+
+        <!-- Giá và Trạng thái -->
         <div class="price-row">
             <span class="price" th:text="${#numbers.formatDecimal(cpu.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
-            <span class="stock-status">Còn hàng</span>
+            <span class="stock-status" th:if="${cpu.stock > 0}">Còn hàng</span>
+            <span class="stock-status" th:if="${cpu.stock <= 0}" style="color: #e30019;">Hết hàng</span>
         </div>
 
+        <!-- Các Nút Thao Tác -->
         <div class="card-actions">
+            <!-- Nút chi tiết luôn hiện -->
             <a th:href="@{/product/{id}(id=${cpu.id})}" class="btn-detail" style="text-decoration: none; text-align: center; box-sizing: border-box; display: inline-block;">Chi tiết</a>
 
-            <!-- Đã bọc Form và thêm class="form-add-cart" -->
+            <!-- Nút Thêm Vào (Chỉ hiện cho Khách, ẩn với Admin) -->
             <form th:if="${!isAdmin}" th:action="@{/cart/add}" method="post" class="form-add-cart" style="margin: 0; flex: 1;">
                 <input type="hidden" name="productId" th:value="${cpu.id}" />
                 <input type="hidden" name="quantity" value="1" />
