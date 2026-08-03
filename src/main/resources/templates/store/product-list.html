@@ -19,9 +19,12 @@
                  alt="No Image">
 
             <!-- Hiển thị Hãng sản xuất hoặc Series tùy theo loại linh kiện -->
+            <!-- Hiển thị Hãng sản xuất hoặc Series -->
             <div class="brand-text" th:if="${cpu.class.simpleName == 'Cpu'}" th:text="${cpu.series}">...</div>
             <div class="brand-text" th:if="${cpu.class.simpleName == 'Ram'}" th:text="${cpu.brand}">...</div>
             <div class="brand-text" th:if="${cpu.class.simpleName == 'Vga'}" th:text="${cpu.cardBrand}">...</div>
+            <div class="brand-text" th:if="${cpu.class.simpleName == 'Mainboard'}" th:text="${cpu.brand}">...</div>
+
 
             <!-- Tên sản phẩm -->
             <h4 class="product-name" th:text="${cpu.name}">Tên sản phẩm</h4>

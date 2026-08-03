@@ -28,15 +28,19 @@ public class HomeController {
     private final RamRepository ramRepository;
     private final VgaRepository vgaRepository;
     private final StorageRepository storageRepository;
-    // Thêm Mainboard, Case, Psu... tùy theo bạn đã tạo
+    private final MainboardRepository mainboardRepository;
+
+    // 2. Thêm tham số vào hàm khởi tạo
     public HomeController(ProductRepository productRepository, CpuRepository cpuRepository,
                           RamRepository ramRepository, VgaRepository vgaRepository,
-                          StorageRepository storageRepository) {
+                          StorageRepository storageRepository,
+                          MainboardRepository mainboardRepository) { // Thêm ở đây
         this.productRepository = productRepository;
         this.cpuRepository = cpuRepository;
         this.ramRepository = ramRepository;
         this.vgaRepository = vgaRepository;
         this.storageRepository = storageRepository;
+        this.mainboardRepository = mainboardRepository; // Gán ở đây
     }
 
     @GetMapping("/")
@@ -66,7 +70,14 @@ public class HomeController {
         } else if ("storage".equals(cat)) {
             productPage = storageRepository.findAll(pageable);
             catTitle = "Ổ Cứng (SSD/HDD)";
+        } else if ("storage".equals(cat)) {
+            productPage = storageRepository.findAll(pageable);
+            catTitle = "Ổ Cứng (SSD/HDD)";
+        } else if ("mainboard".equals(cat)) { // THÊM KHỐI NÀY
+            productPage = mainboardRepository.findAll(pageable);
+            catTitle = "Bo Mạch Chủ (Mainboard)";
         }
+
 
         // .getContent() để chuyển Page thành List và hiển thị ra HTML
         model.addAttribute("cpus", productPage.getContent());

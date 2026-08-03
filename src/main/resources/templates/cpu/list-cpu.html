@@ -96,7 +96,7 @@
     <div class="sidebar-header">
         NexGen <span>Admin</span>
     </div>
-        <div class="sidebar-menu">
+            <div class="sidebar-menu">
         <div class="menu-title">Lối tắt</div>
         <a th:href="@{/}" class="menu-item">
             <i class="fas fa-store"></i> Ra Cửa Hàng
@@ -106,11 +106,14 @@
         <a th:href="@{/admin/cpu}" class="menu-item active">
             <i class="fas fa-microchip"></i> Vi xử lý (CPU)
         </a>
-        <a th:href="@{/admin/vga}" class="menu-item ">
-            <i class="fas fa-tv"></i> Card đồ họa (VGA)
+        <a th:href="@{/admin/mainboard}" class="menu-item ">
+            <i class="fas fa-chess-board"></i> Bo mạch chủ (Main)
         </a>
         <a th:href="@{/admin/ram}" class="menu-item ">
             <i class="fas fa-memory"></i> Bộ nhớ (RAM)
+        </a>
+        <a th:href="@{/admin/vga}" class="menu-item ">
+            <i class="fas fa-tv"></i> Card đồ họa (VGA)
         </a>
         <a th:href="@{/admin/storage}" class="menu-item ">
             <i class="fas fa-hdd"></i> Ổ cứng (Storage)
@@ -241,4 +244,5 @@
 
 </body>
 </html>
+
 
