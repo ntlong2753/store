@@ -128,8 +128,11 @@
         .specs-list li { margin-bottom: 10px; font-size: 14px; color: #555; display: flex; }
         .specs-list li::before { content: "-"; margin-right: 8px; color: #999; }
         .detail-price { font-size: 32px; font-weight: 700; color: var(--primary-red); margin-bottom: 25px; }
-        .btn-add-huge { background: var(--primary-red); color: white; border: none; border-radius: 6px; padding: 15px 40px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 10px; }
-        .btn-add-huge:hover { background: #c40015; }
+        .action-buttons { display: flex; gap: 15px; }
+        .btn-add-huge { background: white; color: var(--primary-red); border: 2px solid var(--primary-red); border-radius: 6px; padding: 15px 25px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 10px; }
+        .btn-add-huge:hover { background: #fff0f1; }
+        .btn-buy-now { background: var(--primary-red); color: white; border: 2px solid var(--primary-red); border-radius: 6px; padding: 15px 40px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 10px; }
+        .btn-buy-now:hover { background: #c40015; border-color: #c40015; }
     </style>
 </head>
 <body>
@@ -300,14 +303,22 @@
 
             <div class="detail-price" th:text="${#numbers.formatDecimal(cpu.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
 
-            <!-- Form đẩy ID sản phẩm vào Giỏ Hàng -->
-            <form th:if="${!isAdmin}" th:action="@{/cart/add}" method="post" class="form-add-cart" style="display: inline-block;">
-                <input type="hidden" name="productId" th:value="${cpu.id}" />
-                <input type="hidden" name="quantity" value="1" />
-                <button type="submit" class="btn-add-huge">
-                    <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
+            <!-- Cụm nút bấm mua hàng -->
+            <div class="action-buttons">
+                <!-- Form đẩy ID sản phẩm vào Giỏ Hàng -->
+                <form th:if="${!isAdmin}" th:action="@{/cart/add}" method="post" class="form-add-cart">
+                    <input type="hidden" name="productId" th:value="${cpu.id}" />
+                    <input type="hidden" name="quantity" value="1" />
+                    <button type="submit" class="btn-add-huge">
+                        <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
+                    </button>
+                </form>
+
+                <!-- Nút Mua ngay (Logic để sau) -->
+                <button th:if="${!isAdmin}" type="button" class="btn-buy-now" onclick="alert('Tính năng mua ngay đang được phát triển!')">
+                    <i class="fas fa-bolt"></i> Mua ngay
                 </button>
-            </form>
+            </div>
         </div>
     </div>
 

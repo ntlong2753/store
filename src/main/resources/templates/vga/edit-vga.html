@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
   <meta charset="UTF-8">
@@ -59,6 +59,11 @@
         <div class="menu-title">Lối tắt</div>
         <a th:href="@{/}" class="menu-item">
             <i class="fas fa-store"></i> Ra Cửa Hàng
+        </a>
+
+        <div class="menu-title" style="margin-top: 15px;">Hệ thống</div>
+        <a th:href="@{/admin}" class="menu-item">
+            <i class="fas fa-chart-pie"></i> Tổng quan (Dashboard)
         </a>
 
         <div class="menu-title" style="margin-top: 15px;">Quản lý kho</div>
