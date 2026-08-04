@@ -32,7 +32,7 @@ public class CasepcController {
 
     @GetMapping({"", "/"})
     public String showCasepcList(@RequestParam(defaultValue = "0") int page, Model model) {
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(page, 10, org.springframework.data.domain.Sort.by("id").descending());
         Page<Casepc> casepcPage = casepcRepository.findAll(pageable);
         model.addAttribute("casepcs", casepcPage);
         return "casepc/list-casepc";
@@ -90,6 +90,7 @@ public class CasepcController {
             return "casepc/edit-casepc";
         }
 
+        // 1. Load entity từ DB
         Casepc existingCasepc = (Casepc) productService.findById(casepc.getId()).orElse(null);
 
         if (existingCasepc != null) {
@@ -97,8 +98,7 @@ public class CasepcController {
             existingCasepc.setModelNumber(casepc.getModelNumber());
             existingCasepc.setFormFactor(casepc.getFormFactor());
             existingCasepc.setSupportedMainboard(casepc.getSupportedMainboard());
-            
-            // Xử lý custom name nếu người dùng sửa name
+
             if (casepc.getName() != null && !casepc.getName().isEmpty()) {
                 existingCasepc.setName(casepc.getName());
             }
@@ -107,6 +107,7 @@ public class CasepcController {
             existingCasepc.setStock(casepc.getStock());
             existingCasepc.setPrice(casepc.getPrice());
 
+            // Xử lý xóa ảnh cũ
             if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
                 for (ProductImage img : existingCasepc.getImages()) {
                     if (deletedImageIds.contains(img.getId())) {

@@ -29,7 +29,7 @@ public class VgaController {
 
     @GetMapping({"", "/"}) // Truy cập /vga hoặc /vga/ thì gọi hàm này
     public String showVgaList(@RequestParam(defaultValue = "0") int page, Model model) {
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10, org.springframework.data.domain.Sort.by("id").descending());
         org.springframework.data.domain.Page<com.codegym.store.model.Vga> vgaPage = vgaRepository.findAll(pageable);
         model.addAttribute("vgas", vgaPage);
         return "vga/list-vga";
@@ -87,6 +87,7 @@ public class VgaController {
             return "vga/edit-vga";
         }
 
+        // 1. Load entity từ DB
         Vga existingVga = (Vga) productService.findById(vga.getId()).orElse(null);
 
         if (existingVga != null) {
@@ -99,6 +100,7 @@ public class VgaController {
             existingVga.setStock(vga.getStock());
             existingVga.setPrice(vga.getPrice());
 
+            // Xử lý xóa ảnh cũ
             if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
                 for (ProductImage img : existingVga.getImages()) {
                     if (deletedImageIds.contains(img.getId())) {

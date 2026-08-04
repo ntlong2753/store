@@ -1,5 +1,6 @@
 package com.codegym.store.dto;
 
+import com.codegym.store.validation.VietnamesePhone;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -27,8 +28,6 @@ public class UserRegisterDTO {
     private String email;
 
     @NotBlank(message = "Số điện thoại không được để trống")
-    // Dùng Regex để bắt đúng 10 số và chỉ thuộc 3 nhà mạng: Viettel, Mobi, Vina
-    @Pattern(regexp = "^(086|096|097|098|03[2-9]|089|090|093|07[06789]|088|091|094|08[1-5])[0-9]{7}$",
-            message = "Số điện thoại phải gồm 10 số và thuộc mạng Viettel, MobiFone hoặc VinaPhone")
+    @VietnamesePhone
     private String phone;
 }

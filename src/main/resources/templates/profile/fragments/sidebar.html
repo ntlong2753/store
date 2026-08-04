@@ -1,0 +1,17 @@
+<th:block th:fragment="sidebar(activeMenu)">
+    <div class="sidebar">
+
+        <a th:href="@{/profile}" class="sidebar-item" th:classappend="${activeMenu == 'info' ? 'active' : ''}">
+            <i class="fas fa-user-circle"></i> Thông tin tài khoản
+        </a>
+        <a th:href="@{/profile/orders}" class="sidebar-item" th:classappend="${activeMenu == 'orders' ? 'active' : ''}">
+            <i class="fas fa-box-open"></i> Lịch sử mua hàng
+        </a>
+        <a th:href="@{/profile/addresses}" class="sidebar-item" th:classappend="${activeMenu == 'addresses' ? 'active' : ''}">
+            <i class="fas fa-map-marker-alt"></i> Các địa chỉ được lưu
+        </a>
+        <a th:href="@{/profile/password}" class="sidebar-item" th:classappend="${activeMenu == 'password' ? 'active' : ''}">
+            <i class="fas fa-shield-alt"></i> Thay đổi mật khẩu
+        </a>
+    </div>
+</th:block>

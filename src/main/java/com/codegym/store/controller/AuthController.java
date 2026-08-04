@@ -77,6 +77,7 @@ public class AuthController {
         userRepository.save(user);
         return "redirect:/login?success";
     }
+
     // 3. Hiển thị Form Đăng Nhập
     @GetMapping("/login")
     public String showLoginForm() {

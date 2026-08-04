@@ -5,186 +5,85 @@
     <title>Hồ sơ của tôi</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; color: #333; }
-
-        .header-bar { background: white; padding: 15px 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .header-bar a { text-decoration: none; color: #555; font-weight: 500; }
-
-        .container { max-width: 1200px; margin: 40px auto; display: flex; gap: 30px; }
-
-        /* SIDEBAR CHUNG */
-        .sidebar { width: 250px; flex-shrink: 0; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 15px 0; height: max-content;}
-        .sidebar-item { display: block; padding: 15px 25px; color: #333; text-decoration: none; font-weight: 500; transition: 0.2s; font-size: 14px; margin-bottom: 5px; }
-        .sidebar-item:hover { color: #e30019; }
-        .sidebar-item.active { background-color: #e30019; color: white; border-radius: 6px; margin: 0 15px; padding: 15px 20px; }
-        .sidebar-item.active:hover { color: white; }
-
-        /* NỘI DUNG BÊN PHẢI */
-        .content { flex-grow: 1; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 40px; }
-        .page-title { font-size: 22px; font-weight: 500; margin-top: 0; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
-
-        .profile-layout { display: flex; gap: 60px; }
-        .form-section { flex: 1; }
-        .avatar-section { width: 220px; text-align: center; border-left: 1px solid #eee; padding-left: 40px; }
-
-        .form-group { margin-bottom: 25px; }
-        .form-group label { display: block; font-size: 14px; font-weight: 500; color: #555; margin-bottom: 10px; }
-
-        /* GIAO DIỆN Ô NHẬP LIỆU */
-        .form-control { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 14px; background: white; color: #333; transition: 0.2s; font-family: inherit;}
-        .form-control:focus { outline: none; border-color: #e30019; }
-
-        /* Trạng thái Readonly (Màu xám y hệt ảnh 1) */
-        .form-control[readonly] { background: #eef0f2; color: #555; cursor: not-allowed; border-color: #ddd; }
-
-        .avatar-circle { width: 150px; height: 150px; border-radius: 50%; border: 3px solid #e30019; object-fit: cover; margin-bottom: 15px; display: inline-block; }
-        .btn-upload { background: white; border: 1px solid #ccc; padding: 8px 20px; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; color: #555; transition: 0.2s; display: inline-block;}
-        .btn-upload:hover { border-color: #333; }
-        .file-input { display: none; }
-
-        /* CÁC NÚT BẤM DƯỚI CÙNG */
-        .action-buttons { display: flex; gap: 15px; margin-top: 30px; }
-
-        .btn-edit { background: white; color: #007bff; border: 1px solid #007bff; padding: 10px 25px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s; }
-        .btn-edit:hover { background: #f0f8ff; }
-
-        .btn-save { background: #e30019; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-save:hover { background: #c40015; }
-
-        .btn-cancel { background: #f5f5f5; color: #333; border: none; padding: 12px 30px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-cancel:hover { background: #e0e0e0; }
-
-        /* Các khu vực ẩn hiện */
-        .hidden { display: none !important; }
-
-        .alert { padding: 12px 15px; border-radius: 4px; margin-bottom: 25px; font-size: 14px; }
-        .alert-success { background-color: #e6f4ea; color: #137333; border: 1px solid #ceead6; }
-        .alert-error { background-color: #fce8e6; color: #c5221f; border: 1px solid #fad2cf; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
 </head>
 <body>
 
-<div class="header-bar">
-    <div style="font-weight: 700; font-size: 20px; color: #e30019;">Cửa hàng linh kiện</div>
-    <a th:href="@{/}"><i class="fas fa-home"></i> Trở về Cửa hàng</a>
-</div>
+<th:block th:replace="~{profile/fragments/header :: header}"></th:block>
 
 <div class="container">
     <!-- SIDEBAR TRÁI -->
-    <div class="sidebar">
-        <a th:href="@{/profile}" class="sidebar-item active">Thông tin tài khoản</a>
-        <a th:href="@{/profile/orders}" class="sidebar-item">Thông tin đơn hàng</a>
-        <a th:href="@{/profile/addresses}" class="sidebar-item">Các địa chỉ được lưu</a>
-        <a th:href="@{/profile/password}" class="sidebar-item">Thay đổi mật khẩu</a>
-    </div>
+    <th:block th:replace="~{profile/fragments/sidebar :: sidebar('info')}"></th:block>
 
     <!-- NỘI DUNG PHẢI -->
-    <div class="content">
-        <h2 class="page-title">Hồ sơ của tôi</h2>
-
-        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-        <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
-
-        <form th:action="@{/profile/update}" th:object="${user}" method="post" enctype="multipart/form-data">
-            <div class="profile-layout">
-
-                <!-- CỘT NHẬP THÔNG TIN (Trái) -->
-                <div class="form-section">
-                    <div class="form-group">
-                        <label>Tên đăng nhập</label>
-                        <!-- Tên đăng nhập LUÔN LUÔN không cho sửa -->
-                        <input type="text" class="form-control" th:field="*{username}" readonly="readonly">
+    <div class="content profile-card">
+        <!-- Phần header banner & avatar -->
+        <div class="profile-banner">
+            <div class="banner-bg"></div>
+            <div class="avatar-header">
+                <form th:action="@{/profile/update}" th:object="${user}" method="post" enctype="multipart/form-data" id="profileUpdateForm">
+                    <!-- Avatar section nằm chung form để khi submit ảnh được upload luôn -->
+                    <div class="avatar-wrapper">
+                        <img id="avatarPreview" th:src="${user.userAvatar != null ? user.userAvatar.path : 'https://ui-avatars.com/api/?name=' + user.fullName + '&background=e30019&color=fff&size=180'}" class="avatar-circle" alt="Avatar">
+                        
+                        <div id="avatarUploadDiv" class="hidden">
+                            <label class="avatar-upload-btn" title="Thay đổi ảnh đại diện">
+                                <i class="fas fa-camera"></i>
+                                <input type="file" name="avatarFile" class="file-input" id="avatarInput" accept="image/*">
+                            </label>
+                            <div style="position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); color: var(--text-muted); font-size: 11px; white-space: nowrap; font-weight: 500;">
+                                Chỉ chấp nhận JPG, PNG. Max 2MB.
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Họ và tên đầy đủ</label>
-                        <!-- Đặt readonly làm mặc định -->
-                        <input type="text" class="form-control editable-field" th:field="*{fullName}" required readonly="readonly">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" class="form-control editable-field" th:field="*{email}" required readonly="readonly">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Số điện thoại</label>
-                        <input type="text" class="form-control editable-field" th:field="*{phone}" required readonly="readonly">
-                    </div>
-
-                    <div class="action-buttons">
-                        <!-- Nút sửa (hiện mặc định) -->
-                        <button type="button" class="btn-edit" id="btnEditInfo">Chỉnh sửa thông tin</button>
-
-                        <!-- Nút Lưu & Hủy (Bị giấu đi lúc đầu) -->
-                        <button type="submit" class="btn-save hidden" id="btnSaveInfo">Lưu</button>
-                        <button type="button" class="btn-cancel hidden" id="btnCancelInfo">Hủy</button>
-                    </div>
-                </div>
-
-                <!-- CỘT ẢNH ĐẠI DIỆN (Phải) -->
-                <div class="avatar-section">
-                    <img id="avatarPreview" th:src="${user.userAvatar != null ? user.userAvatar.path : 'https://ui-avatars.com/api/?name='
-                    + user.fullName + '&background=e30019&color=fff&size=150'}" class="avatar-circle" alt="Avatar">
-
-
-                    <!-- Nút Chọn ảnh mới (Bị giấu đi lúc đầu) -->
-                    <div id="avatarUploadDiv" class="hidden">
-                        <label class="btn-upload">
-                            Chọn ảnh mới
-                            <input type="file" name="avatarFile" class="file-input" id="avatarInput" accept="image/*">
-                        </label>
-                    </div>
-                </div>
-
+                </form>
             </div>
-        </form>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}" style="margin: 20px 40px 0;"></div>
+        <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}" style="margin: 20px 40px 0;"></div>
+
+        <!-- Các trường thông tin phải nằm trong form, dùng chung ID form nãy -->
+        <div class="profile-body">
+            <div class="section-title">
+                <i class="fas fa-info-circle"></i> Thông tin liên hệ
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group input-with-icon">
+                    <label>Tên đăng nhập</label>
+                    <i class="fas fa-user icon-left"></i>
+                    <input type="text" class="form-control" th:field="${user.username}" readonly="readonly" form="profileUpdateForm">
+                </div>
+
+                <div class="form-group input-with-icon">
+                    <label>Họ và tên đầy đủ</label>
+                    <i class="fas fa-id-card icon-left"></i>
+                    <input type="text" class="form-control editable-field" th:field="${user.fullName}" required readonly="readonly" form="profileUpdateForm">
+                </div>
+
+                <div class="form-group input-with-icon">
+                    <label>Email</label>
+                    <i class="fas fa-envelope icon-left"></i>
+                    <input type="email" class="form-control editable-field" th:field="${user.email}" required readonly="readonly" form="profileUpdateForm">
+                </div>
+
+                <div class="form-group input-with-icon">
+                    <label>Số điện thoại</label>
+                    <i class="fas fa-phone-alt icon-left"></i>
+                    <input type="text" class="form-control editable-field" th:field="${user.phone}" required readonly="readonly" form="profileUpdateForm">
+                </div>
+            </div>
+
+            <div class="action-buttons" style="justify-content: flex-end; border-top: 1px dashed var(--border-color); padding-top: 25px; margin-top: 30px;">
+                <button type="button" class="btn-edit" id="btnEditInfo"><i class="fas fa-pen"></i> Chỉnh sửa thông tin</button>
+                <button type="button" class="btn-cancel hidden" id="btnCancelInfo">Hủy</button>
+                <button type="submit" class="btn-save hidden" id="btnSaveInfo" form="profileUpdateForm"><i class="fas fa-save"></i> Lưu thay đổi</button>
+            </div>
+        </div>
     </div>
 </div>
 
-<script>
-    // --- 1. JS Xử lý Chuyển đổi trạng thái Xem / Sửa ---
-    const btnEditInfo = document.getElementById('btnEditInfo');
-    const btnSaveInfo = document.getElementById('btnSaveInfo');
-    const btnCancelInfo = document.getElementById('btnCancelInfo');
-    const avatarUploadDiv = document.getElementById('avatarUploadDiv');
-    const editableFields = document.querySelectorAll('.editable-field');
-
-    // Khi bấm nút "Chỉnh sửa thông tin"
-    btnEditInfo.addEventListener('click', function() {
-        // Giấu nút Sửa
-        btnEditInfo.classList.add('hidden');
-        // Hiện nút Lưu, Hủy, và Chọn ảnh mới
-        btnSaveInfo.classList.remove('hidden');
-        btnCancelInfo.classList.remove('hidden');
-        avatarUploadDiv.classList.remove('hidden');
-
-        // Bỏ khóa Readonly cho các ô text (sẽ chuyển từ xám sang trắng)
-        editableFields.forEach(field => {
-            field.removeAttribute('readonly');
-        });
-    });
-
-    // Khi bấm nút "Hủy"
-    btnCancelInfo.addEventListener('click', function() {
-        // Đơn giản nhất là Tải lại trang (F5) để dọn dẹp mọi thay đổi chưa lưu
-        window.location.reload();
-    });
-
-    // --- 2. JS Hiển thị ảnh ngay khi vừa chọn ---
-    const avatarInput = document.getElementById('avatarInput');
-    const avatarPreview = document.getElementById('avatarPreview');
-
-    avatarInput.addEventListener('change', function(event) {
-        if(event.target.files && event.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                avatarPreview.src = e.target.result;
-            }
-            reader.readAsDataURL(event.target.files[0]);
-        }
-    });
-</script>
+<script th:src="@{/js/profile.js}"></script>
 </body>
 </html>

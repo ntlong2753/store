@@ -1,112 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>NexGen Admin - Chỉnh sửa storage</title>
-  <!-- Font chữ & Icon -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <style>
-    /* CSS GIAO DIỆN ADMIN CHUNG */
-    :root { --admin-primary: #1e1e2d; --admin-secondary: #f3f6f9; --admin-accent: #3699ff; --admin-text: #3f4254; --admin-border: #ebedf3; --danger: #f64e60; --success: #1bc5bd; }
-    body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: var(--admin-secondary); color: var(--admin-text); display: flex; height: 100vh; overflow: hidden; }
-    .sidebar { width: 260px; background-color: var(--admin-primary); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
-    .sidebar-header { padding: 20px; text-align: center; font-size: 24px; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.1); background-color: #1a1a27; }
-    .sidebar-header span { color: var(--danger); }
-    .sidebar-menu { padding: 20px 0; overflow-y: auto; flex-grow: 1; }
-    .menu-title { font-size: 11px; text-transform: uppercase; color: #6c7293; padding: 10px 25px; font-weight: 600; letter-spacing: 1px; }
-    .menu-item { padding: 12px 25px; display: flex; align-items: center; gap: 15px; color: #a2a3b7; text-decoration: none; font-size: 14px; transition: 0.3s; }
-    .menu-item i { font-size: 16px; width: 20px; text-align: center; }
-    .menu-item:hover, .menu-item.active { color: white; background-color: rgba(255,255,255,0.05); border-left: 3px solid var(--admin-accent); padding-left: 22px; }
-    .menu-item.active i { color: var(--admin-accent); }
-    .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .topbar { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); z-index: 10; }
-    .page-title { font-size: 18px; font-weight: 600; margin: 0; }
-    .user-profile { display: flex; align-items: center; gap: 15px; }
-    .btn-logout { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; padding: 6px 15px; border-radius: 4px; font-weight: 500; cursor: pointer; transition: 0.2s; }
-    .btn-logout:hover { background: var(--danger); color: white; }
-    .btn-home { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; padding: 6px 15px; border-radius: 4px; text-decoration: none; font-weight: 500; transition: 0.2s; margin-right: 10px;}
-    .btn-home:hover { background: var(--success); color: white; }
-    .content-area { padding: 30px; overflow-y: auto; flex-grow: 1; }
-    .card { background: white; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
-    .card-header { padding: 20px 25px; border-bottom: 1px solid var(--admin-border); display: flex; justify-content: space-between; align-items: center; }
-    .card-title { margin: 0; font-size: 20px; font-weight: 700; }
-
-    /* CSS DÀNH RIÊNG CHO FORM */
-    .card-body { padding: 30px; }
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; font-size: 15px; font-weight: 600; color: #3f4254; margin-bottom: 8px; }
-    .form-control { width: 100%; padding: 15px 18px; font-size: 15px; border: 1px solid var(--admin-border); border-radius: 6px; box-sizing: border-box; transition: 0.2s; background: #fafafa; font-family: inherit;}
-    .form-control:focus { outline: none; border-color: var(--admin-accent); background: white; box-shadow: 0 0 0 3px rgba(54,153,255,0.1); }
-    .form-control[readonly] { background-color: #f3f6f9; color: #b5b5c3; cursor: not-allowed; }
-    .form-row { display: flex; gap: 20px; margin-bottom: 20px; }
-    .form-col { flex: 1; }
-    .form-col .form-group { margin-bottom: 0; }
-    .error { color: var(--danger); font-size: 12px; margin-top: 5px; display: block; }
-    .btn-primary { background: var(--admin-accent); color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
-    .btn-primary:hover { background: #228cf3; box-shadow: 0 4px 10px rgba(54,153,255,0.3); }
-    .btn-secondary { background: #f3f6f9; color: #7e8299; border: none; padding: 12px 30px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; margin-left: 10px; }
-    .btn-secondary:hover { background: #e4e6ef; color: #3f4254; }
-  </style>
-</head>
+<head th:replace="~{admin/fragments/head :: head('NexGen Admin - Chỉnh sửa storage')}"></head>
 <body>
 
 <!-- SIDEBAR BÊN TRÁI -->
-<div class="sidebar">
-  <div class="sidebar-header">NexGen <span>Admin</span></div>
-          <div class="sidebar-menu">
-        <div class="menu-title">Lối tắt</div>
-        <a th:href="@{/}" class="menu-item">
-            <i class="fas fa-store"></i> Ra Cửa Hàng
-        </a>
-
-        <div class="menu-title" style="margin-top: 15px;">Hệ thống</div>
-        <a th:href="@{/admin}" class="menu-item">
-            <i class="fas fa-chart-pie"></i> Tổng quan (Dashboard)
-        </a>
-
-        <div class="menu-title" style="margin-top: 15px;">Quản lý kho</div>
-        <a th:href="@{/admin/cpu}" class="menu-item ">
-            <i class="fas fa-microchip"></i> Vi xử lý (CPU)
-        </a>
-        <a th:href="@{/admin/mainboard}" class="menu-item ">
-            <i class="fas fa-chess-board"></i> Bo mạch chủ (Main)
-        </a>
-        <a th:href="@{/admin/ram}" class="menu-item ">
-            <i class="fas fa-memory"></i> Bộ nhớ (RAM)
-        </a>
-        <a th:href="@{/admin/vga}" class="menu-item ">
-            <i class="fas fa-tv"></i> Card đồ họa (VGA)
-        </a>
-        <a th:href="@{/admin/storage}" class="menu-item active">
-            <i class="fas fa-hdd"></i> Ổ cứng (Storage)
-        </a>
-        <a th:href="@{/admin/casepc}" class="menu-item ">
-            <i class="fas fa-box"></i> Vỏ máy tính (Case)
-        </a>
-        <a th:href="@{/admin/psu}" class="menu-item ">
-            <i class="fas fa-plug"></i> Nguồn (PSU)
-        </a>
-
-        <div class="menu-title" style="margin-top: 15px;">Hệ thống</div>
-        <a href="#" class="menu-item">
-            <i class="fas fa-file-invoice"></i> Quản lý Đơn hàng
-        </a>
-    </div>
-</div>
+<div th:replace="~{admin/fragments/sidebar :: sidebar('storage')}"></div>
 
 <!-- KHU VỰC BÊN PHẢI -->
 <div class="main-content">
   <!-- TOPBAR -->
-  <div class="topbar">
-    <h2 class="page-title">Cập nhật Vi Xử Lý</h2>
-    <div class="user-profile">
-      <form th:action="@{/logout}" method="post" style="margin: 0;">
-        <button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất hệ thống</button>
-      </form>
-    </div>
-  </div>
+  <div th:replace="~{admin/fragments/topbar :: topbar('Cập nhật Ổ cứng (Storage)')}"></div>
 
   <div class="content-area">
     <div class="card">
@@ -229,7 +132,6 @@
 
           <!-- KHU VỰC ẢNH CŨ VÀ MỚI -->
 
-          <input type="hidden" id="deletedImageIds" name="deletedImageIds" value="" />
 
           <div class="form-group">
             <label>Ảnh đang có sẵn (Bấm <i class="fas fa-times" style="color:red"></i> để xóa ảnh):</label>
@@ -262,104 +164,7 @@
   </div>
 </div>
 
-<script>
-    const storageTypeSelect = document.getElementById('storageType');
-    const ssdSection = document.getElementById('ssd-section');
-    const hddSection = document.getElementById('hdd-section');
-
-    function toggleSections() {
-        if (storageTypeSelect.value === 'SSD') {
-            ssdSection.style.display = 'block';
-            hddSection.style.display = 'none';
-        } else {
-            ssdSection.style.display = 'none';
-            hddSection.style.display = 'block';
-        }
-    }
-
-    storageTypeSelect.addEventListener('change', toggleSections);
-    
-    // Gọi một lần khi tải trang
-    toggleSections();
-
-  const deletedImageIdsInput = document.getElementById('deletedImageIds');
-  let deletedIds = [];
-
-  function deleteOldImage(imageId) {
-    document.getElementById('old-img-container-' + imageId).style.display = 'none';
-    deletedIds.push(imageId);
-    deletedImageIdsInput.value = deletedIds.join(',');
-  }
-
-  const imageInput = document.getElementById('imageInput');
-  const previewContainer = document.getElementById('previewContainer');
-  let selectedFiles = new DataTransfer();
-
-  imageInput.addEventListener('change', function(event) {
-    const files = event.target.files;
-    for(let i = 0; i < files.length; i++) {
-      selectedFiles.items.add(files[i]);
-    }
-    updateImagePreview();
-  });
-
-  function updateImagePreview() {
-    previewContainer.innerHTML = '';
-    imageInput.files = selectedFiles.files;
-    Array.from(selectedFiles.files).forEach((file, index) => {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const wrapper = document.createElement('div');
-        wrapper.style.position = 'relative';
-        wrapper.style.display = 'inline-block';
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.style.width = '100px';
-        img.style.height = '100px';
-        img.style.objectFit = 'cover';
-        img.style.borderRadius = '6px';
-        img.style.border = '1px solid #ebedf3';
-        img.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
-        const deleteBtn = document.createElement('button');
-        deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-        deleteBtn.style.position = 'absolute';
-        deleteBtn.style.top = '-5px';
-        deleteBtn.style.right = '-5px';
-        deleteBtn.style.background = '#f64e60';
-        deleteBtn.style.color = 'white';
-        deleteBtn.style.border = 'none';
-        deleteBtn.style.borderRadius = '50%';
-        deleteBtn.style.width = '24px';
-        deleteBtn.style.height = '24px';
-        deleteBtn.style.cursor = 'pointer';
-        deleteBtn.style.display = 'flex';
-        deleteBtn.style.alignItems = 'center';
-        deleteBtn.style.justifyContent = 'center';
-        deleteBtn.style.boxShadow = '0 2px 4px rgba(246,78,96,0.3)';
-        deleteBtn.onclick = function(e) {
-          e.preventDefault();
-          removeFile(index);
-        };
-        wrapper.appendChild(img);
-        wrapper.appendChild(deleteBtn);
-        previewContainer.appendChild(wrapper);
-      }
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function removeFile(indexToRemove) {
-    const newFiles = new DataTransfer();
-    const currentFiles = selectedFiles.files;
-    for(let i = 0; i < currentFiles.length; i++) {
-      if(i !== indexToRemove) {
-        newFiles.items.add(currentFiles[i]);
-      }
-    }
-    selectedFiles = newFiles;
-    updateImagePreview();
-  }
-</script>
+<script th:src="@{/js/admin.js}"></script>
 </body>
 </html>
 

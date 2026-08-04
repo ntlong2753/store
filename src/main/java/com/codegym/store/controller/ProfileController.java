@@ -4,6 +4,7 @@ import com.codegym.store.model.User;
 import com.codegym.store.repository.UserAddressRepository;
 import com.codegym.store.repository.UserRepository;
 import com.codegym.store.service.StorageService;
+import com.codegym.store.service.OrderService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,12 +22,14 @@ public class ProfileController {
     private final StorageService storageService;
     private final PasswordEncoder passwordEncoder;
     private final UserAddressRepository userAddressRepository;
+    private final OrderService orderService;
 
-    public ProfileController(UserRepository userRepository, StorageService storageService, PasswordEncoder passwordEncoder, UserAddressRepository userAddressRepository) {
+    public ProfileController(UserRepository userRepository, StorageService storageService, PasswordEncoder passwordEncoder, UserAddressRepository userAddressRepository, OrderService orderService) {
         this.userRepository = userRepository;
         this.storageService = storageService;
         this.passwordEncoder = passwordEncoder;
         this.userAddressRepository = userAddressRepository;
+        this.orderService = orderService;
     }
 
     // 1. TRANG THÔNG TIN TÀI KHOẢN
@@ -78,6 +81,9 @@ public class ProfileController {
     @GetMapping("/orders")
     public String showOrders(Principal principal, Model model) {
         User user = userRepository.findByUsername(principal.getName()).orElse(null);
+        if (user != null) {
+            model.addAttribute("orders", orderService.getCompletedUserOrders(user.getId()));
+        }
         model.addAttribute("user", user);
         return "profile/orders";
     }

@@ -90,6 +90,44 @@ public class CartController {
         return "redirect:" + (referer != null ? referer : "/");
     }
 
+    // 2.5 Mua ngay (Thêm vào giỏ và chuyển sang trang giỏ hàng/thanh toán)
+    @PostMapping("/buy-now")
+    public String buyNow(@RequestParam("productId") Long productId,
+                         @RequestParam(value = "quantity", defaultValue = "1") int quantity,
+                         Principal principal) {
+        if (principal == null) return "redirect:/login";
+
+        User user = userRepository.findByUsername(principal.getName()).orElse(null);
+        Product product = productRepository.findById(productId).orElse(null);
+
+        if (user != null && product != null) {
+            Cart cart = cartRepository.findByUserId(user.getId()).orElse(null);
+            if (cart == null) {
+                cart = new Cart();
+                cart.setUser(user);
+            }
+
+            Optional<CartItem> existingItem = cart.getItems().stream()
+                    .filter(item -> item.getProduct().getId().equals(productId))
+                    .findFirst();
+
+            if (existingItem.isPresent()) {
+                CartItem item = existingItem.get();
+                item.setQuantity(item.getQuantity() + quantity);
+            } else {
+                CartItem newItem = new CartItem();
+                newItem.setCart(cart);
+                newItem.setProduct(product);
+                newItem.setQuantity(quantity);
+                cart.getItems().add(newItem);
+            }
+
+            cartRepository.save(cart);
+        }
+
+        return "redirect:/cart";
+    }
+
     // 3. Xóa một mặt hàng khỏi giỏ
     @PostMapping("/remove/{itemId}")
     public String removeItem(@PathVariable Long itemId, Principal principal) {

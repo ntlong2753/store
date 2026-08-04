@@ -6,6 +6,8 @@ import com.codegym.store.repository.MainboardRepository;
 import com.codegym.store.service.ProductService;
 import com.codegym.store.service.StorageService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,8 +31,8 @@ public class MainboardController {
 
     @GetMapping({"", "/"}) // Truy cập /mainboard hoặc /mainboard/ thì gọi hàm này
     public String showMainboardList(@RequestParam(defaultValue = "0") int page, Model model) {
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10);
-        org.springframework.data.domain.Page<com.codegym.store.model.Mainboard> mainboardPage = mainboardRepository.findAll(pageable);
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10, org.springframework.data.domain.Sort.by("id").descending());
+        Page<Mainboard> mainboardPage = mainboardRepository.findAll(pageable);
         model.addAttribute("mainboards", mainboardPage);
         return "mainboard/list-mainboard";
     }
@@ -87,6 +89,7 @@ public class MainboardController {
             return "mainboard/edit-mainboard";
         }
 
+        // 1. Load entity từ DB
         Mainboard existingMainboard = (Mainboard) productService.findById(mainboard.getId()).orElse(null);
 
         if (existingMainboard != null) {
@@ -100,6 +103,7 @@ public class MainboardController {
             existingMainboard.setStock(mainboard.getStock());
             existingMainboard.setPrice(mainboard.getPrice());
 
+            // Xử lý xóa ảnh cũ
             if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
                 for (ProductImage img : existingMainboard.getImages()) {
                     if (deletedImageIds.contains(img.getId())) {

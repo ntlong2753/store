@@ -3,6 +3,7 @@ package com.codegym.store.controller;
 import com.codegym.store.model.Product;
 import com.codegym.store.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,13 +38,13 @@ public class HomeController {
                           StorageRepository storageRepository,
                           MainboardRepository mainboardRepository,
                           CasepcRepository casepcRepository,
-                          PsuRepository psuRepository) { 
+                          PsuRepository psuRepository) {
         this.productRepository = productRepository;
         this.cpuRepository = cpuRepository;
         this.ramRepository = ramRepository;
         this.vgaRepository = vgaRepository;
         this.storageRepository = storageRepository;
-        this.mainboardRepository = mainboardRepository; 
+        this.mainboardRepository = mainboardRepository;
         this.casepcRepository = casepcRepository;
         this.psuRepository = psuRepository;
     }
@@ -56,38 +57,39 @@ public class HomeController {
         Page<? extends Product> productPage = null;
         String catTitle = "Tất Cả Sản Phẩm";
 
-        // Cài đặt phân trang: lấy trang số 'page', mỗi trang 10 sản phẩm
-        Pageable pageable = PageRequest.of(page, 50);
+        // Cài đặt phân trang: lấy trang số 'page', mỗi trang 25 sản phẩm
+        Pageable pageable = PageRequest.of(page, 25);
 
         // Thay vì findAll() thông thường, ta gọi findAll(pageable)
         if (cat == null || cat.isEmpty()) {
-            productPage = productRepository.findAll(pageable);
+            productPage = productRepository.findAll(pageable); // lay tat ca san pham
             catTitle = "Sản Phẩm Nổi Bật";
         } else if ("cpu".equals(cat)) {
-            productPage = cpuRepository.findAll(pageable);
+            productPage = cpuRepository.findAll(pageable); // chi lay cpu
             catTitle = "Vi Xử Lý (CPU)";
         } else if ("ram".equals(cat)) {
-            productPage = ramRepository.findAll(pageable);
+            productPage = ramRepository.findAll(pageable); // chi lay ram
             catTitle = "Bộ Nhớ Trong (RAM)";
         } else if ("vga".equals(cat)) {
-            productPage = vgaRepository.findAll(pageable);
+            productPage = vgaRepository.findAll(pageable); // chi lay vga
             catTitle = "Card Màn Hình (VGA)";
         } else if ("storage".equals(cat)) {
-            productPage = storageRepository.findAll(pageable);
+            productPage = storageRepository.findAll(pageable); // chi lay o cung
             catTitle = "Ổ Cứng (SSD/HDD)";
-        } else if ("mainboard".equals(cat)) { 
-            productPage = mainboardRepository.findAll(pageable);
+        } else if ("mainboard".equals(cat)) {
+            productPage = mainboardRepository.findAll(pageable); // chi lay mainboard
             catTitle = "Bo Mạch Chủ (Mainboard)";
-        } else if ("casepc".equals(cat)) { 
-            productPage = casepcRepository.findAll(pageable);
+        } else if ("casepc".equals(cat)) {
+            productPage = casepcRepository.findAll(pageable); // chi lay case pc
             catTitle = "Vỏ Máy Tính (Case)";
-        } else if ("psu".equals(cat)) { 
-            productPage = psuRepository.findAll(pageable);
+        } else if ("psu".equals(cat)) {
+            productPage = psuRepository.findAll(pageable); // chi lay psu
             catTitle = "Nguồn Máy Tính (PSU)";
         }
 
 
         // .getContent() để chuyển Page thành List và hiển thị ra HTML
+        assert productPage != null;
         model.addAttribute("cpus", productPage.getContent());
 
         // Truyền tổng số trang và trang hiện tại ra giao diện để vẽ nút bấm
@@ -169,9 +171,10 @@ public class HomeController {
 
 
     // --- GIAI ĐOẠN 2: API TÌM KIẾM TRẢ VỀ JSON CHO DROPDOWN ---
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     @GetMapping("/api/search")
     @ResponseBody
-    public List<Map<String, Object>> searchApi(@RequestParam String keyword) {
+    public List<Map<String, Object>> searchApi(@RequestParam("keyword") String keyword) {
 
         // THAY ĐỔI 1: Dùng productRepository để tìm kiếm TRÊN TOÀN BỘ SẢN PHẨM thay vì chỉ cpuRepository
         List<Product> products = productRepository.findByNameContainingIgnoreCase(keyword);
@@ -180,23 +183,31 @@ public class HomeController {
 
         // THAY ĐỔI 2: Đổi tên biến cpus thành products cho logic
         for (Product product : products) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", product.getId());
-            map.put("name", product.getName());
-
-            DecimalFormat df = new DecimalFormat("#,###");
-            map.put("price", df.format(product.getPrice()).replace(",", ".") + " ₫");
-
-            if (product.getImages() != null && !product.getImages().isEmpty()) {
-                map.put("image", product.getImages().get(0).getPath());
-            } else {
-                map.put("image", "https://via.placeholder.com/50x50?text=No+Image");
-            }
+            Map<String, Object> map = getStringObjectMap(product);
             results.add(map);
         }
         return results;
     }
 
+    private static @NonNull Map<String, Object> getStringObjectMap(Product product) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", product.getId());
+        map.put("name", product.getName());
+
+        DecimalFormat df = new DecimalFormat("#,###");
+        if (product.getPrice() != null) {
+            map.put("price", df.format(product.getPrice()).replace(",", ".") + " ₫");
+        } else {
+            map.put("price", "Liên hệ");
+        }
+
+        if (product.getImages() != null && !product.getImages().isEmpty()) {
+            map.put("image", product.getImages().getFirst().getPath());
+        } else {
+            map.put("image", "https://via.placeholder.com/50x50?text=No+Image");
+        }
+        return map;
+    }
 
 
 }
