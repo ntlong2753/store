@@ -474,6 +474,9 @@ body {
     font-weight: bold;
     padding: 4px 8px;
     border-radius: 4px;
+    z-index: 10;
+    pointer-events: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .product-img {
