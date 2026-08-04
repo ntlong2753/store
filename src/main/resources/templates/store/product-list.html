@@ -54,7 +54,11 @@
                       style="margin: 0; flex: 1; display: flex;">
                     <input type="hidden" name="productId" th:value="${cpu.id}"/>
                     <input type="hidden" name="quantity" value="1"/>
-                    <button type="submit" class="btn-add-cart"
+                    <button th:if="${cpu.stock > 0}" type="submit" class="btn-add-cart"
+                            style="width: 100%; white-space: nowrap; padding: 8px 5px;">Thêm vào giỏ
+                    </button>
+                    <button th:if="${cpu.stock <= 0}" type="button" class="btn-add-cart"
+                            onclick="alert('Sản phẩm đã hết hàng!');"
                             style="width: 100%; white-space: nowrap; padding: 8px 5px;">Thêm vào giỏ
                     </button>
                 </form>
