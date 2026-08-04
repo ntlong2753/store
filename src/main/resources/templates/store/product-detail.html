@@ -130,10 +130,14 @@
                     </button>
                 </form>
 
-                <!-- Nút Mua ngay (Logic để sau) -->
-                <button th:if="${!isAdmin}" type="button" class="btn-add-huge" style="flex: 1; justify-content: center;" onclick="alert('Tính năng mua ngay đang được phát triển!')">
-                    <i class="fas fa-bolt"></i> Mua ngay
-                </button>
+                <!-- Nút Mua ngay -->
+                <form th:if="${!isAdmin}" th:action="@{/cart/buy-now}" method="post" style="flex: 1; display: flex;">
+                    <input type="hidden" name="productId" th:value="${cpu.id}" />
+                    <input type="hidden" name="quantity" value="1" />
+                    <button type="submit" class="btn-add-huge" style="flex: 1; justify-content: center; width: 100%;">
+                        <i class="fas fa-bolt"></i> Mua ngay
+                    </button>
+                </form>
             </div>
         </div>
     </div>

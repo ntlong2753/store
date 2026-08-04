@@ -129,6 +129,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<Order> getActiveUserOrders(Long userId) {
+        return orderRepository.findByUserIdAndStatusInOrderByOrderDateDesc(userId, List.of(OrderStatus.PENDING, OrderStatus.APPROVED, OrderStatus.SHIPPING));
+    }
+
+    @Override
+    public List<Order> getCompletedUserOrders(Long userId) {
+        return orderRepository.findByUserIdAndStatusInOrderByOrderDateDesc(userId, List.of(OrderStatus.DELIVERED, OrderStatus.REJECTED));
+    }
+
+
+    @Override
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }

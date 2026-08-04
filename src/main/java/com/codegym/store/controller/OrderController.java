@@ -86,7 +86,7 @@ public class OrderController {
         User user = userRepository.findByUsername(principal.getName()).orElse(null);
 
         if (user != null) {
-            List<Order> orders = orderService.getUserOrders(user.getId());
+            List<Order> orders = orderService.getActiveUserOrders(user.getId());
             model.addAttribute("orders", orders);
         }
 
