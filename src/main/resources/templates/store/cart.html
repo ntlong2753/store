@@ -21,7 +21,7 @@
         <div th:if="${cart == null or #lists.isEmpty(cart.items)}" class="empty-cart">
             <i class="fas fa-box-open"></i>
             <h3>Chưa có sản phẩm nào trong giỏ hàng của bạn.</h3>
-            <a th:href="@{/}" class="btn-checkout">Tiếp tục mua sắm <i class="fas fa-arrow-right"></i></a>
+            <a th:href="@{/}" class="btn-continue"><i class="fas fa-arrow-left"></i> Tiếp tục mua sắm</a>
         </div>
 
         <!-- Nếu có đồ -->
