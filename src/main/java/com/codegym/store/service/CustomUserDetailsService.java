@@ -37,6 +37,5 @@ public class CustomUserDetailsService implements UserDetailsService {
                 user.getPassword(),
                 authorities
         );
-
     }
 }
