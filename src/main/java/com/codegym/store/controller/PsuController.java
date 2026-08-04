@@ -32,7 +32,7 @@ public class PsuController {
 
     @GetMapping({"", "/"})
     public String showPsuList(@RequestParam(defaultValue = "0") int page, Model model) {
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(page, 10, org.springframework.data.domain.Sort.by("id").descending());
         Page<Psu> psuPage = psuRepository.findAll(pageable);
         model.addAttribute("psus", psuPage);
         return "psu/list-psu";
@@ -97,6 +97,7 @@ public class PsuController {
             return "psu/edit-psu";
         }
 
+        // 1. Load entity từ DB
         Psu existingPsu = (Psu) productService.findById(psu.getId()).orElse(null);
 
         if (existingPsu != null) {
@@ -105,11 +106,11 @@ public class PsuController {
             existingPsu.setWattage(psu.getWattage());
             existingPsu.setFormFactor(psu.getFormFactor());
             existingPsu.setSize(psu.getSize());
-            
             existingPsu.setDescription(psu.getDescription());
             existingPsu.setStock(psu.getStock());
             existingPsu.setPrice(psu.getPrice());
 
+            // Xử lý xóa ảnh cũ
             if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
                 for (ProductImage img : existingPsu.getImages()) {
                     if (deletedImageIds.contains(img.getId())) {

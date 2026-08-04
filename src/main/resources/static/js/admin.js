@@ -89,3 +89,34 @@ document.addEventListener('DOMContentLoaded', function() {
         storageType.addEventListener('change', toggleStorageSections);
     }
 });
+
+/**
+ * Xóa ảnh cũ khỏi giao diện và thêm ID vào form để gửi lên server.
+ * Hàm này được gọi từ nút X trên mỗi ảnh cũ trong form chỉnh sửa sản phẩm.
+ * @param {number} imgId - ID của ảnh cần xóa trong database
+ */
+function deleteOldImage(imgId) {
+    // 1. Kiểm tra nếu đã đánh dấu xóa rồi thì bỏ qua
+    if (document.getElementById('del-img-id-' + imgId)) return;
+
+    // 2. Tìm container của ảnh đó và ẩn nó đi với hiệu ứng
+    const container = document.getElementById('old-img-container-' + imgId);
+    if (container) {
+        container.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+        container.style.opacity = '0';
+        container.style.transform = 'scale(0.8)';
+        setTimeout(() => container.remove(), 200);
+    }
+
+    // 3. Thêm hidden input mới vào form chứa nút xóa (hoặc form chỉnh sửa sản phẩm)
+    //    Spring @RequestParam List<Long> sẽ tự gom tất cả cùng tên thành danh sách
+    const form = container ? container.closest('form') : document.querySelector('form[enctype="multipart/form-data"]');
+    if (form) {
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'deletedImageIds';
+        hiddenInput.id = 'del-img-id-' + imgId;
+        hiddenInput.value = imgId;
+        form.appendChild(hiddenInput);
+    }
+}

@@ -6,6 +6,8 @@ import com.codegym.store.repository.StorageRepository;
 import com.codegym.store.service.ProductService;
 import com.codegym.store.service.StorageService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,8 +31,8 @@ public class StorageController {
 
     @GetMapping({"", "/"})
     public String showStorageList(@RequestParam(defaultValue = "0") int page, Model model) {
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10);
-        org.springframework.data.domain.Page<com.codegym.store.model.Storage> storagePage = storageRepository.findAll(pageable);
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10, org.springframework.data.domain.Sort.by("id").descending());
+        Page<Storage> storagePage = storageRepository.findAll(pageable);
         model.addAttribute("storages", storagePage);
         return "storage/list-storage";
     }
@@ -96,29 +98,30 @@ public class StorageController {
             return "storage/edit-storage";
         }
 
+        // 1. Load entity từ DB
         Storage existingStorage = (Storage) productService.findById(storage.getId()).orElse(null);
 
         if (existingStorage != null) {
             existingStorage.setStorageType(storage.getStorageType());
             existingStorage.setBrand(storage.getBrand());
-            
+
             String newCapacity = storage.getCapacity() != null ? storage.getCapacity().trim() : "";
             if (!newCapacity.isEmpty() && !newCapacity.endsWith("GB") && !newCapacity.endsWith("TB")) {
                  newCapacity = newCapacity + " " + capacityUnit;
             }
             existingStorage.setCapacity(newCapacity);
-            
+
             existingStorage.setConnectionStandard(storage.getConnectionStandard());
             existingStorage.setPcieStandard(storage.getPcieStandard());
             existingStorage.setReadSpeed(storage.getReadSpeed());
             existingStorage.setWriteSpeed(storage.getWriteSpeed());
             existingStorage.setRpm(storage.getRpm());
             existingStorage.setCache(storage.getCache());
-            
             existingStorage.setDescription(storage.getDescription());
             existingStorage.setStock(storage.getStock());
             existingStorage.setPrice(storage.getPrice());
 
+            // Xử lý xóa ảnh cũ
             if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
                 for (ProductImage img : existingStorage.getImages()) {
                     if (deletedImageIds.contains(img.getId())) {

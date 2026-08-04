@@ -29,7 +29,7 @@ public class RamController {
 
     @GetMapping({"", "/"}) // Truy cập /ram hoặc /ram/ thì gọi hàm này
     public String showRamList(@RequestParam(defaultValue = "0") int page, Model model) {
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10, org.springframework.data.domain.Sort.by("id").descending());
         org.springframework.data.domain.Page<com.codegym.store.model.Ram> ramPage = ramRepository.findAll(pageable);
         model.addAttribute("rams", ramPage);
         return "ram/list-ram";
@@ -87,6 +87,7 @@ public class RamController {
             return "ram/edit-ram";
         }
 
+        // 1. Load entity từ DB
         Ram existingRam = (Ram) productService.findById(ram.getId()).orElse(null);
 
         if (existingRam != null) {
@@ -97,6 +98,7 @@ public class RamController {
             existingRam.setStock(ram.getStock());
             existingRam.setPrice(ram.getPrice());
 
+            // Xử lý xóa ảnh cũ
             if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
                 for (ProductImage img : existingRam.getImages()) {
                     if (deletedImageIds.contains(img.getId())) {

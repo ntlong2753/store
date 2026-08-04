@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Service
 public class FileStorageServiceImpl implements StorageService {
@@ -30,15 +31,16 @@ public class FileStorageServiceImpl implements StorageService {
                 throw new RuntimeException("File rỗng.");
             }
 
-            // Lấy thẳng tên gốc (VD: anh_cpu.jpg). Nếu đã tồn tại thì nó tự động Ghi Đè (REPLACE_EXISTING)
-            String filename = file.getOriginalFilename();
-            Path destinationFile = this.rootLocation.resolve(Paths.get(filename)).normalize().toAbsolutePath();
+            // Tạo tên file duy nhất bằng UUID để tránh các sản phẩm trùng tên file bị ghi đè lên nhau
+            String originalFilename = file.getOriginalFilename();
+            String uniqueFilename = UUID.randomUUID().toString() + "_" + (originalFilename != null ? originalFilename : "image");
+            Path destinationFile = this.rootLocation.resolve(Paths.get(uniqueFilename)).normalize().toAbsolutePath();
 
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            return "/images/" + filename;
+            return "/images/" + uniqueFilename;
 
         } catch (IOException e) {
             throw new RuntimeException("Lỗi lưu file.", e);
@@ -49,6 +51,7 @@ public class FileStorageServiceImpl implements StorageService {
     @Override
     public void deleteFile(String fileName) {
         try {
+            if (fileName == null || fileName.trim().isEmpty()) return;
             // Cắt bỏ phần "/images/" để lấy tên file gốc
             String actualFileName = fileName.replace("/images/", "");
             Path fileToDelete = rootLocation.resolve(actualFileName).normalize().toAbsolutePath();
@@ -58,3 +61,4 @@ public class FileStorageServiceImpl implements StorageService {
         }
     }
 }
+

@@ -6,6 +6,8 @@ import com.codegym.store.repository.CpuRepository;
 import com.codegym.store.service.ProductService;
 import com.codegym.store.service.StorageService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,8 +31,8 @@ public class CpuController {
 
     @GetMapping({"", "/"}) // Truy cập /cpu hoặc /cpu/ thì gọi hàm này
     public String showCpuList(@RequestParam(defaultValue = "0") int page, Model model) {
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10);
-        org.springframework.data.domain.Page<com.codegym.store.model.Cpu> cpuPage = cpuRepository.findAll(pageable);
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(page, 10, org.springframework.data.domain.Sort.by("id").descending());
+        Page<Cpu> cpuPage = cpuRepository.findAll(pageable);
         model.addAttribute("cpus", cpuPage);
         return "cpu/list-cpu";
     }
@@ -116,11 +118,11 @@ public class CpuController {
             return "cpu/edit-cpu";
         }
 
-        // 1. Móc cái CPU CŨ (Managed Entity) từ Database lên
+        // 1. Load entity từ DB
         Cpu existingCpu = (Cpu) productService.findById(cpu.getId()).orElse(null);
 
         if (existingCpu != null) {
-            // 2. Lấy dữ liệu chữ từ Form (cpu) đắp vào existingCpu
+            // 2. Cập nhật các trường text
             existingCpu.setSeries(cpu.getSeries());
             existingCpu.setSegment(cpu.getSegment());
             existingCpu.setModelNumber(cpu.getModelNumber());
@@ -132,35 +134,31 @@ public class CpuController {
             existingCpu.setStock(cpu.getStock());
             existingCpu.setPrice(cpu.getPrice());
 
-            // 3. Xử lý Xóa ảnh cũ
+            // 3. Xử lý xóa ảnh cũ (orphanRemoval sẽ tự xóa trong DB khi remove khỏi list)
             if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
                 for (ProductImage img : existingCpu.getImages()) {
                     if (deletedImageIds.contains(img.getId())) {
                         storageService.deleteFile(img.getPath());
                     }
                 }
-                // Xóa khỏi danh sách của existingCpu
                 existingCpu.getImages().removeIf(img -> deletedImageIds.contains(img.getId()));
             }
 
-            // 4. Xử lý Thêm ảnh mới
+            // 4. Thêm ảnh mới vào collection
             if (imageFiles != null) {
                 for (MultipartFile file : imageFiles) {
                     if (!file.isEmpty()) {
                         String imagePath = storageService.storeFile(file);
                         ProductImage newImg = new ProductImage();
                         newImg.setPath(imagePath);
-                        newImg.setProduct(existingCpu); // Trỏ về existingCpu
-
+                        newImg.setProduct(existingCpu);
                         existingCpu.getImages().add(newImg);
                     }
                 }
             }
 
-            // Sinh lại tên dựa trên các trường vừa đắp vào
+            // Sinh lại tên
             generateName(existingCpu);
-
-            // LƯU EXISTING CPU (Vì nó là con cưng của Hibernate nên mọi thay đổi list ảnh sẽ được giữ nguyên)
             productService.save(existingCpu);
         }
 
