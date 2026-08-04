@@ -1,10 +1,10 @@
-
 <!-- Bọc toàn bộ bằng 1 thẻ div có id để AJAX có thể thay thế -->
 <div id="ajax-product-list" xmlns:th="http://www.thymeleaf.org">
 
     <div class="product-grid" id="productGrid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px;">
         <!-- NẾU TRỐNG -->
-        <div th:if="${#lists.isEmpty(cpus)}" style="grid-column: 1 / -1; text-align: center; padding: 50px 0; color: #777;">
+        <div th:if="${#lists.isEmpty(cpus)}"
+             style="grid-column: 1 / -1; text-align: center; padding: 50px 0; color: #777;">
             Không tìm thấy sản phẩm nào!
         </div>
 
@@ -38,19 +38,25 @@
 
             <!-- Giá và Trạng thái -->
             <div class="price-row">
-                <span class="price" th:text="${#numbers.formatDecimal(cpu.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                <span class="price"
+                      th:text="${#numbers.formatDecimal(cpu.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
                 <span class="stock-status" th:if="${cpu.stock > 0}">Còn hàng</span>
                 <span class="stock-status" th:if="${cpu.stock <= 0}" style="color: #e30019;">Hết hàng</span>
             </div>
 
             <!-- Các Nút Thao Tác -->
             <div class="card-actions">
-                <a th:href="@{/product/{id}(id=${cpu.id})}" class="btn-detail" style="text-decoration: none; text-align: center; box-sizing: border-box; display: inline-block;">Chi tiết</a>
+                <a th:href="@{/product/{id}(id=${cpu.id})}" class="btn-detail"
+                   style="text-decoration: none; text-align: center; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 32%; padding: 8px 5px;">Chi
+                    tiết</a>
 
-                <form th:if="${!isAdmin}" th:action="@{/cart/add}" method="post" class="form-add-cart" style="margin: 0; flex: 1;">
-                    <input type="hidden" name="productId" th:value="${cpu.id}" />
-                    <input type="hidden" name="quantity" value="1" />
-                    <button type="submit" class="btn-add-cart" style="width: 100%;">Thêm vào</button>
+                <form th:if="${!isAdmin}" th:action="@{/cart/add}" method="post" class="form-add-cart"
+                      style="margin: 0; flex: 1; display: flex;">
+                    <input type="hidden" name="productId" th:value="${cpu.id}"/>
+                    <input type="hidden" name="quantity" value="1"/>
+                    <button type="submit" class="btn-add-cart"
+                            style="width: 100%; white-space: nowrap; padding: 8px 5px;">Thêm vào giỏ
+                    </button>
                 </form>
             </div>
         </div>

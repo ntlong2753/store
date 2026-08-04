@@ -1,126 +1,143 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
 <head th:replace="~{admin/fragments/head :: head('NexGen Admin - Thêm mainboard Mới')}"></head>
+
 <body>
 
-<!-- SIDEBAR BÊN TRÁI -->
-<div th:replace="~{admin/fragments/sidebar :: sidebar('mainboard')}"></div>
+    <!-- SIDEBAR BÊN TRÁI -->
+    <div th:replace="~{admin/fragments/sidebar :: sidebar('mainboard')}"></div>
 
-<!-- KHU VỰC BÊN PHẢI -->
-<div class="main-content">
-    <!-- TOPBAR -->
-    <div th:replace="~{admin/fragments/topbar :: topbar('Thêm Bo mạch chủ (Mainboard) Mới')}"></div>
+    <!-- KHU VỰC BÊN PHẢI -->
+    <div class="main-content">
+        <!-- TOPBAR -->
+        <div th:replace="~{admin/fragments/topbar :: topbar('Thêm Bo mạch chủ (Mainboard) Mới')}"></div>
 
-    <div class="content-area">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Nhập thông số sản phẩm</h3>
-                <a th:href="@{/admin/mainboard}" class="btn-secondary" style="padding: 8px 15px;"><i class="fas fa-arrow-left"></i> Quay lại</a>
-            </div>
+        <div class="content-area">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Nhập thông số sản phẩm</h3>
+                    <a th:href="@{/admin/mainboard}" class="btn-secondary" style="padding: 8px 15px;"><i
+                            class="fas fa-arrow-left"></i> Quay lại</a>
+                </div>
 
-            <div class="card-body">
-                <!-- FORM THÊM MỚI -->
-                <form th:action="@{/admin/mainboard/add}" th:object="${product}" method="post" enctype="multipart/form-data">
+                <div class="card-body">
+                    <!-- FORM THÊM MỚI -->
+                    <form th:action="@{/admin/mainboard/add}" th:object="${product}" method="post"
+                        enctype="multipart/form-data">
 
-                    <div class="form-group">
-                        <label>Tên mainboard (Tự động sinh theo dữ liệu dưới):</label>
-                        <input type="text" class="form-control" th:field="*{name}" readonly="readonly" placeholder="Hệ thống sẽ tự động ghép tên..." />
-                    </div>
+                        <div class="form-group">
+                            <label>Tên mainboard (Tự động sinh theo dữ liệu dưới):</label>
+                            <input type="text" class="form-control" th:field="*{name}" readonly="readonly"
+                                placeholder="Hệ thống sẽ tự động ghép tên..." />
+                        </div>
 
-                                        <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Hãng (Brand):</label>
-                                <input type="text" class="form-control" th:field="*{brand}" id="brand" placeholder="Ví dụ: ASUS, Gigabyte, MSI" />
-                                <span class="error" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></span>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Hãng (Brand):</label>
+                                    <input type="text" class="form-control" th:field="*{brand}" id="brand"
+                                        placeholder="Ví dụ: ASUS, Gigabyte, MSI" />
+                                    <span class="error" th:if="${#fields.hasErrors('brand')}"
+                                        th:errors="*{brand}"></span>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Model (Mã sản phẩm):</label>
+                                    <input type="text" class="form-control" th:field="*{model}" id="model"
+                                        placeholder="Ví dụ: ROG STRIX Z790-A" />
+                                    <span class="error" th:if="${#fields.hasErrors('model')}"
+                                        th:errors="*{model}"></span>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Model (Mã sản phẩm):</label>
-                                <input type="text" class="form-control" th:field="*{model}" id="model" placeholder="Ví dụ: ROG STRIX Z790-A" />
-                                <span class="error" th:if="${#fields.hasErrors('model')}" th:errors="*{model}"></span>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Socket:</label>
+                                    <input type="text" class="form-control" th:field="*{socket}" id="socket"
+                                        placeholder="Ví dụ: LGA 1700" />
+                                    <span class="error" th:if="${#fields.hasErrors('socket')}"
+                                        th:errors="*{socket}"></span>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Chipset:</label>
+                                    <input type="text" class="form-control" th:field="*{chipset}" id="chipset"
+                                        placeholder="Ví dụ: Z790" />
+                                    <span class="error" th:if="${#fields.hasErrors('chipset')}"
+                                        th:errors="*{chipset}"></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Socket:</label>
-                                <input type="text" class="form-control" th:field="*{socket}" id="socket" placeholder="Ví dụ: LGA 1700" />
-                                <span class="error" th:if="${#fields.hasErrors('socket')}" th:errors="*{socket}"></span>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Chuẩn RAM:</label>
+                                    <input type="text" class="form-control" th:field="*{ramStandard}" id="ramStandard"
+                                        placeholder="Ví dụ: DDR5" />
+                                    <span class="error" th:if="${#fields.hasErrors('ramStandard')}"
+                                        th:errors="*{ramStandard}"></span>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Kích thước (Form Factor):</label>
+                                    <input type="text" class="form-control" th:field="*{size}" id="size"
+                                        placeholder="Ví dụ: ATX, Micro-ATX" />
+                                    <span class="error" th:if="${#fields.hasErrors('size')}" th:errors="*{size}"></span>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Chipset:</label>
-                                <input type="text" class="form-control" th:field="*{chipset}" id="chipset" placeholder="Ví dụ: Z790" />
-                                <span class="error" th:if="${#fields.hasErrors('chipset')}" th:errors="*{chipset}"></span>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Số lượng kho:</label>
+                                    <input type="number" class="form-control" th:field="*{stock}" />
+                                    <span class="error" th:if="${#fields.hasErrors('stock')}"
+                                        th:errors="*{stock}"></span>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Giá bán (VNĐ):</label>
+                                    <input type="number" class="form-control" th:field="*{price}" step="0.01" />
+                                    <span class="error" th:if="${#fields.hasErrors('price')}"
+                                        th:errors="*{price}"></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Chuẩn RAM:</label>
-                                <input type="text" class="form-control" th:field="*{ramStandard}" id="ramStandard" placeholder="Ví dụ: DDR5" />
-                                <span class="error" th:if="${#fields.hasErrors('ramStandard')}" th:errors="*{ramStandard}"></span>
-                            </div>
+                        <div class="form-group">
+                            <label>Mô tả ngắn gọn:</label>
+                            <input type="text" class="form-control" th:field="*{description}" />
                         </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Kích thước (Form Factor):</label>
-                                <input type="text" class="form-control" th:field="*{size}" id="size" placeholder="Ví dụ: ATX, Micro-ATX" />
-                                <span class="error" th:if="${#fields.hasErrors('size')}" th:errors="*{size}"></span>
-                            </div>
+
+                        <div class="form-group">
+                            <label>Hình ảnh minh họa:</label>
+                            <input type="file" class="form-control" style="padding: 9px 15px;" id="imageInput"
+                                name="imageFiles" multiple="multiple" accept="image/*" />
+                            <div id="previewContainer"
+                                style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;"></div>
                         </div>
-                    </div>
 
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Số lượng kho:</label>
-                                <input type="number" class="form-control" th:field="*{stock}" />
-                                <span class="error" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></span>
-                            </div>
+                        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--admin-border);">
+                            <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Lưu Sản Phẩm</button>
+                            <a th:href="@{/admin/mainboard}" class="btn-secondary">Hủy bỏ</a>
                         </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>Giá bán (VNĐ):</label>
-                                <input type="number" class="form-control" th:field="*{price}" step="0.01" />
-                                <span class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label>Mô tả ngắn gọn:</label>
-                        <input type="text" class="form-control" th:field="*{description}" />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Hình ảnh minh họa:</label>
-                        <input type="file" class="form-control" style="padding: 9px 15px;" id="imageInput" name="imageFiles" multiple="multiple" accept="image/*" />
-                        <div id="previewContainer" style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;"></div>
-                    </div>
-
-                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--admin-border);">
-                        <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Lưu Sản Phẩm</button>
-                        <a th:href="@{/admin/mainboard}" class="btn-secondary">Hủy bỏ</a>
-                    </div>
-
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script th:src="@{/js/admin.js}"></script>
+    <script th:src="@{/js/admin.js}"></script>
 </body>
+
 </html>
-
-
-
-

@@ -57,33 +57,33 @@ public class HomeController {
         Page<? extends Product> productPage = null;
         String catTitle = "Tất Cả Sản Phẩm";
 
-        // Cài đặt phân trang: lấy trang số 'page', mỗi trang 10 sản phẩm
-        Pageable pageable = PageRequest.of(page, 50);
+        // Cài đặt phân trang: lấy trang số 'page', mỗi trang 25 sản phẩm
+        Pageable pageable = PageRequest.of(page, 25);
 
         // Thay vì findAll() thông thường, ta gọi findAll(pageable)
         if (cat == null || cat.isEmpty()) {
-            productPage = productRepository.findAll(pageable);
+            productPage = productRepository.findAll(pageable); // lay tat ca san pham
             catTitle = "Sản Phẩm Nổi Bật";
         } else if ("cpu".equals(cat)) {
-            productPage = cpuRepository.findAll(pageable);
+            productPage = cpuRepository.findAll(pageable); // chi lay cpu
             catTitle = "Vi Xử Lý (CPU)";
         } else if ("ram".equals(cat)) {
-            productPage = ramRepository.findAll(pageable);
+            productPage = ramRepository.findAll(pageable); // chi lay ram
             catTitle = "Bộ Nhớ Trong (RAM)";
         } else if ("vga".equals(cat)) {
-            productPage = vgaRepository.findAll(pageable);
+            productPage = vgaRepository.findAll(pageable); // chi lay vga
             catTitle = "Card Màn Hình (VGA)";
         } else if ("storage".equals(cat)) {
-            productPage = storageRepository.findAll(pageable);
+            productPage = storageRepository.findAll(pageable); // chi lay o cung
             catTitle = "Ổ Cứng (SSD/HDD)";
         } else if ("mainboard".equals(cat)) {
-            productPage = mainboardRepository.findAll(pageable);
+            productPage = mainboardRepository.findAll(pageable); // chi lay mainboard
             catTitle = "Bo Mạch Chủ (Mainboard)";
         } else if ("casepc".equals(cat)) {
-            productPage = casepcRepository.findAll(pageable);
+            productPage = casepcRepository.findAll(pageable); // chi lay case pc
             catTitle = "Vỏ Máy Tính (Case)";
         } else if ("psu".equals(cat)) {
-            productPage = psuRepository.findAll(pageable);
+            productPage = psuRepository.findAll(pageable); // chi lay psu
             catTitle = "Nguồn Máy Tính (PSU)";
         }
 

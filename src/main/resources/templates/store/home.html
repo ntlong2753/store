@@ -8,10 +8,8 @@
     <!-- Thư viện Icon FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-
-    
     <th:block th:replace="~{store/fragments/header :: header-css}"></th:block>
-    
+
 </head>
 <body>
 
@@ -23,13 +21,48 @@
     <div class="hero-section">
         <aside class="sidebar">
             <ul>
-                <li><a th:href="@{/(cat='cpu')}"><div class="left-icon"><i class="fas fa-microchip"></i> Vi xử lý (CPU)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a th:href="@{/(cat='mainboard')}"><div class="left-icon"><i class="fas fa-chess-board"></i> Bo mạch chủ (Mainboard)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a th:href="@{/(cat='ram')}"><div class="left-icon"><i class="fas fa-memory"></i> Bộ nhớ trong (RAM)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a th:href="@{/(cat='vga')}"><div class="left-icon"><i class="fas fa-tv"></i> Card màn hình (VGA)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a th:href="@{/(cat='storage')}"><div class="left-icon"><i class="fas fa-hdd"></i> Ổ cứng (SSD/HDD)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a th:href="@{/(cat='casepc')}"><div class="left-icon"><i class="fas fa-box"></i> Vỏ máy tính (Case)</div> <i class="fas fa-chevron-right"></i></a></li>
-                <li><a th:href="@{/(cat='psu')}"><div class="left-icon"><i class="fas fa-plug"></i> Nguồn (PSU)</div> <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='cpu')}">
+                    <div class="left-icon"><span
+                            style="font-size: 18px; width: 24px; text-align: center; display: inline-block;">🔲</span> Vi
+                        xử lý (CPU)
+                    </div>
+                    <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='mainboard')}">
+                    <div class="left-icon"><span
+                            style="font-size: 18px; width: 24px; text-align: center; display: inline-block;">🛠️</span>
+                        Bo mạch chủ (Mainboard)
+                    </div>
+                    <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='ram')}">
+                    <div class="left-icon"><span
+                            style="font-size: 18px; width: 24px; text-align: center; display: inline-block;">📼</span> Bộ
+                        nhớ trong (RAM)
+                    </div>
+                    <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='vga')}">
+                    <div class="left-icon"><span
+                            style="font-size: 18px; width: 24px; text-align: center; display: inline-block;">🎮</span>
+                        Card màn hình (VGA)
+                    </div>
+                    <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='storage')}">
+                    <div class="left-icon"><span
+                            style="font-size: 18px; width: 24px; text-align: center; display: inline-block;">💾</span> Ổ
+                        cứng (SSD/HDD)
+                    </div>
+                    <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='psu')}">
+                    <div class="left-icon"><span
+                            style="font-size: 18px; width: 24px; text-align: center; display: inline-block;">⚡</span>
+                        Nguồn máy tính (PSU)
+                    </div>
+                    <i class="fas fa-chevron-right"></i></a></li>
+                <li><a th:href="@{/(cat='casepc')}">
+                    <div class="left-icon"><span
+                            style="font-size: 18px; width: 24px; text-align: center; display: inline-block;">🗄️</span>
+                        Vỏ máy tính (Case)
+                    </div>
+                    <i class="fas fa-chevron-right"></i></a></li>
             </ul>
         </aside>
 
@@ -37,7 +70,8 @@
         <div class="banner">
             <div class="banner-content">
                 <h2>Xây Dựng Cỗ Máy Trong Mơ Của Bạn</h2>
-                <p>Khám phá bộ sưu tập linh kiện PC cao cấp nhất, từ CPU đa nhân, Card đồ họa cực khủng đến những hệ thống tản nhiệt tối tân. Sẵn sàng phá vỡ mọi giới hạn hiệu năng.</p>
+                <p>Khám phá bộ sưu tập linh kiện PC cao cấp nhất, từ CPU đa nhân, Card đồ họa cực khủng đến những hệ
+                    thống tản nhiệt tối tân. Sẵn sàng phá vỡ mọi giới hạn hiệu năng.</p>
                 <button class="btn-discover">Khám Phá Ngay</button>
             </div>
         </div>
@@ -48,7 +82,8 @@
     <div class="section-header">
         <h3 th:text="${catTitle}">Sản Phẩm Nổi Bật</h3>
         <!-- Khi ấn Xem tất cả, vẫn nhớ mình đang ở danh mục nào -->
-        <a th:href="@{/(viewAll=true, cat=${param.cat})}" class="view-all-btn" style="text-decoration: none;" th:if="${!viewAll}">Xem tất cả</a>
+        <a th:href="@{/(viewAll=true, cat=${param.cat})}" class="view-all-btn" style="text-decoration: none;"
+           th:if="${!viewAll}">Xem tất cả</a>
     </div>
 
 
@@ -57,8 +92,6 @@
 </div>
 
 <th:block th:replace="~{store/fragments/header :: header-js}"></th:block>
-
-
 
 
 </body>
