@@ -202,7 +202,7 @@ public class HomeController {
         }
 
         if (product.getImages() != null && !product.getImages().isEmpty()) {
-            map.put("image", product.getImages().getFirst().getPath());
+            map.put("image", product.getImages().get(0).getPath());
         } else {
             map.put("image", "https://via.placeholder.com/50x50?text=No+Image");
         }
